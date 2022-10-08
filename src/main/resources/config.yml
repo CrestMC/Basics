@@ -1,0 +1,9 @@
+Spawn-Location: 0, 0, 0, world
+
+Join-Message: "&8[&a+&8] &7{player-name}"
+Quit-Message: "&8[&c-&8] &7{player-name}"
+
+Chat-Format: "{player-rank} {player-name} &7» &f"
+
+Slowmode-Delay: 1
+Chat-Enabled: true

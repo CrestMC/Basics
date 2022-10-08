@@ -1,0 +1,37 @@
+name: Basics
+version: '${project.version}'
+main: dev.blurmit.basics.Basics
+api-version: 1.16
+prefix: Basics
+authors: [ Blurmit ]
+description: A plugin containing general server utilities
+website: https://blurmit.ml
+
+permissions:
+  basics.*:
+    description: "Gives full permission to the plugin"
+    default: op
+  basics.clearchat.bypass:
+    description: "Allows the user to bypass the chat clear"
+    default: op
+  basics.commands.gamemode.other:
+    description: "Gives permission to change gamemode of other players"
+    default: op
+  basics.commands.fly.other:
+    description: "Gives permission to set the fly state of other players"
+    default: op
+  basics.commands.flyspeed.other:
+    description: "Gives permission to set the flyspeed of other players"
+    default: op
+  basics.commands.walkspeed.other:
+    description: "Gives permission to set the walkspeed of other players"
+    default: op
+  basics.slowmode.bypass:
+    description: "Allows the user to bypass the slowmode"
+    default: op
+  basics.mutechat.bypass:
+    description: "Allows the user to bypass the mutechat"
+    default: op
+  basics.spawn.other:
+    description: "Gives permission to teleport other players to spawn"
+    default: op

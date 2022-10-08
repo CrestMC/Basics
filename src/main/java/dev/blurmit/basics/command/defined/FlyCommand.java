@@ -1,0 +1,86 @@
+package dev.blurmit.basics.command.defined;
+
+import dev.blurmit.basics.Basics;
+import dev.blurmit.basics.command.CommandBase;
+import dev.blurmit.basics.util.Booleans;
+import dev.blurmit.basics.util.Placeholders;
+import dev.blurmit.basics.util.lang.Messages;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Arrays;
+
+public class FlyCommand extends CommandBase {
+
+    private final Basics plugin;
+
+    public FlyCommand(Basics plugin) {
+        super(plugin.getName());
+        setName("fly");
+        setDescription("Toggles the ability to fly for a player");
+        setAliases(Arrays.asList("flight", "flying"));
+        setUsage("Usage: /fly [boolean] [player]");
+        setPermission("basics.commands.fly");
+
+        this.plugin = plugin;
+    }
+
+    @Override
+    public boolean execute(CommandSender sender, @NotNull String commandLabel, String[] args) {
+        if (!sender.hasPermission(getPermission())) {
+            sender.sendMessage(Placeholders.parsePlaceholder(Messages.NO_PERMISSION + "", sender, this, args));
+            return true;
+        }
+
+        if (args.length == 2) {
+            if (!sender.hasPermission("basics.commands.fly.other")) {
+                sender.sendMessage(Placeholders.parsePlaceholder(Messages.NO_PERMISSION_SUBCOMMAND + "", sender, this, args));
+                return true;
+            }
+
+            Player target = plugin.getServer().getPlayer(args[1]);
+            boolean state = Booleans.isFancyBoolean(args[0]);
+
+            if (target == null) {
+                sender.sendMessage(Placeholders.parsePlaceholder(Messages.PLAYER_NOT_FOUND + "", args[1]));
+                return true;
+            }
+
+            target.setAllowFlight(state);
+            target.sendMessage(Placeholders.parsePlaceholder(Messages.FLY_TOGGLE + "", target, this, args));
+
+            if (!target.equals(sender)) {
+                sender.sendMessage(Placeholders.parsePlaceholder(Messages.FLY_TOGGLE + "", target, this, args));
+            }
+
+            return true;
+        }
+
+        if (!(sender instanceof Player)) {
+            sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_ARGS + "", sender, this, args));
+            return true;
+        }
+
+        Player player = (Player) sender;
+
+        if (args.length == 0) {
+            player.setAllowFlight(!player.getAllowFlight());
+            player.sendMessage(Placeholders.parsePlaceholder(Messages.FLY_TOGGLE + "", player, this, args));
+            return true;
+        }
+
+        if (args.length == 1) {
+            boolean state = Booleans.isFancyBoolean(args[0]);
+
+            player.setAllowFlight(state);
+            player.sendMessage(Placeholders.parsePlaceholder(Messages.FLY_TOGGLE + "", player, this, args));
+            return true;
+        }
+
+        sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_ARGS + "", player, this, args));
+        return true;
+
+    }
+
+}
