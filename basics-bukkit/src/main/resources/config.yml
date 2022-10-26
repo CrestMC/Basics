@@ -1,0 +1,108 @@
+# Gets the name of the server through BungeeCord via PluginMessaging.
+# If you are running a standalone server, the auto-detect option will not work. Use the default-value option instead.
+Server-Name:
+  Default-Value: Unknown
+  Auto-Detect: false
+
+# Staff chat message formats
+# Staff messages will be sent through PluginMessaging and thus will require configuration on each server.
+StaffChat:
+  # Whenever a staff members types a chat message, check if it starts with this prefix, if so send the message in staff chat.
+  # Set to "none" to disable.
+  Prefix: "#"
+  # Used when a player sends a message in staffchat.
+  # {replacement-0} will translate to the name of the server that the sender is currently on.
+  # {replacement-1} will translate to the name of the sender.
+  # {replacement-2} will translate to the message that is being sent.
+  Format: "&b[STAFF] &3[{replacement-0}] &b{replacement-1} &7» &b{replacement-2}"
+
+  # Used when a staff member switches servers. Leave blank to disable.
+  # {replacement-0} will translate to the name of the server that the sender moved to.
+  # {replacement-1} will translate to the name of the server that the sender was previously on.
+  Switch: "&b[STAFF] &b{replacement-0} &3joined &b{replacement-1} &3from &b{replacement-2}&3."
+
+  # Used when a staff member joins the server. Leave blank to disable.
+  # {replacement-0} will translate to the name of the staff member.
+  # {replacement-1} will translate to the name of the server that the staff member connected to.
+  Connect: "&b[STAFF] &b{replacement-0} &3connected to &b{replacement-1}&3."
+
+  # Used when a staff member leaves the server. Leave blank to disable.
+  # {replacement-0} will translate to the name of the staff member.
+  # {replacement-1} will translate to the name of the server that the staff member disconnected from.
+  Disconnect: "&b[STAFF] &b{replacement-0} &3disconnected from &b{replacement-1}&3."
+
+# The stored spawn location.
+# Do not mess with this option unless you know what you are doing.
+Spawn-Location: 0, 0, 0, world
+
+# Manages how ranks are stored and handled.
+Ranks:
+  # When this option is set to true, the plugin will attempt to load the built-in rank system.
+  # If your server is running another permission plugin, set this to false.
+  Enabled: false
+  # Rank storage methods. Available options are "config" or "mysql". More options may be added later.
+  # If you choose config, further configuration will be done in the "ranks.yml" & in-game commands.
+  # If you choose MySQL, further configuration can be done through the in-game commands.
+  Storage-Method: config
+  # MySQL database login information.
+  MySQL-Username: "root"
+  MySQL-Password: "password"
+  MySQL-Host: "localhost:3306"
+  MySQL-Database: "Ranks"
+
+# Connection messages.
+# Leave blank to disable connection messages.
+Join-Message: "&8[&a+&8] &7{player-name}"
+Quit-Message: "&8[&c-&8] &7{player-name}"
+
+# Server MOTD. Sent to the player on server join.
+MOTD:
+  - "&7&m                                                &r"
+  - "&a&lWelcome to Server!"
+  - "&7"
+  - "&8● &aWebsite: &fhttps://example.com"
+  - "&8● &aDiscord: &fhttps://discord.example.com"
+  - "&8● &aStore: &fhttps://store.example.com"
+  - "&7&m                                                &r"
+
+# The current chat format
+# %s pertains to the player name and/or message.
+Chat-Format: "{player-rank-prefix}%s &7» &f%s"
+
+# The stored slow-mode delay.
+# Do not mess with this option unless you know what you are doing.
+Slowmode-Delay: 1
+
+# The stored chat status.
+# Do not mess with this option unless you know what you are doing.
+Chat-Enabled: true
+
+# Weather the scoreboard provided in the scoreboard.yml file will be enabled.
+# If you have another scoreboard plugin, you can leave this option disabled.
+# Otherwise, enable this option, and further configuration will be in the scoreboard.yml file.
+Scoreboard-Enabled: false
+
+# The social media links.
+Social-Media:
+  All:
+    - "&7&m                                      &r"
+    - "{server-website}"
+    - "{server-discord}"
+    - "{server-store}"
+    - "{server-teamspeak}"
+    - "{server-twitter}"
+    - "&7&m                                      &r"
+  Website: "&a&lWebsite: &fhttps://www.example.com/"
+  Discord: "&a&lDiscord: &fhttps://discord.example.com/"
+  Store: "&a&lStore: &fhttps://store.example.com/"
+  Twitter: "&a&lTwitter: &fhttps://twitter.com/example"
+  Teamspeak: "&a&lTeamspeak: &fhttps://ts.example.com/"
+
+# Server aliases.
+# Any commands in this config will be registered as /<value>.
+# Dispatching the command with send you to the specified server.
+# This section only works with BungeeCord. You cannot reload server aliases.
+Server-Aliases:
+  lobby: "Lobby"
+  hub: "Lobby"
+  survival: "Survival"

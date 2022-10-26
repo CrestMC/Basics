@@ -1,0 +1,10 @@
+Tablist:
+  Header:
+    - '&7&m                                      &r'
+    - '&b&lServer'
+    - '&fWelcome, {player-name}'
+    - "&r"
+  Footer:
+    - '&r'
+    - '&fexample.com'
+    - '&7&m                                      &r'

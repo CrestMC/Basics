@@ -1,0 +1,131 @@
+Groups:
+  default:
+    prefix: '&7[Guest] '
+    display-name: "&7Guest"
+    suffix: ''
+    priority: 0
+    default: true
+    permissions:
+    - basics.command.ping
+    - basics.command.spawn
+    - basics.command.help
+  vip:
+    prefix: '&7[&aVIP&7] &7'
+    display-name: "&aVIP"
+    suffix: '&7'
+    priority: 1
+    default: false
+    inherits:
+    - default
+    permissions:
+    - basics.command.fly
+    - basics.command.feed
+    - basics.command.heal
+    - basics.command.itemrename
+  youtuber:
+    prefix: '&7[&cYou&fTube&7] &c'
+    display-name: "&cYou&fTube"
+    suffix: ''
+    priority: 2
+    default: false
+    inherits:
+    - vip
+    permissions:
+    - basics.command.vanish
+    - basics.command.broadcast
+  builder:
+    prefix: '&7[&2Builder&7] '
+    display-name: "&2Builder"
+    suffix: ''
+    priority: 3
+    default: false
+    inherits:
+    - vip
+    permissions:
+    - worldedit.*
+    - basics.build.*
+    - basics.slowmode.bypass
+  helper:
+    prefix: '&d&7[&dHelper&7] &d'
+    display-name: "&dHelper"
+    suffix: ''
+    priority: 4
+    default: false
+    inherits:
+    - youtuber
+    permissions:
+    - basics.command.kick
+    - basics.command.mute
+    - basics.command.unmute
+    - basics.command.clearchat
+    - basics.command.mutechat
+    - basics.command.invsee
+    - basics.slowmode.bypass
+  mod:
+    prefix: '&7[&5Mod&7] &5'
+    suffix: ''
+    display-name: "&5Mod"
+    priority: 5
+    default: false
+    inherits:
+    - helper
+    permissions:
+    - basics.command.ban
+    - basics.command.unban
+    - basics.command.tempban
+    - basics.invsee.modify
+    - basics.command.slowmode
+    - basics.spawn.other
+    - basics.command.teleport
+    - basics.commands.fly.other
+    - basics.command.flyspeed
+    - basics.commands.flyspeed.other
+    - basics.command.walkspeed
+    - basics.commands.walkspeed.other
+    - basics.commands.gamemode
+    - basics.command.world
+  srmod:
+    prefix: '&7[&5&lSrMod&7] &5&l'
+    display-name: "&5&lSrMod"
+    suffix: ''
+    priority: 6
+    default: false
+    inherits:
+    - mod
+    - builder
+    permissions:
+    - basics.command.createworld
+    - basics.command.deleteworld
+    - basics.command.setspawn
+    - basics.command.itemlore
+    - minecraft.command.give
+    - basics.command.enchant
+  admin:
+    prefix: '&7[&cAdmin&7] &c'
+    display-name: "&cAdmin"
+    suffix: ''
+    priority: 7
+    default: false
+    inherits:
+    - srmod
+    permissions:
+    - '*'
+  developer:
+    prefix: '&7[&b&lDeveloper&7] &b&l'
+    suffix: '&7'
+    priority: 8
+    default: false
+    inherits:
+    - admin
+    permissions:
+    - '*'
+  owner:
+    prefix: '&7[&4Owner&7] &4'
+    display-name: "&4Owner"
+    suffix: '&7'
+    priority: 9
+    default: false
+    inherits:
+    - developer
+    permissions:
+    - '*'
