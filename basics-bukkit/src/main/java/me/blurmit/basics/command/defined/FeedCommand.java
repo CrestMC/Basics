@@ -20,7 +20,7 @@ public class FeedCommand extends CommandBase {
         setName("feed");
         setDescription("Feed yourself or another player");
         setAliases(Collections.singletonList("feedme"));
-        setUsage("Usage: /feed [player]");
+        setUsage("/feed [player]");
         setPermission("basics.commands.feed");
 
         this.plugin = plugin;

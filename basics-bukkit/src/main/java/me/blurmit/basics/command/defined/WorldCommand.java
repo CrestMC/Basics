@@ -23,7 +23,7 @@ public class WorldCommand extends CommandBase {
         setName("world");
         setDescription("Teleports a player to another world");
         setAliases(Collections.singletonList("worldtp"));
-        setUsage("Usage: /world <world name>");
+        setUsage("/world <world name>");
         setPermission("basics.commands.world");
 
         this.plugin = plugin;

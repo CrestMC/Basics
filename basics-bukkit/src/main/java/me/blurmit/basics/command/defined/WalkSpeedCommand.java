@@ -16,7 +16,7 @@ public class WalkSpeedCommand extends CommandBase {
         super(plugin.getName());
         setName("walkspeed");
         setDescription("Changes the walk speed of a player");
-        setUsage("Usage: /walkspeed <number> [player]");
+        setUsage("/walkspeed <number> [player]");
         setPermission("basics.commands.walkspeed");
 
         this.plugin = plugin;

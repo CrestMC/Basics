@@ -20,7 +20,7 @@ public class FlyCommand extends CommandBase {
         setName("fly");
         setDescription("Toggles the ability to fly for a player");
         setAliases(Arrays.asList("flight", "flying"));
-        setUsage("Usage: /fly [boolean] [player]");
+        setUsage("/fly [boolean] [player]");
         setPermission("basics.commands.fly");
 
         this.plugin = plugin;

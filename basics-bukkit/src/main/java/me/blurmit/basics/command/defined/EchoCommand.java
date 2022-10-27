@@ -18,7 +18,7 @@ public class EchoCommand extends CommandBase {
         super(plugin.getName());
         setName("echo");
         setDescription("Echo a message back to the sender");
-        setUsage("Usage: /echo <message>");
+        setUsage("/echo <message>");
         setPermission("basics.commands.echo");
 
         this.plugin = plugin;

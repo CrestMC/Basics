@@ -16,7 +16,7 @@ public class FlySpeedCommand extends CommandBase {
         super(plugin.getName());
         setName("flyspeed");
         setDescription("Changes the fly speed of a player");
-        setUsage("Usage: /flyspeed <number> [player]");
+        setUsage("/flyspeed <number> [player]");
         setPermission("pizza.commands.flyspeed");
 
         this.plugin = plugin;

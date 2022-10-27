@@ -27,7 +27,7 @@ public class StaffChatCommand extends CommandBase implements Listener, PluginMes
         super(plugin.getName());
         setName("staffchat");
         setDescription("Sends a global message to all online staff");
-        setUsage("Usage: /staffchat <message>");
+        setUsage("/staffchat <message>");
         setAliases(Collections.singletonList("sc"));
         setPermission("basics.commands.staffchat");
 

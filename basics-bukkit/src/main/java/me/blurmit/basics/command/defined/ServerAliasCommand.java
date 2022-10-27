@@ -20,7 +20,7 @@ public class ServerAliasCommand extends CommandBase {
         super(plugin.getName());
         setName("connect");
         setDescription("Connect to another server");
-        setUsage("Usage: /connect <server>");
+        setUsage("/connect <server>");
         setPermission("basics.commands.connect");
 
         List<String> aliases = new ArrayList<>();

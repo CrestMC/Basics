@@ -21,7 +21,7 @@ public class ItemRenameCommand extends CommandBase {
         super(plugin.getName());
         setName("itemrename");
         setDescription("Echo a message back to the sender");
-        setUsage("Usage: /itemrename <name>");
+        setUsage("/itemrename <name>");
         setPermission("basics.commands.itemrename");
 
         this.plugin = plugin;

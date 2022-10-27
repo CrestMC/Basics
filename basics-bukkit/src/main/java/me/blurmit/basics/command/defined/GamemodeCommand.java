@@ -21,7 +21,7 @@ public class GamemodeCommand extends CommandBase {
         setName("gamemode");
         setDescription("Changes the gamemode of a player");
         setAliases(Collections.singletonList("gm"));
-        setUsage("Usage: /gamemode <gamemode> [player]");
+        setUsage("/gamemode <gamemode> [player]");
         setPermission("basics.commands.gamemode");
 
         this.plugin = plugin;

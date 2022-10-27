@@ -39,11 +39,11 @@ public class RankCommand extends CommandBase {
             return true;
         }
 
-        List<String> usages = new ArrayList<>(Collections.singletonList("\n"));
+        List<String> usages = new ArrayList<>();
         subCommands.values().stream().filter(subcommand -> sender.hasPermission(subcommand.getPermission())).forEach(subcommand -> {
-            usages.add(subcommand.getUsage() + "\n" + "  &c- " + subcommand.getDescription());
+            usages.add(subcommand.getUsage() + "\n  - " + subcommand.getDescription());
         });
-        setUsage(String.join("\n", usages));
+        setUsage("\n&c" + String.join("\n", usages));
 
         if (!(args.length > 0)) {
             sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_ARGS + "", sender, this, args));

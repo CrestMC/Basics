@@ -5,7 +5,7 @@ import me.blurmit.basics.command.defined.SubCommand;
 import me.blurmit.basics.rank.Rank;
 import me.blurmit.basics.util.placeholder.Placeholders;
 import me.blurmit.basics.util.lang.Messages;
-import org.bukkit.ChatColor;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
@@ -19,7 +19,7 @@ public class EditRankSubCommand extends SubCommand {
         super(plugin.getName(), command);
         setName("edit");
         setUsage("/rank edit <rank>");
-        setPermission("basics.commands.rank.delete");
+        setPermission("basics.commands.rank.edit");
         setDescription("Edits a rank");
 
         this.plugin = plugin;
@@ -28,7 +28,23 @@ public class EditRankSubCommand extends SubCommand {
     @Override
     public void execute(CommandSender sender, Command command, String[] args) {
         if (args.length < 4) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_ARGS_SUBCOMMAND + "", sender, this, args));
+            sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_ARGS_SUBCOMMAND +
+                    "\n&c/rank edit <name> <addpermission> <permission> [value] [server]" +
+                    "\n&c  - Adds a permission to a rank" +
+                    "\n/rank edit <name> <removepermission> <permission>" +
+                    "\n&c  - Removes a permission from a rank" +
+                    "\n/rank edit <name> <setprefix> <prefix>" +
+                    "\n&c  - Sets the prefix of a rank" +
+                    "\n/rank edit <name> <setsuffix> <suffix>" +
+                    "\n&c  - Sets the suffix of a rank" +
+                    "\n/rank edit <name> <setdefault> <value>" +
+                    "\n&c  - Sets weather a rank is a default rank" +
+                    "\n/rank edit <name> <setdisplayname> <display name>" +
+                    "\n&c  - Sets the display name of a rank" +
+                    "\n/rank edit <name> <setcolor> <color>" +
+                    "\n&c  - Sets the color of a rank" +
+                    "\n/rank edit <name> <setpriority> <priority>" +
+                    "\n&c  - Sets the priority of a rank"));
             return;
         }
 
@@ -109,7 +125,23 @@ public class EditRankSubCommand extends SubCommand {
                 return;
             }
             default: {
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_ARGS_SUBCOMMAND + "", sender, this, args));
+                sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_ARGS_SUBCOMMAND +
+                    "\n&c/rank edit <name> <addpermission> <permission> [value] [server]" +
+                    "\n&c  - Adds a permission to a rank" +
+                    "\n/rank edit <name> <removepermission> <permission>" +
+                    "\n&c  - Removes a permission from a rank" +
+                    "\n/rank edit <name> <setprefix> <prefix>" +
+                    "\n&c  - Sets the prefix of a rank" +
+                    "\n/rank edit <name> <setsuffix> <suffix>" +
+                    "\n&c  - Sets the suffix of a rank" +
+                    "\n/rank edit <name> <setdefault> <value>" +
+                    "\n&c  - Sets weather a rank is a default rank" +
+                    "\n/rank edit <name> <setdisplayname> <display name>" +
+                    "\n&c  - Sets the display name of a rank" +
+                    "\n/rank edit <name> <setcolor> <color>" +
+                    "\n&c  - Sets the color of a rank" +
+                    "\n/rank edit <name> <setpriority> <priority>" +
+                    "\n&c  - Sets the priority of a rank"));
             }
         }
     }

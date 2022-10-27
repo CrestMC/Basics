@@ -20,7 +20,7 @@ public class DeleteWorldCommand extends CommandBase {
         setName("deleteworld");
         setDescription("Deletes a world");
         setAliases(Collections.singletonList("worlddelete"));
-        setUsage("Usage: /deleteworld <world name>");
+        setUsage("/deleteworld <world name>");
         setPermission("basics.commands.deleteworld");
 
         this.plugin = plugin;

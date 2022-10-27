@@ -18,7 +18,7 @@ public class BroadcastCommand extends CommandBase {
         setName("broadcast");
         setDescription("Broadcasts a message to the entire server");
         setAliases(Arrays.asList("alert", "bc"));
-        setUsage("Usage: /broadcast <message>");
+        setUsage("/broadcast <message>");
         setPermission("basics.commands.broadcast");
 
         this.plugin = plugin;

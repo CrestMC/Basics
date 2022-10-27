@@ -24,7 +24,7 @@ public class MuteChatCommand extends CommandBase implements Listener {
         setName("mutechat");
         setDescription("Toggles the chat for players without the bypass permission");
         setAliases(Arrays.asList("togglechat", "disablechat"));
-        setUsage("Usage: /mutechat");
+        setUsage("/mutechat");
         setPermission("basics.commands.mutechat");
 
         this.plugin = plugin;

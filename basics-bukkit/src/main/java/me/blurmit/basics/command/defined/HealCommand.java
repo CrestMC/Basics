@@ -21,7 +21,7 @@ public class HealCommand extends CommandBase {
         setName("heal");
         setDescription("Heal yourself or another player");
         setAliases(Collections.singletonList("healme"));
-        setUsage("Usage: /heal [player]");
+        setUsage("/heal [player]");
         setPermission("basics.commands.heal");
 
         this.plugin = plugin;

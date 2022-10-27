@@ -24,7 +24,7 @@ public class ReplyCommand extends CommandBase {
         super(plugin.getName());
         setName("reply");
         setDescription("Replys to the lastest message that the sender received");
-        setUsage("Usage: /reply <message>");
+        setUsage("/reply <message>");
         setPermission("basics.commands.reply");
         setAliases(Collections.singletonList("r"));
 

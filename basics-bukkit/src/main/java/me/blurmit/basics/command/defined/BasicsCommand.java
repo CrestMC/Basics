@@ -16,7 +16,7 @@ public class BasicsCommand extends CommandBase {
         super(plugin.getName());
         setName("basics");
         setDescription("The main command for the basics plugin");
-        setUsage("Usage: /basics <reload|info>");
+        setUsage("/basics <reload|info>");
         setPermission("basics.commands.basics");
 
         this.plugin = plugin;
