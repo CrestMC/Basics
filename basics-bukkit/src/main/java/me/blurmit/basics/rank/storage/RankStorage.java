@@ -69,7 +69,7 @@ public class RankStorage {
         }
 
         if (type.equals(StorageType.MYSQL)) {
-            plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, this::loadRanks, 0L, 15 * 20L);
+            plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, this::loadRanks, 0L, 10 * 20L);
         } else {
             loadRanks();
         }

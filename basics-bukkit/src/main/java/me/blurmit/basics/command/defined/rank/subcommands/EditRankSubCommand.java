@@ -62,7 +62,7 @@ public class EditRankSubCommand extends SubCommand {
                 String server;
 
                 try {
-                    negated = Boolean.parseBoolean(args[4]);
+                    negated = !Boolean.parseBoolean(args[4]);
                 } catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
                     negated = false;
                 }

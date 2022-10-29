@@ -1,9 +1,13 @@
-title: "&a&lBasics &7|&f Server"
+title: '&a&lServer &7| &f{server-name}'
 entries:
-  - "&7&m                         &m"
-  - "&r &r"
-  - "&e● Global: &f{ALL}/1000"
-  - "&6● Lobby: &f{Lobby}/500"
-  - "&c● KitPvP: &f{KitPvP}/500"
-  - "&r &r"
-  - "&7&m                         &m"
+  - '&7&m                           &r'
+  - '&2&a&lYou'
+  - '&2● &aServer: &f{server-name}'
+  - '&2● &aRank: &f{player-rank-displayname}'
+  - '&2● &aCoins: &f0'
+  - '&r'
+  - '&2●&b&lServer'
+  - '&2●&b Lobby: &f{playercount-lobby}'
+  - '&2●&b KitPvP: &f{playercount-kitpvp}'
+  - '&2●&b Skyblock: &f{playercount-skyblock}'
+  - '&7&m                           &r'

@@ -1,56 +1,40 @@
 package me.blurmit.basics.rank.team;
 
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Material;
 
 public enum TeamColor {
 
-    RED(ChatColor.RED, false),
-    DARK_RED(ChatColor.DARK_RED, false),
-    ORANGE(ChatColor.GOLD, false),
-    YELLOW(ChatColor.YELLOW, false),
-    LIME(ChatColor.GREEN, false),
-    GREEN(ChatColor.GREEN, false),
-    AQUA(ChatColor.AQUA, false),
-    CYAN(ChatColor.DARK_AQUA, false),
-    BLUE(ChatColor.BLUE, false),
-    DARK_BLUE(ChatColor.DARK_BLUE, false),
-    PINK(ChatColor.LIGHT_PURPLE, false),
-    PURPLE(ChatColor.DARK_PURPLE, false),
-    WHITE(ChatColor.WHITE, false),
-    GRAY(ChatColor.GRAY, false),
-    DARK_GRAY(ChatColor.DARK_GRAY, false),
-    BLACK(ChatColor.BLACK, false),
-    BOLD_RED(ChatColor.RED, true),
-    BOLD_DARK_RED(ChatColor.DARK_RED, true),
-    BOLD_ORANGE(ChatColor.GOLD, true),
-    BOLD_YELLOW(ChatColor.YELLOW, true),
-    BOLD_LIME(ChatColor.GREEN, true),
-    BOLD_GREEN(ChatColor.GREEN, true),
-    BOLD_AQUA(ChatColor.AQUA, true),
-    BOLD_CYAN(ChatColor.DARK_AQUA, true),
-    BOLD_BLUE(ChatColor.BLUE, true),
-    BOLD_DARK_BLUE(ChatColor.DARK_BLUE, true),
-    BOLD_PINK(ChatColor.LIGHT_PURPLE, true),
-    BOLD_PURPLE(ChatColor.DARK_PURPLE, true),
-    BOLD_WHITE(ChatColor.WHITE, true),
-    BOLD_GRAY(ChatColor.GRAY, true),
-    BOLD_DARK_GRAY(ChatColor.DARK_GRAY, true),
-    BOLD_BLACK(ChatColor.BLACK, true);
+    RED(ChatColor.RED,  Material.RED_WOOL),
+    DARK_RED(ChatColor.DARK_RED,  Material.REDSTONE_BLOCK),
+    ORANGE(ChatColor.GOLD,  Material.ORANGE_WOOL),
+    YELLOW(ChatColor.YELLOW,  Material.YELLOW_WOOL),
+    LIME(ChatColor.GREEN,  Material.LIME_WOOL),
+    GREEN(ChatColor.GREEN,  Material.GREEN_WOOL),
+    AQUA(ChatColor.AQUA,  Material.LIGHT_BLUE_WOOL),
+    CYAN(ChatColor.DARK_AQUA,  Material.CYAN_WOOL),
+    BLUE(ChatColor.BLUE,  Material.BLUE_WOOL),
+    DARK_BLUE(ChatColor.DARK_BLUE,  Material.LAPIS_BLOCK),
+    PINK(ChatColor.LIGHT_PURPLE,  Material.PINK_WOOL),
+    PURPLE(ChatColor.DARK_PURPLE,  Material.PURPLE_WOOL),
+    WHITE(ChatColor.WHITE,  Material.QUARTZ_BLOCK),
+    GRAY(ChatColor.GRAY,  Material.LIGHT_GRAY_WOOL),
+    DARK_GRAY(ChatColor.DARK_GRAY,  Material.GRAY_WOOL),
+    BLACK(ChatColor.BLACK, Material.BLACK_WOOL);
 
     private final ChatColor color;
-    private final boolean bold;
+    private final Material material;
 
-    TeamColor(ChatColor color, boolean bold) {
+    TeamColor(ChatColor color, Material material) {
         this.color = color;
-        this.bold = bold;
+        this.material = material;
     }
 
     public String getColor() {
-        return color + "" + (bold ? ChatColor.BOLD : "");
+        return color + "";
     }
 
-    public boolean isBold() {
-        return bold;
+    public Material getMaterial() {
+        return material;
     }
-
 }

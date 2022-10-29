@@ -270,12 +270,12 @@ public class RankManager implements Listener {
                 statement.setString(1, rank);
                 statement.setString(2, permission);
                 statement.setString(3, server);
-                statement.setString(4, !negated ? "1" : "0");
+                statement.setString(4, negated ? "1" : "0");
                 statement.execute();
             });
         } else {
             List<String> perms = plugin.getConfigManager().getRanksConfig().getStringList("Groups." + rank + ".permissions");
-            perms.add((!negated ? "-" : "") + permission);
+            perms.add((negated ? "-" : "") + permission);
 
             plugin.getConfigManager().getRanksConfig().set("Groups." + rank + ".permissions", perms);
             plugin.getConfigManager().saveRanksConfig();

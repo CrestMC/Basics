@@ -54,15 +54,23 @@ public class MessageCommand extends CommandBase {
             return true;
         }
 
+        boolean isToggled = Boolean.parseBoolean(target.getPersistentDataContainer().getOrDefault(new NamespacedKey(plugin, "messages-toggled"), PersistentDataType.STRING, ""));
+
+        if (isToggled && !sender.hasPermission("basics.messagetoggle.bypass")) {
+            sender.sendMessage(Placeholders.parsePlaceholder(Messages.MESSAGES_TOGGLED_ERROR + "", sender, this, args));
+            return true;
+        }
+
         String message = Placeholders.parsePlaceholder(String.join(" ", Arrays.copyOfRange(args, 1, args.length)), sender, this, args);
+        NamespacedKey lastMessageKey = new NamespacedKey(plugin, "last-message");
 
         sender.sendMessage(Placeholders.parsePlaceholder(Messages.MESSAGE_SEND + "", target.getName(), message));
         target.sendMessage(Placeholders.parsePlaceholder(Messages.MESSAGE_RECEIVE + "", sender.getName(), message));
 
         if (sender instanceof Player) {
             // Set the name of the target that the sender last messaged in the sender's metadata
-            ((Player) sender).getPersistentDataContainer().set(new NamespacedKey(plugin, "last-message"), PersistentDataType.STRING, target.getName());
-            target.getPersistentDataContainer().set(new NamespacedKey(plugin, "last-message"), PersistentDataType.STRING, sender.getName());
+            ((Player) sender).getPersistentDataContainer().set(lastMessageKey, PersistentDataType.STRING, target.getName());
+            target.getPersistentDataContainer().set(lastMessageKey, PersistentDataType.STRING, sender.getName());
         }
 
         target.playSound(target.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.MASTER, 35, 1);

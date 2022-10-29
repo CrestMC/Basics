@@ -26,7 +26,7 @@ public class RevokeRankSubCommand extends SubCommand {
     public RevokeRankSubCommand(Basics plugin, Command command) {
         super(plugin.getName(), command);
         setName("revoke");
-        setUsage("rank revoke <player> <rank>");
+        setUsage("rank revoke <rank> <player>");
         setPermission("basics.commands.rank.revoke");
         setDescription("Removes a rank from a player");
 
@@ -43,30 +43,30 @@ public class RevokeRankSubCommand extends SubCommand {
             return;
         }
 
-        if (cachedPlayers.containsKey(args[1].toLowerCase())) {
-            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> handleRevokeRank(sender, args, cachedPlayers.get(args[1].toLowerCase())));
+        if (cachedPlayers.containsKey(args[2].toLowerCase())) {
+            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> handleRevokeRank(sender, args, cachedPlayers.get(args[2].toLowerCase())));
         } else {
-            retrieveUUID(args[1].toLowerCase(), uuid -> handleRevokeRank(sender, args, uuid));
+            retrieveUUID(args[2].toLowerCase(), uuid -> handleRevokeRank(sender, args, uuid));
         }
     }
 
     private void handleRevokeRank(CommandSender sender, String[] args, UUID uuid) {
-        Player target = plugin.getServer().getPlayer(args[1]);
-        Rank rank = plugin.getRankManager().getRankByName(args[2]);
+        Player target = plugin.getServer().getPlayer(args[2]);
+        Rank rank = plugin.getRankManager().getRankByName(args[1]);
 
         if (uuid == null) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.ACCOUNT_DOESNT_EXIST + "", true, args[1]));
+            sender.sendMessage(Placeholders.parsePlaceholder(Messages.ACCOUNT_DOESNT_EXIST + "", true, args[2]));
             return;
         }
 
         if (rank == null) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_NOT_FOUND + "", true, args[2].toLowerCase()));
+            sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_NOT_FOUND + "", true, args[1].toLowerCase()));
             return;
         }
 
-        cachedPlayers.put(args[1].toLowerCase(), uuid);
+        cachedPlayers.put(args[2].toLowerCase(), uuid);
         plugin.getRankManager().revokeRank(rank.getName(), uuid.toString());
-        sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_REVOKED_SUCCESS + "", true, args[1], rank.getDisplayName()));
+        sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_REVOKED_SUCCESS + "", true, args[2], rank.getDisplayName()));
 
         if (target != null) {
             target.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_REVOKED + "", true, rank.getDisplayName()));

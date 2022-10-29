@@ -42,6 +42,8 @@ permissions:
       - "basics.commands.vanish"
       - "basics.commands.walkspeed"
       - "basics.commands.world"
+      - "basics.commands.message"
+      - "basics.messagetoggle.bypass"
     description: "Gives full permission to the plugin"
     default: op
   basics.clearchat.bypass:
@@ -71,3 +73,5 @@ permissions:
   basics.staffchat:
     description: "Allows the use of staffchat"
     default: op
+  basics.messagetoggle.bypass:
+    description: "Gives the ability to message users who have disabled their private messages"

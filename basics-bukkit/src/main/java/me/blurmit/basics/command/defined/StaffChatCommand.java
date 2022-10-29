@@ -7,7 +7,6 @@ import me.blurmit.basics.command.CommandBase;
 import me.blurmit.basics.util.placeholder.Placeholders;
 import me.blurmit.basics.util.lang.Messages;
 import me.blurmit.basics.util.pluginmessage.PluginMessageHelper;
-import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -45,17 +44,24 @@ public class StaffChatCommand extends CommandBase implements Listener, PluginMes
             return true;
         }
 
+        if (!(sender instanceof Player)) {
+            sender.sendMessage(Placeholders.parsePlaceholder(Messages.ONLY_PLAYERS + "", sender, this, args));
+            return true;
+        }
+
         if (args.length == 0) {
             sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_ARGS + "", sender, this, args));
             return true;
         }
 
+        Player player = (Player) sender;
+
         // Yes, I used my placeholder system for the server name.
         String server = Placeholders.parsePlaceholder("{server-name}");
-        String message = Placeholders.parsePlaceholder(String.join(" ", Arrays.copyOfRange(args, 0, args.length)), sender, this, args);
-        String format = Placeholders.parsePlaceholder(plugin.getConfigManager().getConfig().getString("StaffChat.Format"), server, sender.getName(), message);
+        String message = Placeholders.parsePlaceholder(String.join(" ", Arrays.copyOfRange(args, 0, args.length)), player, this, args);
+        String format = Placeholders.parsePlaceholder(plugin.getConfigManager().getConfig().getString("StaffChat.Format"), server, player.getName(), message);
 
-        PluginMessageHelper.sendData("BungeeCord", "Staff-Chat", server, sender.getName(), message);
+        PluginMessageHelper.sendData("BungeeCord", "Staff-Chat", server, player.getName(), message);
         plugin.getServer().broadcast(format, "basics.staffchat");
         return true;
     }
@@ -89,10 +95,6 @@ public class StaffChatCommand extends CommandBase implements Listener, PluginMes
     @Override
     public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, @NotNull byte[] message) {
         if (!channel.equals("BungeeCord")) {
-            return;
-        }
-
-        if (plugin.getServer().getOnlinePlayers().size() == 1) {
             return;
         }
 

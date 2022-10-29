@@ -66,3 +66,5 @@ rank-prefix-set: "&a✔ &7Prefix set to &a{replacement-0} &7for the rank &a{repl
 rank-suffix-set: "&a✔ &7Suffix set to &a{replacement-0} &7for the rank &a{replacement-1}&7."
 rank-color-set: "&a✔ &7Color set to &a{replacement-0} &7for the rank &a{replacement-1}&7."
 rank-displayname-set: "&a✔ &7Display name set to &a{replacement-0} &7for the rank &a{replacement-1}&7."
+messages-toggled: "&a✔ &7Your private messages are now toggled &a{replacement-0}&7."
+messages-toggled-error: "&c✖ &7That player has turned off their private messages."

@@ -26,7 +26,7 @@ public class GiveRankSubCommand extends SubCommand {
     public GiveRankSubCommand(Basics plugin, Command command) {
         super(plugin.getName(), command);
         setName("give");
-        setUsage("/rank give <player> <rank> [server]");
+        setUsage("/rank give <rank> <player> [server]");
         setPermission("basics.commands.rank.give");
         setDescription("Gives a rank to a player");
 
@@ -43,24 +43,24 @@ public class GiveRankSubCommand extends SubCommand {
             return;
         }
 
-        if (cachedPlayers.containsKey(args[1].toLowerCase())) {
-            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> handleGiveRank(sender, args, cachedPlayers.get(args[1].toLowerCase())));
+        if (cachedPlayers.containsKey(args[2].toLowerCase())) {
+            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> handleGiveRank(sender, args, cachedPlayers.get(args[2].toLowerCase())));
         } else {
             retrieveUUID(args[1].toLowerCase(), uuid -> handleGiveRank(sender, args, uuid));
         }
     }
 
     private void handleGiveRank(CommandSender sender, String[] args, UUID uuid) {
-        Player target = plugin.getServer().getPlayer(args[1]);
-        Rank rank = plugin.getRankManager().getRankByName(args[2]);
+        Player target = plugin.getServer().getPlayer(args[2]);
+        Rank rank = plugin.getRankManager().getRankByName(args[1]);
 
         if (uuid == null) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.ACCOUNT_DOESNT_EXIST + "", true, args[1]));
+            sender.sendMessage(Placeholders.parsePlaceholder(Messages.ACCOUNT_DOESNT_EXIST + "", true, args[2]));
             return;
         }
 
         if (rank == null) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_NOT_FOUND + "", true, args[2].toLowerCase()));
+            sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_NOT_FOUND + "", true, args[1].toLowerCase()));
             return;
         }
 
@@ -71,8 +71,8 @@ public class GiveRankSubCommand extends SubCommand {
         }
 
         cachedPlayers.put(args[1].toLowerCase(), uuid);
-        plugin.getRankManager().giveRank(args[2], uuid.toString(), server);
-        sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_GRANTED_SUCCESS + "", true, args[1], rank.getDisplayName()));
+        plugin.getRankManager().giveRank(args[1], uuid.toString(), server);
+        sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_GRANTED_SUCCESS + "", true, args[2], rank.getDisplayName()));
 
         if (target != null) {
             target.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_RECEIVED + "", true, rank.getDisplayName()));

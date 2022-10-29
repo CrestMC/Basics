@@ -468,6 +468,20 @@ public enum Messages {
         }
     },
 
+    MESSAGES_TOGGLED() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("messages-toggled");
+        }
+    },
+
+    MESSAGES_TOGGLED_ERROR() {
+       @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("messages-toggled-error");
+        }
+    },
+
     INVALID_COORDINATES() {
         @Override
         public String toString() {

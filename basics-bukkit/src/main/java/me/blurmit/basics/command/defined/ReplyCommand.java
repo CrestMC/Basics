@@ -68,6 +68,13 @@ public class ReplyCommand extends CommandBase {
             return true;
         }
 
+        boolean isToggled = Boolean.parseBoolean(target.getPersistentDataContainer().getOrDefault(new NamespacedKey(plugin, "messages-toggled"), PersistentDataType.STRING, ""));
+
+        if (isToggled && !sender.hasPermission("basics.messagetoggle.bypass")) {
+            sender.sendMessage(Placeholders.parsePlaceholder(Messages.MESSAGES_TOGGLED_ERROR + "", sender, this, args));
+            return true;
+        }
+
         String message = Placeholders.parsePlaceholder(String.join(" ", Arrays.copyOfRange(args, 0, args.length)), player, this, args);
 
         player.sendMessage(Placeholders.parsePlaceholder(Messages.MESSAGE_SEND + "", target.getName(), message));
