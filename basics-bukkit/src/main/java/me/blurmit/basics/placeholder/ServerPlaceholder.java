@@ -60,6 +60,12 @@ public class ServerPlaceholder implements Listener, PluginMessageListener {
         if (placeholder.startsWith("playercount-")) {
             try {
                 String serverName = placeholder.replace("playercount-", "").toLowerCase();
+
+                if (serverName.equalsIgnoreCase(currentServerName)) {
+                    event.setResponse(plugin.getServer().getOnlinePlayers().size() + "/" + plugin.getServer().getMaxPlayers());
+                    return;
+                }
+
                 event.setResponse(playerCountMap.get(serverName) == null ? ChatColor.RED + "Offline" : playerCountMap.get(serverName));
             } catch (Exception e) {
                 event.setResponse("");

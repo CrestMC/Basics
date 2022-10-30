@@ -89,20 +89,9 @@ Social-Media:
     - "{server-website}"
     - "{server-discord}"
     - "{server-store}"
-    - "{server-teamspeak}"
     - "{server-twitter}"
     - "&7&m                                      &r"
   Website: "&a&lWebsite: &fhttps://www.example.com/"
   Discord: "&a&lDiscord: &fhttps://discord.example.com/"
   Store: "&a&lStore: &fhttps://store.example.com/"
   Twitter: "&a&lTwitter: &fhttps://twitter.com/example"
-  Teamspeak: "&a&lTeamspeak: &fhttps://ts.example.com/"
-
-# Server aliases.
-# Any commands in this config will be registered as /<value>.
-# Dispatching the command with send you to the specified server.
-# This section only works with BungeeCord. You cannot reload server aliases.
-Server-Aliases:
-  lobby: "Lobby"
-  hub: "Lobby"
-  survival: "Survival"

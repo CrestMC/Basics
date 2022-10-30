@@ -49,7 +49,6 @@ player-teleported-other: "&a✔ &7You have teleported &a{replacement-0} &7to &a{
 coordinates-invalid: "&c✖ &7The coordinates &c{replacement-0} &7are not valid."
 message-send: "&8(&aTo {replacement-0}&8) &f{replacement-1}"
 message-receive: "&8(&aFrom {replacement-0}&8) &f{replacement-1}"
-connect-message: "&a✔ &7Attempting to connect &ayou &7to &a{replacement-0}&7..."
 reply-error: "&c✖ &7You have not sent a message to anyone recently."
 rank-not-found: "&c✖ &7The rank &c{replacement-0} &7does not exist."
 rank-given-success: "&a✔ &7You have successfully given &a{replacement-0} &7the &a{replacement-1}&7 rank!"

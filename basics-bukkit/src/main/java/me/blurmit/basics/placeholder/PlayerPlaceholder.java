@@ -51,10 +51,16 @@ public class PlayerPlaceholder implements Listener {
         }
 
         if (placeholder.equals("player-ping")) {
+            // Legacy servers do not have Player#getPing
+            // To counter this we have to use reflection to get it directly from the craftplayer handle
             try {
+                Object craftPlayer = event.getPlayer().getClass().getMethod("getHandle").invoke(event.getPlayer());
+                int ping = (int) craftPlayer.getClass().getField("ping").get(craftPlayer);
+                event.setResponse(ping + "");
+            } catch (ReflectiveOperationException e) {
                 event.setResponse(event.getPlayer().getPing() + "");
             } catch (Exception e) {
-                event.setResponse("");
+                event.setResponse("30");
             }
         }
 

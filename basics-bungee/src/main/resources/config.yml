@@ -8,3 +8,7 @@ Tablist:
     - '&r'
     - '&fexample.com'
     - '&7&m                                      &r'
+
+Server-Aliases:
+  Lobby: "Lobby"
+  Hub: "Lobby"

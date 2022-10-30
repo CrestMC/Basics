@@ -4,6 +4,8 @@ main: me.blurmit.basics.Basics
 api-version: 1.16
 prefix: Basics
 authors: [ Blurmit ]
+softdepend:
+  - LuckPerms
 description: A plugin containing general server utilities
 website: https://blurmit.ml
 load: POSTWORLD

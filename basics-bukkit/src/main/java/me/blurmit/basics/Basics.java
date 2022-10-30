@@ -3,10 +3,7 @@ package me.blurmit.basics;
 import me.blurmit.basics.command.CommandManager;
 import me.blurmit.basics.listeners.AsyncChatListener;
 import me.blurmit.basics.listeners.PlayerConnectionListener;
-import me.blurmit.basics.placeholder.CommandPlaceholder;
-import me.blurmit.basics.placeholder.PlayerPlaceholder;
-import me.blurmit.basics.placeholder.RankPlaceholder;
-import me.blurmit.basics.placeholder.ServerPlaceholder;
+import me.blurmit.basics.placeholder.*;
 import me.blurmit.basics.rank.RankManager;
 import me.blurmit.basics.scoreboard.ScoreboardManager;
 import lombok.Getter;
@@ -38,6 +35,10 @@ public final class Basics extends JavaPlugin {
         new PlayerPlaceholder(this);
         new RankPlaceholder(this);
         new ServerPlaceholder(this);
+
+        if (getServer().getPluginManager().getPlugin("LuckPerms") != null ) {
+            new LuckPermsPlaceholder(this);
+        }
 
         getLogger().info("Registering scoreboard...");
         scoreboardManager = new ScoreboardManager(this);

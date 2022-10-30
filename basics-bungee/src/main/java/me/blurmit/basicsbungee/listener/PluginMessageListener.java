@@ -43,8 +43,6 @@ public class PluginMessageListener implements Listener {
 
                     for (ServerInfo server : plugin.getProxy().getServers().values()) {
                         server.ping((result, error) -> {
-                            result.getModinfo();
-
                             serverStatus.add(error == null ? server.getName() + ":" + result.getPlayers().getOnline() + "/" + result.getPlayers().getMax() : server.getName() + ":" + ChatColor.RED + "Offline");
 
                             if (serverStatus.size() == plugin.getProxy().getServers().values().size()) {

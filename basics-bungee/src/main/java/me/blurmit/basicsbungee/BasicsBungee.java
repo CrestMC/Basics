@@ -1,5 +1,6 @@
 package me.blurmit.basicsbungee;
 
+import me.blurmit.basicsbungee.command.ServerAliasCommand;
 import me.blurmit.basicsbungee.configuration.ConfigManager;
 import me.blurmit.basicsbungee.listener.PluginMessageListener;
 import me.blurmit.basicsbungee.listener.PlayerConnectionListener;
@@ -8,12 +9,20 @@ import net.md_5.bungee.api.plugin.Plugin;
 
 public final class BasicsBungee extends Plugin {
 
-    private ConfigManager configManager;
+    private static ConfigManager configManager;
 
     @Override
     public void onEnable() {
         getLogger().info("Loading configuration files...");
-        this.configManager = new ConfigManager(this);
+        configManager = new ConfigManager(this);
+
+        getLogger().info("Registering commands...");
+        configManager.getConfig().getSection("Server-Aliases").getKeys().forEach(key -> {
+            getProxy().getPluginManager().registerCommand(
+                    this,
+                    new ServerAliasCommand(this, key, configManager.getConfig().getSection("Server-Aliases").getString(key))
+            );
+        });
 
         getLogger().info("Registering listeners...");
         new PluginMessageListener(this);
@@ -30,7 +39,7 @@ public final class BasicsBungee extends Plugin {
         getLogger().info(getDescription().getName() + " has been enabled!");
     }
 
-    public ConfigManager getConfigManager() {
+    public static ConfigManager getConfigManager() {
         return configManager;
     }
 

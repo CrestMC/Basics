@@ -2,3 +2,4 @@ name: BasicsBungee
 version: '${project.version}'
 main: me.blurmit.basicsbungee.BasicsBungee
 description: Bungee counterpart to the Basics plugin
+author: Blurmit

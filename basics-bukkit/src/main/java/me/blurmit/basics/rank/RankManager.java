@@ -175,12 +175,7 @@ public class RankManager implements Listener {
     }
 
     public void giveRank(String rank, String player, String server) {
-        Rank cachedRank = getRankByName(rank.toLowerCase());
         Player user = plugin.getServer().getPlayer(UUID.fromString(player));
-
-        if (cachedRank == null) {
-            return;
-        }
 
         if (user != null) {
             storage.getOwnedRanks().computeIfAbsent(user.getUniqueId(), id -> new HashSet<>()).add(rank);
@@ -196,10 +191,13 @@ public class RankManager implements Listener {
                 statement.execute();
             });
         } else {
-            Set<String> member = new HashSet<>(Set.copyOf(plugin.getConfigManager().getRanksConfig().getStringList("Groups." + rank + ".members")));
-            member.add(player);
+            List<String> member = plugin.getConfigManager().getRanksConfig().getStringList("Groups." + rank + ".members");
 
-            plugin.getConfigManager().getRanksConfig().set("Groups." + rank.toLowerCase() + ".members", List.copyOf(member));
+            if (!member.contains(player)) {
+                member.add(player);
+            }
+
+            plugin.getConfigManager().getRanksConfig().set("Groups." + rank.toLowerCase() + ".members", member);
             plugin.getConfigManager().saveRanksConfig();
         }
 

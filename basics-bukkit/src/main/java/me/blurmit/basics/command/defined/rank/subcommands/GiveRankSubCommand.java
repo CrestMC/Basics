@@ -46,7 +46,7 @@ public class GiveRankSubCommand extends SubCommand {
         if (cachedPlayers.containsKey(args[2].toLowerCase())) {
             plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> handleGiveRank(sender, args, cachedPlayers.get(args[2].toLowerCase())));
         } else {
-            retrieveUUID(args[1].toLowerCase(), uuid -> handleGiveRank(sender, args, uuid));
+            retrieveUUID(args[2].toLowerCase(), uuid -> handleGiveRank(sender, args, uuid));
         }
     }
 
@@ -70,8 +70,8 @@ public class GiveRankSubCommand extends SubCommand {
             server = args[3];
         }
 
-        cachedPlayers.put(args[1].toLowerCase(), uuid);
-        plugin.getRankManager().giveRank(args[1], uuid.toString(), server);
+        cachedPlayers.put(args[2].toLowerCase(), uuid);
+        plugin.getRankManager().giveRank(rank.getName(), uuid.toString(), server);
         sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_GRANTED_SUCCESS + "", true, args[2], rank.getDisplayName()));
 
         if (target != null) {

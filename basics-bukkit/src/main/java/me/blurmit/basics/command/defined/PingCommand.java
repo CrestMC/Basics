@@ -47,7 +47,7 @@ public class PingCommand extends CommandBase {
             return true;
         }
 
-        sender.sendMessage(Placeholders.parsePlaceholder(Messages.PING_MESSAGE + "", target, false, target.getPing()));
+        sender.sendMessage(Placeholders.parsePlaceholder(Messages.PING_MESSAGE + "", target, this, args));
         return true;
 
     }
