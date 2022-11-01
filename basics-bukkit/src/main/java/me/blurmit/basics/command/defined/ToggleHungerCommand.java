@@ -17,41 +17,35 @@ import java.util.Arrays;
 public class ToggleHungerCommand extends CommandBase implements Listener {
 
     private final Basics plugin;
+    private boolean isHungerToggled;
 
-    private boolean currentToggled;
-
-    public ToggleHungerCommand (Basics plugin){
+    public ToggleHungerCommand (Basics plugin) {
         super (plugin.getName());
         setName("togglehunger");
         setDescription("Toggle losing hunger.");
         setUsage("/togglehunger");
         setPermission("basics.command.togglehunger");
-        setAliases(Arrays.asList("hunger", "th"));
+        setAliases(Arrays.asList("hungertoggle", "th"));
 
         this.plugin = plugin;
-
-        this.currentToggled = plugin.getConfigManager().getConfig().getBoolean("hunger-disabled");
+        this.isHungerToggled = plugin.getConfigManager().getConfig().getBoolean("hunger-disabled");
 
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     @Override
-    public boolean execute(@NotNull CommandSender commandSender, @NotNull String s, @NotNull String[] strings) {
-        if(!currentToggled) {
-            plugin.getConfigManager().getConfig().set("hunger-disabled", true);
-            commandSender.sendMessage(Placeholders.parsePlaceholder(Messages.HUNGER_TOGGLED + "", plugin.getConfigManager().getLanguageConfig().getString("togglehunger.enabled")));
-        } else {
-            plugin.getConfigManager().getConfig().set("hunger-disabled", false);
-            commandSender.sendMessage(Placeholders.parsePlaceholder(Messages.HUNGER_TOGGLED + "", plugin.getConfigManager().getLanguageConfig().getString("togglehunger.disabled")));
-        }
-        return true;
+    public boolean execute(@NotNull CommandSender sender, @NotNull String label, @NotNull String[] args) {
+        isHungerToggled = !isHungerToggled;
 
+        plugin.getConfigManager().getConfig().set("hunger-disabled", isHungerToggled);
+        sender.sendMessage(Placeholders.parsePlaceholder(Messages.HUNGER_TOGGLED + "", plugin.getConfigManager().getLanguageConfig().getString("togglehunger." + (isHungerToggled ? "enabled" : "disabled"))));
+        return true;
     }
 
     @EventHandler
-    public void onHungerChange(FoodLevelChangeEvent e){
-        if(plugin.getConfigManager().getConfig().getBoolean("hunger-disabled")){
-            e.setFoodLevel(20);
+    public void onHungerChange(FoodLevelChangeEvent event) {
+        if (plugin.getConfigManager().getConfig().getBoolean("hunger-disabled")) {
+            event.setFoodLevel(20);
         }
     }
 }
