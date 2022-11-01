@@ -482,6 +482,34 @@ public enum Messages {
         }
     },
 
+    RANK_ALREADY_EXISTS() {
+      @Override
+      public String toString() {
+          return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("rank-already-exists");
+      }
+    },
+
+    RANK_ALREADY_OWNED() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("rank-already-owned");
+        }
+    },
+
+    RANK_NOT_OWNED() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("rank-not-owned");
+        }
+    },
+
+    RANK_PERMISSION_NOT_OWNED() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("rank-permission-not-owned");
+        }
+    },
+
     INVALID_COORDINATES() {
         @Override
         public String toString() {

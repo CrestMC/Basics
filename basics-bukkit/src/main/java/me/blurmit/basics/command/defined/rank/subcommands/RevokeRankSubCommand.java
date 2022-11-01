@@ -26,7 +26,7 @@ public class RevokeRankSubCommand extends SubCommand {
     public RevokeRankSubCommand(Basics plugin, Command command) {
         super(plugin.getName(), command);
         setName("revoke");
-        setUsage("rank revoke <rank> <player>");
+        setUsage("/rank revoke <rank> <player>");
         setPermission("basics.commands.rank.revoke");
         setDescription("Removes a rank from a player");
 
@@ -61,6 +61,11 @@ public class RevokeRankSubCommand extends SubCommand {
 
         if (rank == null) {
             sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_NOT_FOUND + "", true, args[1].toLowerCase()));
+            return;
+        }
+
+        if (!plugin.getRankManager().hasRank(uuid, rank.getName())) {
+            sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_NOT_OWNED + "", true, rank.getDisplayName()));
             return;
         }
 

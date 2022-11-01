@@ -56,7 +56,7 @@ public class PluginMessageListener implements Listener {
                     String server = input.readUTF();
                     String player = input.readUTF();
                     String message = ChatColor.translateAlternateColorCodes('&', input.readUTF());
-                    PluginMessageHelper.sendData("RECEIVERS", serverData.getName(), "Staff-Chat", server, player, message);
+                    PluginMessageHelper.sendData("PLAYERS", serverData.getName(), "Staff-Chat", server, player, message);
                     break;
                 }
             }

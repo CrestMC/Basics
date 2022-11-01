@@ -1,17 +1,21 @@
 package me.blurmit.basics.rank;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
 import me.blurmit.basics.Basics;
 import me.blurmit.basics.rank.storage.RankStorage;
 import me.blurmit.basics.database.StorageType;
+import me.blurmit.basics.util.Reflector;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.permissions.PermissibleBase;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionDefault;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.*;
@@ -61,6 +65,16 @@ public class RankManager implements Listener {
                 .orElse(getDefaultRank().getName() == null ? "None" : getDefaultRank().getName()));
     }
 
+    public boolean hasPermission(Rank rank, String permission) {
+        return rank.getPermissions().stream()
+                .map(Permission::getName)
+                .anyMatch(name -> name.equalsIgnoreCase(permission));
+    }
+
+    public boolean hasRank(UUID player, String rank) {
+        return storage.getOwnedRanks().get(player).contains(rank);
+    }
+
     public List<Permission> getRankPermissions(String rank) {
         List<Permission> permissions = new ArrayList<>();
 
@@ -83,8 +97,22 @@ public class RankManager implements Listener {
         return permissions;
     }
 
+    @SneakyThrows
     public void clearPermissions(Player player) {
-        player.removeAttachment(getActiveAttachments().get(player.getUniqueId()));
+        try {
+            player.removeAttachment(getActiveAttachments().get(player.getUniqueId()));
+        } catch (IllegalArgumentException e) {
+            Field permissibleField = Reflector.getOBCClass("entity.CraftHumanEntity").getDeclaredField("perm");
+            permissibleField.setAccessible(true);
+            PermissibleBase permissibleBase = (PermissibleBase) permissibleField.get(player);
+
+            Field attachmentsField = PermissibleBase.class.getDeclaredField("attachments");
+            attachmentsField.setAccessible(true);
+
+            //noinspection unchecked
+            List<PermissionAttachment> attachments = (List<PermissionAttachment>) attachmentsField.get(permissibleBase);
+            attachments.stream().filter(attachment -> attachment.getPlugin().getName().equals(plugin.getName())).forEach(player::removeAttachment);
+        }
     }
 
     public PermissionAttachment loadPermissions(Player player) {
@@ -104,7 +132,6 @@ public class RankManager implements Listener {
             attachment.setPermission(permission, permission.getDefault().equals(PermissionDefault.TRUE));
         }
 
-        player.recalculatePermissions();
         player.updateCommands();
         return attachment;
     }
@@ -253,12 +280,19 @@ public class RankManager implements Listener {
             Player player = plugin.getServer().getPlayer(owner);
             Set<String> groups = new HashSet<>(storage.getOwnedRanks().get(owner));
 
+            groups.forEach(group -> {
+                getInheritedGroups(group).forEach(inheritedGroup -> {
+                    if (!groups.contains(inheritedGroup)) {
+                        groups.add(inheritedGroup);
+                    }
+                });
+            });
+
             if (player == null || !groups.contains(rank)) {
                 return;
             }
 
             getActiveAttachments().get(owner).setPermission(perm, perm.getDefault().equals(PermissionDefault.TRUE));
-            player.recalculatePermissions();
             player.updateCommands();
         });
 
@@ -300,7 +334,6 @@ public class RankManager implements Listener {
             clearPermissions(player);
             loadPermissions(player);
 
-            player.recalculatePermissions();
             player.updateCommands();
         });
 
@@ -371,68 +404,6 @@ public class RankManager implements Listener {
             inheritedGroups.remove(inheritedRank);
 
             plugin.getConfigManager().getRanksConfig().set("Groups." + rank + ".inheritedGroups", inheritedGroups);
-            plugin.getConfigManager().saveRanksConfig();
-        }
-    }
-
-    public void negateRankPermission(String rank, String permission) {
-        Rank cachedRank = getRankByName(rank);
-
-        if (cachedRank == null) {
-            return;
-        }
-
-        Set<Permission> permissions = storage.getRanks().stream().filter(rank1 -> rank1.getName().equalsIgnoreCase(rank)).findFirst().get().getPermissions();
-        Permission perm = new Permission(permission);
-        perm.setDefault(PermissionDefault.FALSE);
-        permissions.removeIf(perms -> perms.getName().equalsIgnoreCase(permission));
-        permissions.add(perm);
-
-        if (storage.getType().equals(StorageType.MYSQL)) {
-            storage.getDatabaseManager().useAsynchronousConnection(connection -> {
-                PreparedStatement statement = connection.prepareStatement("UPDATE `basics_rank_permissions` SET `negated` = ? WHERE (`rank`, `permission`) = (?, ?)");
-                statement.setInt(1, 1);
-                statement.setString(2, rank);
-                statement.setString(3, permission);
-                statement.execute();
-            });
-        } else {
-            List<String> perms = plugin.getConfigManager().getRanksConfig().getStringList("Groups." + rank + ".permissions");
-            perms.remove(permission);
-            perms.add("-" + permission);
-
-            plugin.getConfigManager().getRanksConfig().set("Groups." + rank + ".permissions", permissions);
-            plugin.getConfigManager().saveRanksConfig();
-        }
-    }
-
-    public void allowRankPermission(String rank, String permission) {
-        Rank cachedRank = getRankByName(rank);
-
-        if (cachedRank == null) {
-            return;
-        }
-
-        Set<Permission> permissions = storage.getRanks().stream().filter(rank1 -> rank1.getName().equalsIgnoreCase(rank)).findFirst().get().getPermissions();
-        Permission perm = new Permission(permission);
-        perm.setDefault(PermissionDefault.TRUE);
-        permissions.removeIf(perms -> perms.getName().equalsIgnoreCase(permission));
-        permissions.add(perm);
-
-        if (storage.getType().equals(StorageType.MYSQL)) {
-            storage.getDatabaseManager().useAsynchronousConnection(connection -> {
-                PreparedStatement statement = connection.prepareStatement("UPDATE `basics_rank_permissions` SET `negated` = ? WHERE (`rank`, `permission`) = (?, ?)");
-                statement.setInt(1, 0);
-                statement.setString(2, rank);
-                statement.setString(3, permission);
-                statement.execute();
-            });
-        } else {
-            List<String> perms = plugin.getConfigManager().getRanksConfig().getStringList("Groups." + rank + ".permissions");
-            perms.remove("-" + permission);
-            perms.add(permission);
-
-            plugin.getConfigManager().getRanksConfig().set("Groups." + rank + ".permissions", permissions);
             plugin.getConfigManager().saveRanksConfig();
         }
     }

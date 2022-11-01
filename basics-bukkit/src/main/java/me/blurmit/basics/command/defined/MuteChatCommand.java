@@ -55,7 +55,7 @@ public class MuteChatCommand extends CommandBase implements Listener {
             return;
         }
 
-        if (!isMuted) {
+        if (isMuted) {
             return;
         }
 

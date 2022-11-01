@@ -64,6 +64,11 @@ public class GiveRankSubCommand extends SubCommand {
             return;
         }
 
+        if (plugin.getRankManager().hasRank(uuid, rank.getName())) {
+            sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_ALREADY_OWNED + "", true, rank.getDisplayName()));
+            return;
+        }
+
         String server = "global";
 
         if (args.length > 3) {

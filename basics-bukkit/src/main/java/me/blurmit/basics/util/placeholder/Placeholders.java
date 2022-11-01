@@ -14,78 +14,78 @@ import java.util.regex.Pattern;
 public class Placeholders {
 
     public static String parsePlaceholder(String placeholder) {
-        return parsePlaceholder(placeholder, null, null, null, null, null, false);
+        return parsePlaceholder(placeholder, null, null, null, null, false, "");
     }
 
     public static String parsePlaceholder(String placeholder, String... replacements) {
-        return parsePlaceholder(placeholder, null, null, null, null, replacements, false);
+        return parsePlaceholder(placeholder, null, null, null, null, false, replacements);
     }
 
     public static String parsePlaceholder(String placeholder, boolean async, String... replacements) {
-        return parsePlaceholder(placeholder, null, null, null, null, replacements, async);
+        return parsePlaceholder(placeholder, null, null, null, null, async, replacements);
     }
 
     public static String parsePlaceholder(String placeholder, boolean async) {
-        return parsePlaceholder(placeholder, null, null, null, null, null, async);
+        return parsePlaceholder(placeholder, null, null, null, null, async, "");
     }
 
-    public static String parsePlaceholder(String placeholder, CommandSender sender, boolean async, Object... replacements) {
-        return parsePlaceholder(placeholder, sender, null, null, null, replacements, async);
+    public static String parsePlaceholder(String placeholder, CommandSender sender, boolean async, String... replacements) {
+        return parsePlaceholder(placeholder, sender, null, null, null, async, replacements);
     }
 
-    public static String parsePlaceholder(String placeholder, Player player, boolean async, Object... replacements) {
-        return parsePlaceholder(placeholder, player, null, null, null, replacements, async);
+    public static String parsePlaceholder(String placeholder, Player player, boolean async, String... replacements) {
+        return parsePlaceholder(placeholder, player, null, null, null, async, replacements);
     }
 
     public static String parsePlaceholder(String placeholder, Player player, boolean async) {
-        return parsePlaceholder(placeholder, player, null, null, null, null, async);
+        return parsePlaceholder(placeholder, player, null, null, null, async, "");
     }
 
     public static String parsePlaceholder(String placeholder, CommandSender sender, boolean async) {
-        return parsePlaceholder(placeholder, sender, null, null, null, null, async);
+        return parsePlaceholder(placeholder, sender, null, null, null, async, "");
     }
 
     public static String parsePlaceholder(String placeholder, Player player) {
-        return parsePlaceholder(placeholder, player, null, null, null, null, false);
+        return parsePlaceholder(placeholder, player, null, null, null, false, "");
     }
 
     public static String parsePlaceholder(String placeholder, CommandSender sender) {
-        return parsePlaceholder(placeholder, sender, null,  null, null, null, false);
+        return parsePlaceholder(placeholder, sender, null,  null, null, false, "");
     }
 
     public static String parsePlaceholder(String placeholder, Player player, Command command, String[] args) {
-        return parsePlaceholder(placeholder, player, command, null, args, null, false);
+        return parsePlaceholder(placeholder, player, command, null, args, false, "");
     }
 
     public static String parsePlaceholder(String placeholder, Player player, Command command, String[] args, boolean async) {
-        return parsePlaceholder(placeholder, player, command, null, args, null, async);
+        return parsePlaceholder(placeholder, player, command, null, args, async, "");
     }
 
     public static String parsePlaceholder(String placeholder, CommandSender sender, Command command, String[] args) {
-        return parsePlaceholder(placeholder, sender, command, null,  args, null, false);
+        return parsePlaceholder(placeholder, sender, command, null,  args, false, "");
     }
 
     public static String parsePlaceholder(String placeholder, CommandSender sender, Command command, String[] args, boolean async) {
-        return parsePlaceholder(placeholder, sender, command, null, args, null, async);
+        return parsePlaceholder(placeholder, sender, command, null, args, async, "");
     }
 
     public static String parsePlaceholder(String placeholder, Player player, SubCommand subcommand, String[] args) {
-        return parsePlaceholder(placeholder, player, null, subcommand, args, null, false);
+        return parsePlaceholder(placeholder, player, null, subcommand, args, false, "");
     }
 
     public static String parsePlaceholder(String placeholder, Player player, SubCommand subcommand, String[] args, boolean async) {
-        return parsePlaceholder(placeholder, player, null, subcommand, args, null, async);
+        return parsePlaceholder(placeholder, player, null, subcommand, args, async, "");
     }
 
     public static String parsePlaceholder(String placeholder, CommandSender sender, SubCommand subCommand, String[] args) {
-        return parsePlaceholder(placeholder, sender, null, subCommand,  args, null, false);
+        return parsePlaceholder(placeholder, sender, null, subCommand,  args, false, "");
     }
 
     public static String parsePlaceholder(String placeholder, CommandSender sender, SubCommand subcommand, String[] args, boolean async) {
-        return parsePlaceholder(placeholder, sender, null, subcommand, args, null, async);
+        return parsePlaceholder(placeholder, sender, null, subcommand, args, async, "");
     }
 
-    public static String parsePlaceholder(String placeholder, Player player, Command command, SubCommand subcommand, String[] args, Object[] replacements, boolean async) {
+    public static String parsePlaceholder(String placeholder, Player player, Command command, SubCommand subcommand, String[] args, boolean async, String... replacements) {
         Matcher placeholderValue = Pattern.compile("\\{(.*?)}(?!\\s*})\\s*", Pattern.DOTALL).matcher(placeholder);
         String response;
 
@@ -99,7 +99,7 @@ public class Placeholders {
         return ChatColor.translateAlternateColorCodes('&', placeholder);
     }
 
-    public static String parsePlaceholder(String placeholder, CommandSender sender, Command command, SubCommand subcommand, String[] args, Object[] replacements, boolean async) {
+    public static String parsePlaceholder(String placeholder, CommandSender sender, Command command, SubCommand subcommand, String[] args, boolean async, String... replacements) {
         Matcher placeholderValue = Pattern.compile("\\{(.*?)}(?!\\s*})\\s*", Pattern.DOTALL).matcher(placeholder);
         String response;
 

@@ -59,7 +59,7 @@ public class StaffChatCommand extends CommandBase implements Listener, PluginMes
         // Yes, I used my placeholder system for the server name.
         String server = Placeholders.parsePlaceholder("{server-name}");
         String message = Placeholders.parsePlaceholder(String.join(" ", Arrays.copyOfRange(args, 0, args.length)), player, this, args);
-        String format = Placeholders.parsePlaceholder(plugin.getConfigManager().getConfig().getString("StaffChat.Format"), server, player.getName(), message);
+        String format = Placeholders.parsePlaceholder(plugin.getConfigManager().getConfig().getString("StaffChat.Format"), player, this, null, null, false, server, player.getName(), message);
 
         PluginMessageHelper.sendData("BungeeCord", "Staff-Chat", server, player.getName(), message);
         plugin.getServer().broadcast(format, "basics.staffchat");
@@ -86,7 +86,7 @@ public class StaffChatCommand extends CommandBase implements Listener, PluginMes
         event.setMessage(event.getMessage().replaceFirst(prefix, ""));
 
         String server = Placeholders.parsePlaceholder("{server-name}", true);
-        String format = Placeholders.parsePlaceholder(plugin.getConfigManager().getConfig().getString("StaffChat.Format"), true, server, event.getPlayer().getName(), event.getMessage());
+        String format = Placeholders.parsePlaceholder(plugin.getConfigManager().getConfig().getString("StaffChat.Format"), event.getPlayer(), this, null, null, event.isAsynchronous(), server, event.getPlayer().getName(), event.getMessage());
 
         PluginMessageHelper.sendData("BungeeCord", "Staff-Chat", server, event.getPlayer().getName(), event.getMessage());
         plugin.getServer().broadcast(format, "basics.staffchat");

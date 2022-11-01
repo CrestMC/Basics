@@ -28,6 +28,11 @@ public class CreateRankSubCommand extends SubCommand {
             return;
         }
 
+        if (plugin.getRankManager().getRankByName(args[1].toLowerCase()) != null) {
+            sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_ALREADY_EXISTS + "", sender, this, args));
+            return;
+        }
+
         plugin.getRankManager().createRank(args[1].toLowerCase());
         sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_CREATED + "", args[1].toLowerCase()));
     }

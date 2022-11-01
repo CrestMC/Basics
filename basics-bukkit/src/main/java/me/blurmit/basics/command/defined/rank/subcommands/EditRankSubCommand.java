@@ -78,6 +78,11 @@ public class EditRankSubCommand extends SubCommand {
                 return;
             }
             case "removepermission": {
+                if (!plugin.getRankManager().hasPermission(rank, args[3])) {
+                    sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_PERMISSION_NOT_OWNED + "", rank.getDisplayName(), args[3]));
+                    return;
+                }
+
                 plugin.getRankManager().removeRankPermission(rank.getName(), args[3]);
                 sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_PERMISSION_REMOVED + "", args[3], rank.getDisplayName()));
                 return;

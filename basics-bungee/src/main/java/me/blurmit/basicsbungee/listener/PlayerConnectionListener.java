@@ -10,6 +10,7 @@ import net.md_5.bungee.api.event.ServerDisconnectEvent;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -54,7 +55,7 @@ public class PlayerConnectionListener implements Listener {
     }
 
     @EventHandler
-    public void onServerDisconnect(ServerDisconnectEvent event) {
+    public void onServerDisconnect(@NotNull ServerDisconnectEvent event) {
         if (!event.getPlayer().hasPermission("basics.staffchat")) {
             return;
         }
@@ -64,23 +65,19 @@ public class PlayerConnectionListener implements Listener {
             String player = event.getPlayer().getName();
             String server = event.getTarget().getName();
 
-            ProxyServer.getInstance().getScheduler().schedule(plugin, () -> {
-                PluginMessageHelper.sendData("ALL", "", "Staff-Disconnected", server, player);
-            }, 500, TimeUnit.MILLISECONDS);
+            PluginMessageHelper.sendData("PLAYERS", "", "Staff-Disconnected", server, player);
         } else {
             // Send staff server switch message via plugin messaging
             String player = event.getPlayer().getDisplayName();
             String originalServer = event.getTarget().getName();
             String newServer = event.getPlayer().getServer().getInfo().getName();
 
-            ProxyServer.getInstance().getScheduler().schedule(plugin, () -> {
-                PluginMessageHelper.sendData("ALL", "", "Staff-ServerSwitch", player, originalServer, newServer);
-            }, 500, TimeUnit.MILLISECONDS);
+            PluginMessageHelper.sendData("PLAYERS", "", "Staff-ServerSwitch", player, originalServer, newServer);
         }
     }
 
     @EventHandler
-    public void onServerSwitch(ServerSwitchEvent event) {
+    public void onServerSwitch(@NotNull ServerSwitchEvent event) {
         if (event.getFrom() != null) {
             return;
         }
@@ -93,9 +90,7 @@ public class PlayerConnectionListener implements Listener {
         String player = event.getPlayer().getDisplayName();
         String server = event.getPlayer().getServer().getInfo().getName();
 
-        ProxyServer.getInstance().getScheduler().schedule(plugin, () -> {
-            PluginMessageHelper.sendData("ALL", "", "Staff-Connected", server, player);
-        }, 500, TimeUnit.MILLISECONDS);
+        PluginMessageHelper.sendData("PLAYERS", "", "Staff-Connected", server, player);
     }
 
 }
