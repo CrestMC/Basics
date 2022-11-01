@@ -6,6 +6,13 @@ import org.jetbrains.annotations.NotNull;
 
 public enum Messages {
 
+    HUNGER_TOGGLED() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("togglehunger.toggled");
+        }
+    },
+
     PLUGIN_INFO() {
         @Override
         public String toString() {

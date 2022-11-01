@@ -71,3 +71,7 @@ rank-already-exists: "&c✖ &7The &c{argument-1} &7rank already exists."
 rank-already-owned: "&c✖ &7That player already has the &c{replacement-0} &7rank."
 rank-not-owned: "&c✖ &7That player does not have the &c{replacement-0} &7rank."
 rank-permission-not-owned: "&c✖ &7The &c{replacement-0} &7rank does not have the &c{replacement-1} &7permission."
+togglehunger:
+  toggled: "&7You have {replacement-0} &7hunger."
+  enabled: "&aenabled"
+  disabled: "&cdisabled"
