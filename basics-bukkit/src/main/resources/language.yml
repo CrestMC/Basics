@@ -75,3 +75,6 @@ togglehunger:
   toggled: "&7You have {replacement-0} &7hunger."
   enabled: "&aenabled"
   disabled: "&cdisabled"
+helpop:
+  submitted: "&aYour request has been submitted."
+  message: "&b&l[SUPPORT REQUEST]&r {player-rank-prefix}{player-name}&7: &f{replacement-0}"

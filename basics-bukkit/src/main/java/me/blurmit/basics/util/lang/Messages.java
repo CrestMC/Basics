@@ -522,6 +522,20 @@ public enum Messages {
         public String toString() {
             return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("coordinates-invalid");
         }
+    },
+
+    HELPOP_SUBMITTED() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("helpop.submitted");
+        }
+    },
+
+    HELPOP_REQUEST() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("helpop.message");
+        }
     };
 
     @NotNull
