@@ -1,17 +1,22 @@
 package me.blurmit.basics.command.defined;
 
+import com.google.common.io.ByteArrayDataInput;
+import com.google.common.io.ByteStreams;
 import me.blurmit.basics.Basics;
 import me.blurmit.basics.command.CommandBase;
 import me.blurmit.basics.util.lang.Messages;
 import me.blurmit.basics.util.placeholder.Placeholders;
+import me.blurmit.basics.util.pluginmessage.PluginMessageHelper;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
-public class HelpopCommand extends CommandBase {
+public class HelpopCommand extends CommandBase implements PluginMessageListener {
 
     private final Basics plugin;
 
@@ -21,23 +26,78 @@ public class HelpopCommand extends CommandBase {
         setAliases(Arrays.asList("helpme", "messagestaff"));
         setDescription("Send a message to all active staff members.");
         setPermission("basics.command.helpop");
+        setCooldown(10);
         setUsage("/helpop <message>");
 
         this.plugin = plugin;
+
+        plugin.getServer().getMessenger().registerOutgoingPluginChannel(plugin, "BungeeCord");
+        plugin.getServer().getMessenger().registerIncomingPluginChannel(plugin, "BungeeCord", this);
     }
 
     @Override
-    public boolean execute(@NotNull CommandSender commandSender, @NotNull String s, @NotNull String[] args) {
-        Player player = (Player) commandSender;
-        String message = Placeholders.parsePlaceholder(String.join(" ", Arrays.copyOfRange(args, 0, args.length)), player, this, args);
+    public boolean execute(@NotNull CommandSender sender, @NotNull String label, @NotNull String[] args) {
+        if (!sender.hasPermission(getPermission())) {
+            sender.sendMessage(Placeholders.parsePlaceholder(Messages.NO_PERMISSION + "", sender, this, args));
+            return true;
+        }
 
-        plugin.getServer().getOnlinePlayers().forEach(loopplayer -> {
-            if (!loopplayer.hasPermission("basics.helpop")) {
+        if (!(sender instanceof Player)) {
+            sender.sendMessage(Placeholders.parsePlaceholder(Messages.ONLY_PLAYERS + "", sender, this, args));
+            return true;
+        }
+
+        if (args.length == 0) {
+            sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_ARGS + "", sender, this, args));
+            return true;
+        }
+
+        Player player = (Player) sender;
+        String message = String.join(" ", Arrays.copyOfRange(args, 0, args.length));
+
+        player.sendMessage(Placeholders.parsePlaceholder(Messages.HELPOP_SUBMITTED + ""));
+
+        plugin.getServer().getOnlinePlayers().forEach(onlinePlayer -> {
+            if (!onlinePlayer.hasPermission("basics.helpop")) {
                 return;
             }
 
-            // send message
+            onlinePlayer.sendMessage(Placeholders.parsePlaceholder(Messages.HELPOP_REQUEST + "", player, this, null, args, false, ChatColor.stripColor(message)));
         });
+
+        PluginMessageHelper.sendData("BungeeCord", "HelpOP-Request", player.getName(), ChatColor.stripColor(message));
         return true;
     }
+
+    @Override
+    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, @NotNull byte[] message) {
+        if (!channel.equals("BungeeCord")) {
+            return;
+        }
+
+        ByteArrayDataInput input = ByteStreams.newDataInput(message);
+        String subchannel = input.readUTF();
+
+        if (!subchannel.equals("HelpOP-Request")) {
+            return;
+        }
+
+        String user = input.readUTF();
+        String request = input.readUTF();
+
+        plugin.getServer().getOnlinePlayers().forEach(onlinePlayer -> {
+            if (!onlinePlayer.hasPermission("basics.helpop")) {
+                return;
+            }
+
+            String oldName = player.getDisplayName();
+            player.setDisplayName(user);
+
+            onlinePlayer.sendMessage(Placeholders.parsePlaceholder(Messages.HELPOP_REQUEST + "", player, this, null, null, false, ChatColor.stripColor(request)));
+
+            // TODO: Do this better. This is a terrible way of doing it.
+            player.setDisplayName(oldName);
+        });
+    }
+
 }

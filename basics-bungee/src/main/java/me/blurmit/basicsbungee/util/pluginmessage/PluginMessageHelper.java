@@ -12,9 +12,7 @@ public class PluginMessageHelper {
 
     /**
     * Sends a plugin message to a specified server
-    * @param name Server name that will be receiving the message (Use "all" for all servers,
-     * "receivers" for all servers except for the sender),
-     * and "players" for all servers with players online
+    * @param name Server name that will be receiving the message (Use "all" for all servers, "receivers" for all servers except for the sender)
     * @param subchannel The subchannel in which the plugin message will be sent to
     * @param message The data that will be sent
      */
@@ -37,7 +35,7 @@ public class PluginMessageHelper {
                     ProxyServer.getInstance().getServers().forEach((server, info) -> info.sendData("BungeeCord", data));
                     return;
                 }
-                case "players": {
+                case "receivers": {
                     ProxyServer.getInstance().getServers().forEach((server, info) -> {
                         if (server.equals(sender)) {
                             return;
@@ -48,14 +46,6 @@ public class PluginMessageHelper {
                         }
 
                         info.sendData("BungeeCord", data);
-                    });
-                    return;
-                }
-                case "receivers": {
-                    ProxyServer.getInstance().getServers().forEach((server, info) -> {
-                        if (!server.equals(sender)) {
-                            info.sendData("BungeeCord", data);
-                        }
                     });
                     return;
                 }

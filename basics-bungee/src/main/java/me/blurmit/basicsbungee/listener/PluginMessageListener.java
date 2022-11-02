@@ -14,6 +14,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 public class PluginMessageListener implements Listener {
@@ -56,8 +57,13 @@ public class PluginMessageListener implements Listener {
                     String server = input.readUTF();
                     String player = input.readUTF();
                     String message = ChatColor.translateAlternateColorCodes('&', input.readUTF());
-                    PluginMessageHelper.sendData("PLAYERS", serverData.getName(), "Staff-Chat", server, player, message);
+                    PluginMessageHelper.sendData("RECEIVERS", serverData.getName(), "Staff-Chat", server, player, message);
                     break;
+                }
+                case "HelpOP-Request": {
+                    String player = input.readUTF();
+                    String message = input.readUTF();
+                    PluginMessageHelper.sendData("RECEIVERS", "HelpOP-Request", player, message);
                 }
             }
         } catch (IOException e) {

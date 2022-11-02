@@ -534,14 +534,14 @@ public enum Messages {
     HELPOP_SUBMITTED() {
         @Override
         public String toString() {
-            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("helpop.submitted");
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("helpop-submitted");
         }
     },
 
     HELPOP_REQUEST() {
         @Override
         public String toString() {
-            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("helpop.message");
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("helpop-message");
         }
     };
 

@@ -65,14 +65,19 @@ public class PlayerConnectionListener implements Listener {
             String player = event.getPlayer().getName();
             String server = event.getTarget().getName();
 
-            PluginMessageHelper.sendData("PLAYERS", "", "Staff-Disconnected", server, player);
+            plugin.getProxy().getScheduler().schedule(plugin, () -> {
+                PluginMessageHelper.sendData("RECEIVERS", "", "Staff-Disconnected", server, player);
+            }, 250, TimeUnit.MILLISECONDS);
         } else {
             // Send staff server switch message via plugin messaging
             String player = event.getPlayer().getDisplayName();
             String originalServer = event.getTarget().getName();
             String newServer = event.getPlayer().getServer().getInfo().getName();
 
-            PluginMessageHelper.sendData("PLAYERS", "", "Staff-ServerSwitch", player, originalServer, newServer);
+
+            plugin.getProxy().getScheduler().schedule(plugin, () -> {
+                PluginMessageHelper.sendData("RECEIVERS", "", "Staff-ServerSwitch", player, originalServer, newServer);
+            }, 250, TimeUnit.MILLISECONDS);
         }
     }
 
@@ -90,7 +95,9 @@ public class PlayerConnectionListener implements Listener {
         String player = event.getPlayer().getDisplayName();
         String server = event.getPlayer().getServer().getInfo().getName();
 
-        PluginMessageHelper.sendData("PLAYERS", "", "Staff-Connected", server, player);
+        plugin.getProxy().getScheduler().schedule(plugin, () -> {
+            PluginMessageHelper.sendData("RECEIVERS", "", "Staff-Connected", server, player);
+        }, 250, TimeUnit.MILLISECONDS);
     }
 
 }
