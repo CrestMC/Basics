@@ -517,6 +517,13 @@ public enum Messages {
         }
     },
 
+    COMMAND_COOLDOWN() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("command-cooldown");
+        }
+    },
+
     INVALID_COORDINATES() {
         @Override
         public String toString() {
