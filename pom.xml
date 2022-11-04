@@ -49,5 +49,6 @@
     <modules>
         <module>basics-bukkit</module>
         <module>basics-bungee</module>
+        <module>CrestQueue</module>
     </modules>
 </project>

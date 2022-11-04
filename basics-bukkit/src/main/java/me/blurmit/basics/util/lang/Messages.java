@@ -543,6 +543,13 @@ public enum Messages {
         public String toString() {
             return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("helpop-message");
         }
+    },
+
+    HELP_CMD() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("help-command");
+        }
     };
 
     @NotNull

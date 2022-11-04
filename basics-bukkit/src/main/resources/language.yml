@@ -78,3 +78,6 @@ togglehunger:
   disabled: "&cdisabled"
 helpop-submitted: "&a✔ &7Your help request has been submitted."
 helpop-message: "&b&l[SUPPORT REQUEST] &r{player-rank-prefix}{player-display-name}&7: &f{replacement-0}"
+help-command: |-
+  &3&lNeed help?
+  &bCheck our forums at /website!
