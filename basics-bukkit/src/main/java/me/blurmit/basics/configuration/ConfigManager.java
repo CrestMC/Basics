@@ -1,13 +1,12 @@
 package me.blurmit.basics.configuration;
 
-import com.google.common.io.ByteStreams;
 import lombok.Getter;
 import me.blurmit.basics.Basics;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import java.io.*;
-import java.nio.file.Files;
+import java.io.File;
+import java.io.IOException;
 import java.util.logging.Level;
 
 public class ConfigManager {

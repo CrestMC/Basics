@@ -4,11 +4,9 @@ import me.blurmit.basics.Basics;
 import me.blurmit.basics.command.CommandBase;
 import me.blurmit.basics.util.lang.Messages;
 import me.blurmit.basics.util.placeholder.Placeholders;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityExhaustionEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.jetbrains.annotations.NotNull;
 

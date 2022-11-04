@@ -7,8 +7,6 @@ import me.blurmit.basics.util.placeholder.Placeholders;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
-
 public class HelpCommand extends CommandBase {
 
     private final Basics plugin;

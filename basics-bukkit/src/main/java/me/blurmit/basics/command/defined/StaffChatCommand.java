@@ -4,8 +4,8 @@ import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 import me.blurmit.basics.Basics;
 import me.blurmit.basics.command.CommandBase;
-import me.blurmit.basics.util.placeholder.Placeholders;
 import me.blurmit.basics.util.lang.Messages;
+import me.blurmit.basics.util.placeholder.Placeholders;
 import me.blurmit.basics.util.pluginmessage.PluginMessageHelper;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -106,30 +106,50 @@ public class StaffChatCommand extends CommandBase implements Listener, PluginMes
                 String server = input.readUTF();
                 String playerName = input.readUTF();
                 String msg = input.readUTF();
-                String format = Placeholders.parsePlaceholder(plugin.getConfigManager().getConfig().getString("StaffChat.Format"), server, playerName, msg);
-                plugin.getServer().broadcast(format, "basics.staffchat");
+
+                plugin.getRankManager().retrieveUUID(playerName, uuid -> {
+                    plugin.getRankManager().getHighestRankByPriority(uuid, rank -> {
+                        String format = Placeholders.parsePlaceholder(plugin.getConfigManager().getConfig().getString("StaffChat.Format"), true, server, rank.getColor() + playerName, msg);
+                        plugin.getServer().broadcast(format, "basics.staffchat");
+                    });
+                });
                 break;
             }
             case "Staff-Connected": {
                 String server = input.readUTF();
                 String playerName = input.readUTF();
-                String format = Placeholders.parsePlaceholder(plugin.getConfigManager().getConfig().getString("StaffChat.Connect"), playerName, server);
-                plugin.getServer().broadcast(format, "basics.staffchat");
+
+                plugin.getRankManager().retrieveUUID(playerName, uuid -> {
+                    plugin.getRankManager().getHighestRankByPriority(uuid, rank -> {
+                        String format = Placeholders.parsePlaceholder(plugin.getConfigManager().getConfig().getString("StaffChat.Connect"), true, rank.getColor() + playerName, server);
+                        plugin.getServer().broadcast(format, "basics.staffchat");
+                    });
+                });
                 break;
             }
             case "Staff-Disconnected": {
                 String server = input.readUTF();
                 String playerName = input.readUTF();
-                String format = Placeholders.parsePlaceholder(plugin.getConfigManager().getConfig().getString("StaffChat.Disconnect"), playerName, server);
-                plugin.getServer().broadcast(format, "basics.staffchat");
+
+                plugin.getRankManager().retrieveUUID(playerName, uuid -> {
+                    plugin.getRankManager().getHighestRankByPriority(uuid, rank -> {
+                        String format = Placeholders.parsePlaceholder(plugin.getConfigManager().getConfig().getString("StaffChat.Disconnect"), true, rank.getColor() + playerName, server);
+                        plugin.getServer().broadcast(format, "basics.staffchat");
+                    });
+                });
                 break;
             }
             case "Staff-ServerSwitch": {
                 String playerName = input.readUTF();
                 String originalServer = input.readUTF();
                 String newServer = input.readUTF();
-                String format = Placeholders.parsePlaceholder(plugin.getConfigManager().getConfig().getString("StaffChat.Switch"), playerName, newServer, originalServer);
-                plugin.getServer().broadcast(format, "basics.staffchat");
+
+                plugin.getRankManager().retrieveUUID(playerName, uuid -> {
+                    plugin.getRankManager().getHighestRankByPriority(uuid, rank -> {
+                        String format = Placeholders.parsePlaceholder(plugin.getConfigManager().getConfig().getString("StaffChat.Switch"), true, rank.getColor() + playerName, newServer, originalServer);
+                        plugin.getServer().broadcast(format, "basics.staffchat");
+                    });
+                });
             }
         }
     }

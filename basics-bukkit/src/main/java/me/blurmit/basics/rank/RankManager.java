@@ -1,10 +1,11 @@
 package me.blurmit.basics.rank;
 
+import com.google.gson.JsonParser;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import me.blurmit.basics.Basics;
-import me.blurmit.basics.rank.storage.RankStorage;
 import me.blurmit.basics.database.StorageType;
+import me.blurmit.basics.rank.storage.RankStorage;
 import me.blurmit.basics.util.Reflector;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -15,10 +16,16 @@ import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionDefault;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Field;
+import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 public class RankManager implements Listener {
 
@@ -27,6 +34,7 @@ public class RankManager implements Listener {
     @Getter
     private RankStorage storage;
     private RankListener listener;
+    private Map<String, UUID> cachedPlayers;
 
     @Getter
     private Map<UUID, PermissionAttachment> activeAttachments;
@@ -40,6 +48,9 @@ public class RankManager implements Listener {
         this.storage = new RankStorage(plugin);
         this.listener = new RankListener(plugin);
         this.activeAttachments = new HashMap<>();
+        this.cachedPlayers = new HashMap<>();
+
+        plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, () -> cachedPlayers.clear(), 0L, 10 * 60 * 20L);
     }
 
     @Nullable
@@ -65,6 +76,39 @@ public class RankManager implements Listener {
                 .orElse(getDefaultRank().getName() == null ? "None" : getDefaultRank().getName()));
     }
 
+    public void getHighestRankByPriority(UUID player, Consumer<Rank> consumer) {
+        getRankFromStorage(player, rankSet -> {
+            String rankName = rankSet.stream()
+                .reduce((rank1, rank2) -> getRankByName(rank1).getPriority() > getRankByName(rank2).getPriority() ? rank1 : rank2)
+                .orElse(getDefaultRank().getName() == null ? "default" : getDefaultRank().getName());
+            Rank rank = getRankByName(rankName);
+            consumer.accept(rank);
+        });
+    }
+
+    public void retrieveUUID(String username, Consumer<UUID> consumer) {
+        if (!cachedPlayers.containsKey(username)) {
+            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+                try {
+                    URL apiServer = new URL("https://api.mojang.com/users/profiles/minecraft/" + username);
+                    InputStreamReader uuidReader = new InputStreamReader(apiServer.openStream());
+                    String uuidString = new JsonParser().parse(uuidReader).getAsJsonObject().get("id").getAsString();
+                    UUID uuid = UUID.fromString(uuidString.replaceFirst(
+                            "(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)",
+                            "$1-$2-$3-$4-$5"
+                    ));
+
+                    consumer.accept(uuid);
+                    cachedPlayers.put(username, uuid);
+                } catch (IOException | IllegalStateException e) {
+                    consumer.accept(null);
+                }
+            });
+        } else {
+            consumer.accept(cachedPlayers.get(username));
+        }
+    }
+
     public boolean hasPermission(Rank rank, String permission) {
         return rank.getPermissions().stream()
                 .map(Permission::getName)
@@ -72,7 +116,15 @@ public class RankManager implements Listener {
     }
 
     public boolean hasRank(UUID player, String rank) {
-        return storage.getOwnedRanks().get(player).contains(rank);
+        if (storage.getOwnedRanks().get(player) != null) {
+            return storage.getOwnedRanks().get(player).contains(rank);
+        } else {
+            AtomicBoolean hasRank = new AtomicBoolean(false);
+            getRankFromStorage(player, ranks -> {
+                hasRank.set(ranks.contains(rank));
+            });
+            return hasRank.get();
+        }
     }
 
     public List<Permission> getRankPermissions(String rank) {
@@ -539,6 +591,34 @@ public class RankManager implements Listener {
         } else {
             plugin.getConfigManager().getRanksConfig().set("Groups." + rank + ".default", def);
             plugin.getConfigManager().saveRanksConfig();
+        }
+    }
+
+    public void getRankFromStorage(UUID uuid, Consumer<Set<String>> consumer) {
+        if (storage.getType().equals(StorageType.MYSQL)) {
+            storage.getDatabaseManager().useAsynchronousConnection(connection -> {
+                PreparedStatement statement = connection.prepareStatement("SELECT `rank` FROM `basics_rank_members` WHERE `member` = ?");
+                Set<String> ranks = new HashSet<>();
+                statement.setString(1, uuid.toString());
+                ResultSet result = statement.executeQuery();
+
+                while (result.next()) {
+                    ranks.add(result.getString("rank"));
+                }
+
+                consumer.accept(ranks);
+            });
+        } else {
+            Set<String> ranks = new HashSet<>();
+
+            plugin.getConfigManager().getRanksConfig().getConfigurationSection("Groups").getValues(false).forEach((name, section) -> {
+                if (((ConfigurationSection) section).getStringList("members").contains(uuid.toString())) {
+                    ranks.add(name);
+                }
+            });
+
+            storage.getRanks().stream().filter(Rank::isDefault).forEach(rank -> ranks.add(rank.getName()));
+            consumer.accept(ranks);
         }
     }
 

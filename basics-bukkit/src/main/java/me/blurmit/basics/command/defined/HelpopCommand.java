@@ -7,7 +7,6 @@ import me.blurmit.basics.command.CommandBase;
 import me.blurmit.basics.util.lang.Messages;
 import me.blurmit.basics.util.placeholder.Placeholders;
 import me.blurmit.basics.util.pluginmessage.PluginMessageHelper;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -15,6 +14,8 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class HelpopCommand extends CommandBase implements PluginMessageListener {
 
@@ -62,7 +63,11 @@ public class HelpopCommand extends CommandBase implements PluginMessageListener 
                 return;
             }
 
-            onlinePlayer.sendMessage(Placeholders.parsePlaceholder(Messages.HELPOP_REQUEST + "", player, this, null, args, false, ChatColor.stripColor(message)));
+            plugin.getRankManager().retrieveUUID(player.getName(), uuid -> {
+                plugin.getRankManager().getHighestRankByPriority(uuid, rank -> {
+                    onlinePlayer.sendMessage(Placeholders.parsePlaceholder(Messages.HELPOP_REQUEST + "", rank.getColor() + player.getName(), ChatColor.stripColor(message)));
+                });
+            });
         });
 
         PluginMessageHelper.sendData("BungeeCord", "HelpOP-Request", player.getName(), ChatColor.stripColor(message));
@@ -90,13 +95,11 @@ public class HelpopCommand extends CommandBase implements PluginMessageListener 
                 return;
             }
 
-            String oldName = player.getDisplayName();
-            player.setDisplayName(user);
-
-            onlinePlayer.sendMessage(Placeholders.parsePlaceholder(Messages.HELPOP_REQUEST + "", player, this, null, null, false, ChatColor.stripColor(request)));
-
-            // TODO: Do this better. This is a terrible way of doing it.
-            player.setDisplayName(oldName);
+            plugin.getRankManager().retrieveUUID(user, uuid -> {
+                plugin.getRankManager().getHighestRankByPriority(uuid, rank -> {
+                    onlinePlayer.sendMessage(Placeholders.parsePlaceholder(Messages.HELPOP_REQUEST + "", rank.getColor() + user, ChatColor.stripColor(request)));
+                });
+            });
         });
     }
 

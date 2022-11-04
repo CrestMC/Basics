@@ -1,13 +1,13 @@
 package me.blurmit.basics;
 
+import lombok.Getter;
 import me.blurmit.basics.command.CommandManager;
+import me.blurmit.basics.configuration.ConfigManager;
 import me.blurmit.basics.listeners.AsyncChatListener;
 import me.blurmit.basics.listeners.PlayerConnectionListener;
 import me.blurmit.basics.placeholder.*;
 import me.blurmit.basics.rank.RankManager;
 import me.blurmit.basics.scoreboard.ScoreboardManager;
-import lombok.Getter;
-import me.blurmit.basics.configuration.ConfigManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Basics extends JavaPlugin {

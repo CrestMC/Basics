@@ -4,12 +4,15 @@ import me.blurmit.basics.Basics;
 import me.blurmit.basics.command.CommandBase;
 import me.blurmit.basics.command.defined.SubCommand;
 import me.blurmit.basics.command.defined.rank.subcommands.*;
-import me.blurmit.basics.util.placeholder.Placeholders;
 import me.blurmit.basics.util.lang.Messages;
+import me.blurmit.basics.util.placeholder.Placeholders;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class RankCommand extends CommandBase {
 

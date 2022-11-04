@@ -2,11 +2,8 @@ package me.blurmit.basics.placeholder;
 
 import me.blurmit.basics.Basics;
 import me.blurmit.basics.events.PlaceholderRequestEvent;
-import me.blurmit.basics.util.placeholder.Placeholders;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-
-import java.util.Objects;
 
 public class RankPlaceholder implements Listener {
 
