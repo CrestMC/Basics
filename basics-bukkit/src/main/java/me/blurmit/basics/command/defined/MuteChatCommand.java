@@ -44,7 +44,7 @@ public class MuteChatCommand extends CommandBase implements Listener {
         plugin.getConfigManager().getConfig().set("Chat-Enabled", isMuted);
         plugin.getConfigManager().saveConfig();
 
-        Bukkit.broadcastMessage(Placeholders.parsePlaceholder(Messages.MUTE_CHAT_TOGGLE + "", sender, false, Booleans.getFancyBoolean(isMuted)));
+        Bukkit.broadcast(Placeholders.parsePlaceholder(Messages.MUTE_CHAT_TOGGLE + "", sender, false, Booleans.getFancyBoolean(isMuted)), "basics.mutechat.bypass");
 
         return true;
     }
