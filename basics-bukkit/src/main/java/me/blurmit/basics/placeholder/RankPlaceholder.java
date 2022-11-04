@@ -54,6 +54,14 @@ public class RankPlaceholder implements Listener {
             }
         }
 
+        if (placeholder.equalsIgnoreCase("player-rank-color")) {
+            try {
+                event.setResponse(plugin.getRankManager().getHighestRankByPriority(event.getPlayer()).getColor());
+            } catch (Exception e) {
+                event.setResponse("");
+            }
+        }
+
         if (placeholder.equalsIgnoreCase("player-rank-priority")) {
             try {
                 event.setResponse(plugin.getRankManager().getHighestRankByPriority(event.getPlayer()).getPriority() + "");

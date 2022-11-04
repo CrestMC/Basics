@@ -57,6 +57,31 @@ public class ServerPlaceholder implements Listener, PluginMessageListener {
     public void onPlaceholderRequest(PlaceholderRequestEvent event) {
         String placeholder = event.getPlaceholder().toLowerCase();
 
+        if (placeholder.equalsIgnoreCase("server-name")) {
+            try {
+                event.setResponse(currentServerName);
+            } catch (Exception e) {
+                event.setResponse("");
+            }
+        }
+
+        if (placeholder.equalsIgnoreCase("server-playercount")) {
+            try {
+                event.setResponse(plugin.getServer().getOnlinePlayers().size() + "");
+            } catch (Exception e) {
+                event.setResponse("");
+            }
+        }
+
+        if (placeholder.equalsIgnoreCase("server-playercount-filtered")) {
+            try {
+                long players = plugin.getServer().getOnlinePlayers().stream().filter(onlinePlayer -> event.getPlayer().canSee(onlinePlayer)).count();
+                event.setResponse(players + "");
+            } catch (Exception e) {
+                event.setResponse("");
+            }
+        }
+
         if (placeholder.startsWith("playercount-")) {
             try {
                 String serverName = placeholder.replace("playercount-", "").toLowerCase();
@@ -72,9 +97,9 @@ public class ServerPlaceholder implements Listener, PluginMessageListener {
             }
         }
 
-        if (placeholder.equalsIgnoreCase("server-name")) {
+        if (placeholder.equalsIgnoreCase("server-max-players")) {
             try {
-                event.setResponse(currentServerName);
+                event.setResponse(plugin.getServer().getMaxPlayers() + "");
             } catch (Exception e) {
                 event.setResponse("");
             }

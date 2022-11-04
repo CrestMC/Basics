@@ -27,7 +27,7 @@ public class RankStorage {
     @Getter
     private StorageType type;
 
-    private static final String CREATE_RANKS_TABLE = "CREATE TABLE IF NOT EXISTS `basics_ranks` (`name` VARCHAR(64) NOT NULL PRIMARY KEY, `display_name` VARCHAR(255) NOTNULL, `priority` INT NOT NULL, `default` TINYINT(1) NOT NULL, `prefix` VARCHAR(255) NOT NULL, `suffix` VARCHAR(255) NOT NULL)";
+    private static final String CREATE_RANKS_TABLE = "CREATE TABLE IF NOT EXISTS `basics_ranks` (`name` VARCHAR(64) NOT NULL PRIMARY KEY, `display_name` VARCHAR(255) NOTNULL, `color` VARCHAR(16), `priority` INT NOT NULL, `default` TINYINT(1) NOT NULL, `prefix` VARCHAR(255) NOT NULL, `suffix` VARCHAR(255) NOT NULL)";
     private static final String CREATE_RANK_PERMISSION_TABLE = "CREATE TABLE IF NOT EXISTS `basics_rank_permissions` (`rank` VARCHAR(64) NOT NULL, `permission` VARCHAR(64) NOT NULL, `server` VARCHAR(64) NOT NULL, `negated` TINYINT(1), `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY)";
     private static final String CREATE_RANK_MEMBER_TABLE = "CREATE TABLE IF NOT EXISTS `basics_rank_members` (`rank` VARCHAR(64) NOT NULL, `member` VARCHAR(36) NOT NULL, `server` VARCHAR(64) NOT NULL, `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY)";
 
@@ -69,7 +69,7 @@ public class RankStorage {
         }
 
         if (type.equals(StorageType.MYSQL)) {
-            plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, this::loadRanks, 0L, 10 * 20L);
+            plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, this::loadRanks, 0L, 10 * 30L);
         } else {
             loadRanks();
         }
@@ -86,6 +86,7 @@ public class RankStorage {
                     rank.setDisplayName(data.getString("display-name") == null ? name : data.getString("display-name"));
                     rank.setPrefix(data.getString("prefix"));
                     rank.setSuffix(data.getString("suffix"));
+                    rank.setColor(data.getString("color"));
                     data.getStringList("permissions").forEach(permission -> {
                         Permission perm = new Permission(permission);
                         perm.setDefault(permission.startsWith("-") ? PermissionDefault.FALSE : PermissionDefault.TRUE);
@@ -125,10 +126,12 @@ public class RankStorage {
                             int def = result.getInt("default");
                             String prefix = result.getString("prefix");
                             String suffix = result.getString("suffix");
+                            String color = result.getString("color");
 
                             Rank rank = new Rank(name, priority, def == 1);
                             rank.setPrefix(prefix);
                             rank.setSuffix(suffix);
+                            rank.setColor(color);
                             rank.setDisplayName(displayName);
 
                             ranks.add(rank);

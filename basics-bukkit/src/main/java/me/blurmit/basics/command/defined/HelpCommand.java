@@ -24,8 +24,8 @@ public class HelpCommand extends CommandBase {
     }
 
     @Override
-    public boolean execute(@NotNull CommandSender commandSender, @NotNull String s, @NotNull String[] strings) {
-        commandSender.sendMessage(Placeholders.parsePlaceholder(String.valueOf(Messages.HELP_CMD)));
+    public boolean execute(@NotNull CommandSender sender, @NotNull String label, @NotNull String[] args) {
+        sender.sendMessage(Placeholders.parsePlaceholder(Messages.HELP_CMD + ""));
         return true;
     }
 }

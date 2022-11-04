@@ -164,19 +164,21 @@ public class RankManager implements Listener {
 
         if (storage.getType().equals(StorageType.MYSQL)) {
             storage.getDatabaseManager().useAsynchronousConnection(connection -> {
-                PreparedStatement statement = connection.prepareStatement("INSERT INTO `basics_ranks` (`name`, `display_name`, `priority`, `default`, `prefix`, `suffix`) VALUES (?, ?, ?, ?, ?, ?)");
+                PreparedStatement statement = connection.prepareStatement("INSERT INTO `basics_ranks` (`name`, `display_name`, `color`, `priority`, `default`, `prefix`, `suffix`) VALUES (?, ?, ?, ?, ?, ?)");
                 statement.setString(1, name);
                 statement.setString(2, name);
-                statement.setInt(3, 0);
+                statement.setString(3, "");
                 statement.setInt(4, 0);
-                statement.setString(5, "");
+                statement.setInt(5, 0);
                 statement.setString(6, "");
+                statement.setString(7, "");
                 statement.execute();
             });
         } else {
             plugin.getConfigManager().getRanksConfig().set("Groups." + name + ".display-name", name);
             plugin.getConfigManager().getRanksConfig().set("Groups." + name + ".prefix", "");
             plugin.getConfigManager().getRanksConfig().set("Groups." + name + ".suffix", "");
+            plugin.getConfigManager().getRanksConfig().set("Groups." + name + ".color", "");
             plugin.getConfigManager().getRanksConfig().set("Groups." + name + ".priority", 0);
             plugin.getConfigManager().getRanksConfig().set("Groups." + name + ".default", false);
             plugin.getConfigManager().getRanksConfig().set("Groups." + name + ".inherits", new ArrayList<>());
@@ -492,6 +494,28 @@ public class RankManager implements Listener {
             });
         } else {
             plugin.getConfigManager().getRanksConfig().set("Groups." + rank + ".priority", priority);
+            plugin.getConfigManager().saveRanksConfig();
+        }
+    }
+
+    public void setRankColor(String rank, String color) {
+        Rank cachedRank = getRankByName(rank);
+
+        if (cachedRank == null) {
+            return;
+        }
+
+        storage.getRanks().stream().filter(rank1 -> rank1.getName().equals(rank)).forEach(rank1 -> rank1.setColor(color));
+
+        if (storage.getType().equals(StorageType.MYSQL)) {
+            storage.getDatabaseManager().useAsynchronousConnection(connection -> {
+                PreparedStatement statement = connection.prepareStatement("UPDATE `basics_ranks` SET `color` = ? WHERE `rank` = ?");
+                statement.setString(1, color);
+                statement.setString(2, rank);
+                statement.execute();
+            });
+        } else {
+            plugin.getConfigManager().getRanksConfig().set("Groups." + rank + ".color", color);
             plugin.getConfigManager().saveRanksConfig();
         }
     }

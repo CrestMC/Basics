@@ -81,3 +81,6 @@ helpop-message: "&b&l[SUPPORT REQUEST] &r{player-rank-prefix}{player-display-nam
 help-command: |-
   &3&lNeed help?
   &bCheck our forums at /website!
+list-message: |-
+  {replacement-0}
+  ({server-playercount-filtered}/{server-max-players}) {replacement-1}

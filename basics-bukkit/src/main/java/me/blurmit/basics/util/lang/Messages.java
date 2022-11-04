@@ -545,6 +545,13 @@ public enum Messages {
         }
     },
 
+    LIST_MESSAGE() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("list-message");
+        }
+    },
+
     HELP_CMD() {
         @Override
         public String toString() {

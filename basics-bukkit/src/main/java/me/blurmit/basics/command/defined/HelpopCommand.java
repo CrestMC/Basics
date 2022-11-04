@@ -25,7 +25,7 @@ public class HelpopCommand extends CommandBase implements PluginMessageListener 
         setName("helpop");
         setAliases(Arrays.asList("helpme", "messagestaff"));
         setDescription("Send a message to all active staff members.");
-        setPermission("basics.command.helpop");
+        setPermission("basics.commands.helpop");
         setCooldown(10);
         setUsage("/helpop <message>");
 

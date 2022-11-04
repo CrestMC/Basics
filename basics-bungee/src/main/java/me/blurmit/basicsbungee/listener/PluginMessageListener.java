@@ -63,7 +63,7 @@ public class PluginMessageListener implements Listener {
                 case "HelpOP-Request": {
                     String player = input.readUTF();
                     String message = input.readUTF();
-                    PluginMessageHelper.sendData("RECEIVERS", "HelpOP-Request", player, message);
+                    PluginMessageHelper.sendData("RECEIVERS", serverData.getName(), "HelpOP-Request", player, message);
                 }
             }
         } catch (IOException e) {

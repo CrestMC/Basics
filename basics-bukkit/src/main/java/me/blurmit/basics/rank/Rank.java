@@ -23,6 +23,9 @@ public class Rank {
     private String suffix;
     @Getter
     @Setter
+    private String color;
+    @Getter
+    @Setter
     private long priority;
     @Getter
     @Setter
@@ -44,10 +47,10 @@ public class Rank {
     }
 
     public Rank(String name, long priority, boolean isDefault, Set<Permission> permissions) {
-        this(name, name, priority, isDefault, permissions, "", "");
+        this(name, name, "", priority, isDefault, permissions, "", "");
     }
 
-    public Rank(String name, String displayName, long priority, boolean isDefault, Set<Permission> permissions, String prefix, String suffix) {
+    public Rank(String name, String displayName, String color, long priority, boolean isDefault, Set<Permission> permissions, String prefix, String suffix) {
         this.name = name;
         this.priority = priority;
         this.isDefault = isDefault;
@@ -55,6 +58,7 @@ public class Rank {
         this.prefix = prefix;
         this.suffix = suffix;
         this.displayName = displayName;
+        this.color = color;
     }
 
 }
