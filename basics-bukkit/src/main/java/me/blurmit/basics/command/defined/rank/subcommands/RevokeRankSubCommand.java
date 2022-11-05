@@ -49,17 +49,19 @@ public class RevokeRankSubCommand extends SubCommand {
             return;
         }
 
-        if (!plugin.getRankManager().hasRank(uuid, rank.getName())) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_NOT_OWNED + "", true, rank.getDisplayName()));
-            return;
-        }
+        plugin.getRankManager().hasRank(uuid, rank.getName(), hasRank -> {
+            if (!hasRank) {
+                sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_NOT_OWNED + "", true, rank.getDisplayName()));
+                return;
+            }
 
-        plugin.getRankManager().revokeRank(rank.getName(), uuid.toString());
-        sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_REVOKED_SUCCESS + "", true, args[2], rank.getDisplayName()));
+            plugin.getRankManager().revokeRank(rank.getName(), uuid.toString());
+            sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_REVOKED_SUCCESS + "", true, args[2], rank.getDisplayName()));
 
-        if (target != null) {
-            target.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_REVOKED + "", true, rank.getDisplayName()));
-        }
+            if (target != null) {
+                target.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_REVOKED + "", true, rank.getDisplayName()));
+            }
+        });
     }
 
 }

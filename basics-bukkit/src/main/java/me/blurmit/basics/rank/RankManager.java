@@ -87,8 +87,8 @@ public class RankManager implements Listener {
     }
 
     public void retrieveUUID(String username, Consumer<UUID> consumer) {
-        if (!cachedPlayers.containsKey(username)) {
-            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+            if (!cachedPlayers.containsKey(username)) {
                 try {
                     URL apiServer = new URL("https://api.mojang.com/users/profiles/minecraft/" + username);
                     InputStreamReader uuidReader = new InputStreamReader(apiServer.openStream());
@@ -103,10 +103,10 @@ public class RankManager implements Listener {
                 } catch (IOException | IllegalStateException e) {
                     consumer.accept(null);
                 }
-            });
-        } else {
-            consumer.accept(cachedPlayers.get(username));
-        }
+            } else {
+                consumer.accept(cachedPlayers.get(username));
+            }
+        });
     }
 
     public boolean hasPermission(Rank rank, String permission) {
@@ -115,16 +115,8 @@ public class RankManager implements Listener {
                 .anyMatch(name -> name.equalsIgnoreCase(permission));
     }
 
-    public boolean hasRank(UUID player, String rank) {
-        if (storage.getOwnedRanks().get(player) != null) {
-            return storage.getOwnedRanks().get(player).contains(rank);
-        } else {
-            AtomicBoolean hasRank = new AtomicBoolean(false);
-            getRankFromStorage(player, ranks -> {
-                hasRank.set(ranks.contains(rank));
-            });
-            return hasRank.get();
-        }
+    public void hasRank(UUID player, String rank, Consumer<Boolean> consumer) {
+        getRankFromStorage(player, ranks -> consumer.accept(ranks.contains(rank)));
     }
 
     public List<Permission> getRankPermissions(String rank) {
@@ -595,31 +587,33 @@ public class RankManager implements Listener {
     }
 
     public void getRankFromStorage(UUID uuid, Consumer<Set<String>> consumer) {
-        if (storage.getType().equals(StorageType.MYSQL)) {
-            storage.getDatabaseManager().useAsynchronousConnection(connection -> {
-                PreparedStatement statement = connection.prepareStatement("SELECT `rank` FROM `basics_rank_members` WHERE `member` = ?");
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+            if (storage.getType().equals(StorageType.MYSQL)) {
+                storage.getDatabaseManager().useAsynchronousConnection(connection -> {
+                    PreparedStatement statement = connection.prepareStatement("SELECT `rank` FROM `basics_rank_members` WHERE `member` = ?");
+                    Set<String> ranks = new HashSet<>();
+                    statement.setString(1, uuid.toString());
+                    ResultSet result = statement.executeQuery();
+
+                    while (result.next()) {
+                        ranks.add(result.getString("rank"));
+                    }
+
+                    consumer.accept(ranks);
+                });
+            } else {
                 Set<String> ranks = new HashSet<>();
-                statement.setString(1, uuid.toString());
-                ResultSet result = statement.executeQuery();
 
-                while (result.next()) {
-                    ranks.add(result.getString("rank"));
-                }
+                plugin.getConfigManager().getRanksConfig().getConfigurationSection("Groups").getValues(false).forEach((name, section) -> {
+                    if (((ConfigurationSection) section).getStringList("members").contains(uuid.toString())) {
+                        ranks.add(name);
+                    }
+                });
 
+                storage.getRanks().stream().filter(Rank::isDefault).forEach(rank -> ranks.add(rank.getName()));
                 consumer.accept(ranks);
-            });
-        } else {
-            Set<String> ranks = new HashSet<>();
-
-            plugin.getConfigManager().getRanksConfig().getConfigurationSection("Groups").getValues(false).forEach((name, section) -> {
-                if (((ConfigurationSection) section).getStringList("members").contains(uuid.toString())) {
-                    ranks.add(name);
-                }
-            });
-
-            storage.getRanks().stream().filter(Rank::isDefault).forEach(rank -> ranks.add(rank.getName()));
-            consumer.accept(ranks);
-        }
+            }
+        });
     }
 
     public void loadRankData(UUID uuid) {

@@ -118,7 +118,7 @@ public class EditRankSubCommand extends SubCommand {
                 String color = String.join(" ", Arrays.copyOfRange(args, 3, args.length));
 
                 plugin.getRankManager().setRankColor(rank.getName(), color);
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_COLOR_SET + "", color, rank.getName()));
+                sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_COLOR_SET + "", color, rank.getDisplayName()));
                 return;
             }
             case "setpriority": {

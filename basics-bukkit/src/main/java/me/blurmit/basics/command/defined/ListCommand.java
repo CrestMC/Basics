@@ -56,13 +56,12 @@ public class ListCommand extends CommandBase {
 
             players = plugin.getServer().getOnlinePlayers().stream()
                     .filter(player::canSee)
-                    .sorted(Comparator.comparingLong(onlinePlayer -> plugin.getRankManager().getHighestRankByPriority(onlinePlayer).getPriority()))
+                    .sorted(Comparator.comparingLong(onlinePlayer -> -plugin.getRankManager().getHighestRankByPriority(onlinePlayer).getPriority()))
                     .map(onlinePlayer -> plugin.getRankManager().getHighestRankByPriority(onlinePlayer).getColor() + onlinePlayer.getName())
-                    .sorted(Comparator.reverseOrder())
                     .collect(Collectors.joining(ChatColor.GRAY + ", " + ChatColor.RESET, ChatColor.GRAY + "", ChatColor.RESET + ""));
         } else if (plugin.getServer().getPluginManager().getPlugin("LuckPerms") != null) {
             ranks = LuckPermsProvider.get().getGroupManager().getLoadedGroups().stream()
-                    .sorted(Comparator.comparing(group -> group.getWeight().getAsInt()))
+                    .sorted(Comparator.comparing(group -> -group.getWeight().getAsInt()))
                     .map(Group::getDisplayName)
                     .sorted(Comparator.reverseOrder())
                     .collect(Collectors.joining(ChatColor.GRAY + ", " + ChatColor.RESET, ChatColor.GRAY + "", ChatColor.RESET + ""));
@@ -71,7 +70,7 @@ public class ListCommand extends CommandBase {
                     .filter(player::canSee)
                     .sorted(Comparator.comparingInt(onlinePlayer -> {
                         String group = LuckPermsProvider.get().getUserManager().getUser(onlinePlayer.getUniqueId()).getPrimaryGroup();
-                        return LuckPermsProvider.get().getGroupManager().getGroup(group).getWeight().getAsInt();
+                        return -LuckPermsProvider.get().getGroupManager().getGroup(group).getWeight().getAsInt();
                     }))
                     .map(onlinePlayer -> {
                         String group = LuckPermsProvider.get().getUserManager().getUser(onlinePlayer.getUniqueId()).getPrimaryGroup();

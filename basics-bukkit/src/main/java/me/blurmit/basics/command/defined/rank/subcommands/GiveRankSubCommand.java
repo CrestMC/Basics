@@ -49,23 +49,25 @@ public class GiveRankSubCommand extends SubCommand {
             return;
         }
 
-        if (plugin.getRankManager().hasRank(uuid, rank.getName())) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_ALREADY_OWNED + "", true, rank.getDisplayName()));
-            return;
-        }
+        plugin.getRankManager().hasRank(uuid, rank.getName(), hasRank -> {
+            if (hasRank) {
+                sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_ALREADY_OWNED + "", true, rank.getDisplayName()));
+                return;
+            }
 
-        String server = "global";
+            String server = "global";
 
-        if (args.length > 3) {
-            server = args[3];
-        }
+            if (args.length > 3) {
+                server = args[3];
+            }
 
-        plugin.getRankManager().giveRank(rank.getName(), uuid.toString(), server);
-        sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_GRANTED_SUCCESS + "", true, args[2], rank.getDisplayName()));
+            plugin.getRankManager().giveRank(rank.getName(), uuid.toString(), server);
+            sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_GRANTED_SUCCESS + "", true, args[2], rank.getDisplayName()));
 
-        if (target != null) {
-            target.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_RECEIVED + "", true, rank.getDisplayName()));
-        }
+            if (target != null) {
+                target.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_RECEIVED + "", true, rank.getDisplayName()));
+            }
+        });
     }
 
 }
