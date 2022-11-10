@@ -26,7 +26,7 @@ public class ListCommand extends CommandBase {
         setName("list");
         setDescription("Sends a list of all online players, including their rank");
         setUsage("/list");
-        setPermission("basics.commands.list");
+        setPermission("basics.command.list");
         setAliases(Arrays.asList("who", "online"));
 
         this.plugin = plugin;

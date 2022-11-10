@@ -35,14 +35,14 @@ public class CommandManager implements Listener {
         Reflector.consume("me.blurmit.basics.command.defined", Basics.class.getClassLoader(), CommandBase.class, CommandBase::registerCommand, true, plugin);
     }
 
-    public void register(String command, Command commandClass) {
+    public void register(String command, CommandBase commandClass) {
         // Check if the server's plugin manager is SimplePluginManager
         if (!(plugin.getServer().getPluginManager() instanceof SimplePluginManager)) {
             plugin.getLogger().severe(Prefixes.ERROR + "Could not register command " + command + ": SimplePluginManager not found!");
             return;
         }
 
-        final Map<?, ?> knownCommandsMap;
+        final Map<String, Command> knownCommandsMap;
 
         try {
             // Get the commandmap field
@@ -53,7 +53,7 @@ public class CommandManager implements Listener {
             // Get the direct hashmap of known commands
             Field knownCommandsField = SimpleCommandMap.class.getDeclaredField("knownCommands");
             knownCommandsField.setAccessible(true);
-            knownCommandsMap = (Map<?, ?>) knownCommandsField.get(commandMap);
+            knownCommandsMap = (Map<String, Command>) knownCommandsField.get(commandMap);
 
         } catch (Exception e) {
             plugin.getLogger().log(Level.SEVERE, Prefixes.ERROR + "Could not register command " + command + ": " + e.getMessage(), e);
@@ -65,36 +65,48 @@ public class CommandManager implements Listener {
         commandClass.getAliases().forEach(alias -> knownCommandsMap.remove(alias.toLowerCase()));
 
         // Register command in the command map
-        commandMap.register(plugin.getName().toLowerCase(), commandClass);
+        commandMap.register(commandClass.getName(), plugin.getName().toLowerCase(), commandClass);
 
         // Remove fallback prefix command
         knownCommandsMap.remove(plugin.getName().toLowerCase() + ":" + command);
         commandClass.getAliases().forEach(alias -> knownCommandsMap.remove(plugin.getName().toLowerCase() + ":" + alias.toLowerCase()));
-
     }
 
     @EventHandler
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-        Command command = commandMap.getCommand(event.getMessage());
+        if (event.getMessage().split("/").length == 0) {
+            return;
+        }
+
+        String commandLabel = event.getMessage().split("/")[1].split(" ")[0];
+        Command command = commandMap.getCommand(commandLabel);
 
         if (!(command instanceof CommandBase)) {
             return;
         }
 
-        CommandBase commandBase = (CommandBase) commandMap.getCommand(event.getMessage());
-        long cooldown = commandBase.getCooldown();
-
-        if (!commandCooldowns.containsKey(event.getPlayer().getUniqueId())) {
+        if (event.getMessage().split(" ").length < 2) {
             return;
         }
 
-        long secondsLeft = ((commandCooldowns.get(event.getPlayer().getUniqueId()) / 1000) + cooldown) - (System.currentTimeMillis() / 1000);
+        CommandBase commandBase = (CommandBase) commandMap.getCommand(commandLabel);
+        long cooldown = commandBase.getCooldown();
 
-        if (secondsLeft > 0) {
-            event.getPlayer().sendMessage(Placeholders.parsePlaceholder(Messages.COMMAND_COOLDOWN + "", secondsLeft + ""));
-            event.setCancelled(true);
-            commandCooldowns.remove(event.getPlayer().getUniqueId());
+        if (cooldown == 0) {
             return;
+        }
+
+        if (commandCooldowns.containsKey(event.getPlayer().getUniqueId())) {
+
+            long secondsLeft = ((commandCooldowns.get(event.getPlayer().getUniqueId()) / 1000) + cooldown) - (System.currentTimeMillis() / 1000);
+
+            if (secondsLeft > 0) {
+                event.getPlayer().sendMessage(Placeholders.parsePlaceholder(Messages.COMMAND_COOLDOWN + "", secondsLeft + ""));
+                event.setCancelled(true);
+                return;
+            }
+
+            commandCooldowns.remove(event.getPlayer().getUniqueId());
         }
 
         commandCooldowns.put(event.getPlayer().getUniqueId(), System.currentTimeMillis());

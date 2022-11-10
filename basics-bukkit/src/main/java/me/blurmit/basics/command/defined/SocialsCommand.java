@@ -19,7 +19,7 @@ public class SocialsCommand extends CommandBase {
         setName("socials");
         setDescription("Sends the social media information about the server");
         setUsage("/socials");
-        setPermission("basics.commands.socials");
+        setPermission("basics.command.socials");
         setAliases(Arrays.asList("website", "discord", "store", "twitter"));
 
         this.plugin = plugin;

@@ -22,7 +22,7 @@ public class ItemRenameCommand extends CommandBase {
         setName("itemrename");
         setDescription("Echo a message back to the sender");
         setUsage("/itemrename <name>");
-        setPermission("basics.commands.itemrename");
+        setPermission("basics.command.itemrename");
 
         this.plugin = plugin;
     }

@@ -77,12 +77,12 @@ Groups:
     - basics.command.slowmode
     - basics.spawn.other
     - basics.command.teleport
-    - basics.commands.fly.other
+    - basics.command.fly.other
     - basics.command.flyspeed
-    - basics.commands.flyspeed.other
+    - basics.command.flyspeed.other
     - basics.command.walkspeed
-    - basics.commands.walkspeed.other
-    - basics.commands.gamemode
+    - basics.command.walkspeed.other
+    - basics.command.gamemode
     - basics.command.world
   srmod:
     prefix: '&7[&5&lSrMod&7] &5&l'

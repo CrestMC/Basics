@@ -18,7 +18,7 @@ public class EditRankSubCommand extends SubCommand {
         super(plugin.getName(), command);
         setName("edit");
         setUsage("/rank edit <rank>");
-        setPermission("basics.commands.rank.edit");
+        setPermission("basics.command.rank.edit");
         setDescription("Edits a rank");
 
         this.plugin = plugin;

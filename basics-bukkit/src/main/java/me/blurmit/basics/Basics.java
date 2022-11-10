@@ -6,6 +6,7 @@ import me.blurmit.basics.configuration.ConfigManager;
 import me.blurmit.basics.listeners.AsyncChatListener;
 import me.blurmit.basics.listeners.PlayerConnectionListener;
 import me.blurmit.basics.placeholder.*;
+import me.blurmit.basics.punishments.PunishmentManager;
 import me.blurmit.basics.rank.RankManager;
 import me.blurmit.basics.scoreboard.ScoreboardManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -20,6 +21,8 @@ public final class Basics extends JavaPlugin {
     private ConfigManager configManager;
     @Getter
     private RankManager rankManager;
+    @Getter
+    private PunishmentManager punishmentManager;
 
     @Override
     public void onEnable() {
@@ -36,8 +39,8 @@ public final class Basics extends JavaPlugin {
         new RankPlaceholder(this);
         new ServerPlaceholder(this);
 
-        if (getServer().getPluginManager().getPlugin("LuckPerms") != null ) {
-            new LuckPermsPlaceholder(this);
+        if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null ) {
+            new PapiPlaceholder(this);
         }
 
         getLogger().info("Registering scoreboard...");
@@ -47,8 +50,15 @@ public final class Basics extends JavaPlugin {
         new AsyncChatListener(this);
         new PlayerConnectionListener(this);
 
-        getLogger().info("Loading ranks...");
-        this.rankManager = new RankManager(this);
+        if (configManager.getConfig().getBoolean("Ranks.Enabled")) {
+            getLogger().info("Loading ranks...");
+            this.rankManager = new RankManager(this);
+            rankManager.createDefaultRank();
+        }
+
+        getLogger().info("Loading punishments...");
+        this.punishmentManager = new PunishmentManager(this);
+
 
         getLogger().info(getName() + " has been enabled!");
     }
@@ -57,6 +67,10 @@ public final class Basics extends JavaPlugin {
     public void onDisable() {
         if (getRankManager().getStorage().getDatabaseManager() != null) {
             getRankManager().getStorage().getDatabaseManager().shutdown();
+        }
+
+        if (getPunishmentManager().getStorage().getDatabaseManager() != null) {
+            getPunishmentManager().getStorage().getDatabaseManager().shutdown();
         }
 
         getLogger().info(getName() + " has been disabled!");

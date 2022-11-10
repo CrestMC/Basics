@@ -22,7 +22,7 @@ public class TeleportCommand extends CommandBase {
         setDescription("Teleports a player to a specified location or player");
         setUsage("/teleport <location> [new location]");
         setAliases(Collections.singletonList("tp"));
-        setPermission("basics.commands.teleport");
+        setPermission("basics.command.teleport");
 
         this.plugin = plugin;
     }

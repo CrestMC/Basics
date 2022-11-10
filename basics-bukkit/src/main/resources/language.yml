@@ -84,3 +84,79 @@ help-command: |-
 list-message: |-
   {replacement-0}
   ({server-playercount-filtered}/{server-max-players}) {replacement-1}
+console-name: "&c&lConsole"
+punishment-silent-prefix: "&7(Silent) "
+punishment-message: "&aYou've {replacement-0} {replacement-1} &afor &2{replacement-2}"
+pardon-message: "&2{replacement-0} &ahas been {replacement-1} &aby &2{replacement-2}"
+player-not-banned: ""
+player-not-muted: ""
+punishment-hover: |-
+  &7&m--------------
+  &aModerator: {replacement-0}
+  &aReason: {replacement-1}
+  &7&m--------------
+frozen:
+  message: "&cYou cannot move as you are currently frozen. Please wait for instructions from staff."
+kick:
+  message: "&2{replacement-0} &ahas been kicked by &2{replacement-1}&a."
+  alert: |-
+    &7&m------------------------------------------
+    &aYou have been kicked for &2{replacement-0}&a.
+    &7&m------------------------------------------
+mute:
+  temporary: "&2{replacement-0} &ahas been temporarily muted by &2{replacement-1} &afor &2{replacement-2}&a."
+  permanent: "&2{replacement-0} &ahas been permanently muted by &2{replacement-1}&a."
+  cant-chat: "&cYou cannot use chat as you are currently muted."
+  command-not-allowed: "&cYou cannot execute the command &o{replacement-0} &cwhile you are muted."
+  not-muted: "&2{replacement-0} &adoes not have an active ban."
+  temporary-alert: |-
+    &7&m------------------------------------------
+    &aYou have been muted for &2{replacement-0}&a.
+    &aThis muted will expire in &2{replacement-1}&a.
+    &r
+    &aYou can appeal at &2https://www.example.com&a.
+    &7&m------------------------------------------
+  permanent-alert: |-
+    &7&m------------------------------------------
+    &aYou have been muted for &2{replacement-0}&a.
+    &aThis muted will never expire&a.
+    &r
+    &aYou can appeal at &2https://www.example.com&a.
+    &7&m------------------------------------------
+ban:
+  temporary: "&2{replacement-0} &ahas been temporarily banned by &2{replacement-1} &afor &2{replacement-2}&a."
+  permanent: "&2{replacement-0} &ahas been permanently banned by &2{replacement-1}&a."
+  cant-chat: "&cYou cannot use chat as you are currently banned."
+  command-not-allowed: "&cYou cannot execute the command &o{replacement-0} &cwhile you are banned."
+  not-banned: "&2{replacement-0} &adoes not have an active ban."
+  temporary-alert: |-
+    &7&m------------------------------------------
+    &aYou have been banned for &2{replacement-0}&a.
+    &aThis ban will expire in &2{replacement-1}&a.
+    &r
+    &aYou can appeal at &2https://www.example.com&a.
+    &7&m------------------------------------------
+  permanent-alert: |-
+    &7&m------------------------------------------
+    &aYou have been banned for &2{replacement-0}&a.
+    &aThis ban will never expire.
+    &r
+    &aYou can appeal at &2https://www.example.com&a.
+    &7&m------------------------------------------
+blacklist:
+  temporary: "&2{replacement-0} &ahas been temporarily blacklisted by &2{replacement-1} &afor &2{replacement-2}&a."
+  permanent: "&2{replacement-0} &ahas been permanently blacklisted by &2{replacement-1}&a."\
+  temporary-alert: |-
+    &7&m------------------------------------------
+    &aYou have been blacklisted for &2{replacement-0}&a.
+    &aThis blacklist will expire in &2{replacement-1}&a.
+    &r
+    &aYou can appeal at &2https://www.example.com&a.
+    &7&m------------------------------------------
+  permanent-alert: |-
+    &7&m------------------------------------------
+    &aYou have been blacklisted for &2{replacement-0}&a.
+    &aThis blacklist will never expire&a.
+    &r
+    &aYou can appeal at &2https://www.example.com&a.
+    &7&m------------------------------------------

@@ -22,7 +22,7 @@ public class MessageToggleCommand extends CommandBase {
         setDescription("Toggles your messages on/off");
         setUsage("/messagetoggle");
         setAliases(Arrays.asList("msgtoggle", "tpm", "tm", "toggleprivatemessages", "toggledirectmessages"));
-        setPermission("basics.commands.messagetoggle");
+        setPermission("basics.command.messagetoggle");
 
         this.plugin = plugin;
     }

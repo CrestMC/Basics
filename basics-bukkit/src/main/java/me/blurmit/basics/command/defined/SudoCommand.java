@@ -19,7 +19,7 @@ public class SudoCommand extends CommandBase {
         setName("sudo");
         setDescription("Forces a command to be executed as another player");
         setUsage("/sudo <player> <command>");
-        setPermission("basics.commands.sudo");
+        setPermission("basics.command.sudo");
 
         this.plugin = plugin;
     }

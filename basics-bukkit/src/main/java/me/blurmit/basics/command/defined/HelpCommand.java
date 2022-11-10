@@ -16,7 +16,7 @@ public class HelpCommand extends CommandBase {
         setName("help");
         setDescription("Get server help.");
         setUsage("/help");
-        setPermission("basics.commands.help");
+        setPermission("basics.command.help");
 
         this.plugin = plugin;
     }

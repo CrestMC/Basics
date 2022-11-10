@@ -23,7 +23,7 @@ public class EnchantCommand extends CommandBase {
         setDescription("Enchants an item that the sender is holding");
         setAliases(Collections.singletonList("ench"));
         setUsage("/enchant <enchantment> <level>");
-        setPermission("basics.commands.enchant");
+        setPermission("basics.command.enchant");
 
         this.plugin = plugin;
     }

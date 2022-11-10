@@ -4,6 +4,7 @@ import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 import me.blurmit.basics.Basics;
 import me.blurmit.basics.command.CommandBase;
+import me.blurmit.basics.util.UUIDs;
 import me.blurmit.basics.util.lang.Messages;
 import me.blurmit.basics.util.placeholder.Placeholders;
 import me.blurmit.basics.util.pluginmessage.PluginMessageHelper;
@@ -28,7 +29,7 @@ public class StaffChatCommand extends CommandBase implements Listener, PluginMes
         setDescription("Sends a global message to all online staff");
         setUsage("/staffchat <message>");
         setAliases(Collections.singletonList("sc"));
-        setPermission("basics.commands.staffchat");
+        setPermission("basics.command.staffchat");
 
         this.plugin = plugin;
 
@@ -107,7 +108,7 @@ public class StaffChatCommand extends CommandBase implements Listener, PluginMes
                 String playerName = input.readUTF();
                 String msg = input.readUTF();
 
-                plugin.getRankManager().retrieveUUID(playerName, uuid -> {
+                UUIDs.retrieveUUID(playerName, uuid -> {
                     plugin.getRankManager().getHighestRankByPriority(uuid, rank -> {
                         String format = Placeholders.parsePlaceholder(plugin.getConfigManager().getConfig().getString("StaffChat.Format"), true, server, rank.getColor() + playerName, msg);
                         plugin.getServer().broadcast(format, "basics.staffchat");
@@ -119,7 +120,7 @@ public class StaffChatCommand extends CommandBase implements Listener, PluginMes
                 String server = input.readUTF();
                 String playerName = input.readUTF();
 
-                plugin.getRankManager().retrieveUUID(playerName, uuid -> {
+                UUIDs.retrieveUUID(playerName, uuid -> {
                     plugin.getRankManager().getHighestRankByPriority(uuid, rank -> {
                         String format = Placeholders.parsePlaceholder(plugin.getConfigManager().getConfig().getString("StaffChat.Connect"), true, rank.getColor() + playerName, server);
                         plugin.getServer().broadcast(format, "basics.staffchat");
@@ -131,7 +132,7 @@ public class StaffChatCommand extends CommandBase implements Listener, PluginMes
                 String server = input.readUTF();
                 String playerName = input.readUTF();
 
-                plugin.getRankManager().retrieveUUID(playerName, uuid -> {
+                UUIDs.retrieveUUID(playerName, uuid -> {
                     plugin.getRankManager().getHighestRankByPriority(uuid, rank -> {
                         String format = Placeholders.parsePlaceholder(plugin.getConfigManager().getConfig().getString("StaffChat.Disconnect"), true, rank.getColor() + playerName, server);
                         plugin.getServer().broadcast(format, "basics.staffchat");
@@ -144,7 +145,7 @@ public class StaffChatCommand extends CommandBase implements Listener, PluginMes
                 String originalServer = input.readUTF();
                 String newServer = input.readUTF();
 
-                plugin.getRankManager().retrieveUUID(playerName, uuid -> {
+                UUIDs.retrieveUUID(playerName, uuid -> {
                     plugin.getRankManager().getHighestRankByPriority(uuid, rank -> {
                         String format = Placeholders.parsePlaceholder(plugin.getConfigManager().getConfig().getString("StaffChat.Switch"), true, rank.getColor() + playerName, newServer, originalServer);
                         plugin.getServer().broadcast(format, "basics.staffchat");

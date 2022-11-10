@@ -5,6 +5,7 @@ api-version: 1.16
 prefix: Basics
 authors: [ Blurmit ]
 softdepend:
+  - PlaceholderAPI
   - LuckPerms
 description: A plugin containing general server utilities
 website: https://blurmit.ml
@@ -13,54 +14,55 @@ load: POSTWORLD
 permissions:
   basics.*:
     children:
-      - "basics.commands.basics"
-      - "basics.commands.broadcast"
-      - "basics.commands.clearchat"
-      - "basics.commands.createworld"
-      - "basics.commands.deleteworld"
-      - "basics.commands.echo"
-      - "basics.commands.enchant"
-      - "basics.commands.feed"
-      - "basics.commands.fly"
-      - "basics.commands.flyspeed"
-      - "basics.commands.gamemode"
-      - "basics.commands.heal"
-      - "basics.commands.invsee"
-      - "basics.commands.itemlore"
-      - "basics.commands.itemrename"
-      - "basics.commands.message"
-      - "basics.commands.mutechat"
-      - "basics.commands.ping"
-      - "basics.commands.rank"
-      - "basics.commands.reply"
-      - "basics.commands.connect"
-      - "basics.commands.setspawn"
-      - "basics.commands.slowmode"
-      - "basics.commands.socials"
-      - "basics.commands.spawn"
-      - "basics.commands.staffchat"
-      - "basics.commands.sudo"
-      - "basics.commands.teleport"
-      - "basics.commands.vanish"
-      - "basics.commands.walkspeed"
-      - "basics.commands.world"
-      - "basics.commands.message"
+      - "basics.command.basics"
+      - "basics.command.broadcast"
+      - "basics.command.clearchat"
+      - "basics.command.createworld"
+      - "basics.command.deleteworld"
+      - "basics.command.echo"
+      - "basics.command.enchant"
+      - "basics.command.feed"
+      - "basics.command.fly"
+      - "basics.command.flyspeed"
+      - "basics.command.gamemode"
+      - "basics.command.heal"
+      - "basics.command.invsee"
+      - "basics.command.itemlore"
+      - "basics.command.itemrename"
+      - "basics.command.message"
+      - "basics.command.mutechat"
+      - "basics.command.ping"
+      - "basics.command.rank"
+      - "basics.command.reply"
+      - "basics.command.connect"
+      - "basics.command.setspawn"
+      - "basics.command.slowmode"
+      - "basics.command.socials"
+      - "basics.command.spawn"
+      - "basics.command.staffchat"
+      - "basics.command.sudo"
+      - "basics.command.teleport"
+      - "basics.command.vanish"
+      - "basics.command.walkspeed"
+      - "basics.command.world"
+      - "basics.command.message"
       - "basics.messagetoggle.bypass"
+      - "basics.punishments.viewsilent"
     description: "Gives full permission to the plugin"
     default: op
   basics.clearchat.bypass:
     description: "Allows the user to bypass the chat clear"
     default: op
-  basics.commands.gamemode.other:
+  basics.command.gamemode.other:
     description: "Gives permission to change gamemode of other players"
     default: op
-  basics.commands.fly.other:
+  basics.command.fly.other:
     description: "Gives permission to set the fly state of other players"
     default: op
-  basics.commands.flyspeed.other:
+  basics.command.flyspeed.other:
     description: "Gives permission to set the flyspeed of other players"
     default: op
-  basics.commands.walkspeed.other:
+  basics.command.walkspeed.other:
     description: "Gives permission to set the walkspeed of other players"
     default: op
   basics.slowmode.bypass:
@@ -77,3 +79,13 @@ permissions:
     default: op
   basics.messagetoggle.bypass:
     description: "Gives the ability to message users who have disabled their private messages"
+    default: op
+  basics.punishments.viewsilent:
+    description: "Gives the ability to view silent punishments"
+    default: op
+  basics.punishments.viewdetails:
+    description: Shows details about a punishment when hovering over it
+    default: op
+  basics.player:
+    description: "All players have this permission"
+    default: true

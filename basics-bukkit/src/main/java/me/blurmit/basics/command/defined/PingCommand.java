@@ -18,7 +18,7 @@ public class PingCommand extends CommandBase {
         setName("ping");
         setDescription("Get the ping of yourself or another player");
         setUsage("/ping [player]");
-        setPermission("basics.commands.ping");
+        setPermission("basics.command.ping");
 
         this.plugin = plugin;
     }

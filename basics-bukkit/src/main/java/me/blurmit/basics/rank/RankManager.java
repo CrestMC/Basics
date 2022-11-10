@@ -1,6 +1,5 @@
 package me.blurmit.basics.rank;
 
-import com.google.gson.JsonParser;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import me.blurmit.basics.Basics;
@@ -9,48 +8,35 @@ import me.blurmit.basics.rank.storage.RankStorage;
 import me.blurmit.basics.util.Reflector;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 import org.bukkit.permissions.PermissibleBase;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionDefault;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.Field;
-import java.net.URL;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
-public class RankManager implements Listener {
+public class RankManager {
 
-    private Basics plugin;
+    private final Basics plugin;
 
     @Getter
-    private RankStorage storage;
+    private final RankStorage storage;
     private RankListener listener;
-    private Map<String, UUID> cachedPlayers;
 
     @Getter
-    private Map<UUID, PermissionAttachment> activeAttachments;
+    private final Map<UUID, PermissionAttachment> activeAttachments;
 
     public RankManager(Basics plugin) {
-        if (!plugin.getConfigManager().getConfig().getBoolean("Ranks.Enabled")) {
-            return;
-        }
-
         this.plugin = plugin;
         this.storage = new RankStorage(plugin);
         this.listener = new RankListener(plugin);
         this.activeAttachments = new HashMap<>();
-        this.cachedPlayers = new HashMap<>();
-
-        plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, () -> cachedPlayers.clear(), 0L, 10 * 60 * 20L);
     }
 
     @Nullable
@@ -61,19 +47,60 @@ public class RankManager implements Listener {
                 .orElse(null);
     }
 
-    @Nullable
     public Rank getDefaultRank() {
-        return storage.getRanks().stream()
+        Rank defaultRank = storage.getRanks().stream()
                 .filter(Rank::isDefault)
                 .findFirst()
                 .orElse(null);
+
+        if (defaultRank == null) {
+            defaultRank = createRank("default");
+            defaultRank.setDefault(true);
+        }
+
+        return defaultRank;
     }
 
     @Nullable
     public Rank getHighestRankByPriority(Player player) {
+        storage.getOwnedRanks().computeIfAbsent(player.getUniqueId(), id -> new HashSet<>());
+
         return getRankByName(storage.getOwnedRanks().get(player.getUniqueId()).stream()
                 .reduce((rank1, rank2) -> getRankByName(rank1).getPriority() > getRankByName(rank2).getPriority() ? rank1 : rank2)
-                .orElse(getDefaultRank().getName() == null ? "None" : getDefaultRank().getName()));
+                .orElse(getDefaultRank().getName()));
+    }
+
+    public Rank getHighestRankByPriority(UUID uuid) {
+        if (storage.getType().equals(StorageType.MYSQL)) {
+            AtomicReference<Rank> primaryRank = new AtomicReference<>();
+
+            storage.getDatabaseManager().useConnection(connection -> {
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM `basics_rank_members` WHERE `member` = ?");
+                statement.setString(1, uuid.toString());
+
+                ResultSet results = statement.executeQuery();
+                Set<Rank> ownedRanks = new HashSet<>();
+                while (results.next()) {
+                    Rank rank = getRankByName(results.getString("rank"));
+
+                    if (rank == null) {
+                        rank = getDefaultRank();
+                    }
+
+                    ownedRanks.add(rank);
+                }
+
+                primaryRank.set(ownedRanks.stream()
+                        .reduce((rank1, rank2) -> rank1.getPriority() > rank2.getPriority() ? rank1 : rank2)
+                        .orElse(getDefaultRank()));
+            });
+
+            return primaryRank.get();
+        } else {
+            return getRankByName(storage.getOwnedRanks().get(uuid).stream()
+                .reduce((rank1, rank2) -> getRankByName(rank1).getPriority() > getRankByName(rank2).getPriority() ? rank1 : rank2)
+                .orElse(getDefaultRank().getName()));
+        }
     }
 
     public void getHighestRankByPriority(UUID player, Consumer<Rank> consumer) {
@@ -86,27 +113,16 @@ public class RankManager implements Listener {
         });
     }
 
-    public void retrieveUUID(String username, Consumer<UUID> consumer) {
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-            if (!cachedPlayers.containsKey(username)) {
-                try {
-                    URL apiServer = new URL("https://api.mojang.com/users/profiles/minecraft/" + username);
-                    InputStreamReader uuidReader = new InputStreamReader(apiServer.openStream());
-                    String uuidString = new JsonParser().parse(uuidReader).getAsJsonObject().get("id").getAsString();
-                    UUID uuid = UUID.fromString(uuidString.replaceFirst(
-                            "(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)",
-                            "$1-$2-$3-$4-$5"
-                    ));
+    public void createDefaultRank() {
+        plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, () -> {
+            if (getDefaultRank() == null) {
+                Rank rank = plugin.getRankManager().createRank("default");
 
-                    consumer.accept(uuid);
-                    cachedPlayers.put(username, uuid);
-                } catch (IOException | IllegalStateException e) {
-                    consumer.accept(null);
+                if (rank != null) {
+                    rank.setDefault(true);
                 }
-            } else {
-                consumer.accept(cachedPlayers.get(username));
             }
-        });
+        }, 20L * 3);
     }
 
     public boolean hasPermission(Rank rank, String permission) {
@@ -203,12 +219,17 @@ public class RankManager implements Listener {
         return groups;
     }
 
-    public void createRank(String name) {
-        storage.getRanks().add(new Rank(name));
+    public Rank createRank(String name) {
+        if (storage.getRanks().contains(getRankByName(name))) {
+            return getRankByName(name);
+        }
+
+        Rank rank = new Rank(name);
+        storage.getRanks().add(rank);
 
         if (storage.getType().equals(StorageType.MYSQL)) {
             storage.getDatabaseManager().useAsynchronousConnection(connection -> {
-                PreparedStatement statement = connection.prepareStatement("INSERT INTO `basics_ranks` (`name`, `display_name`, `color`, `priority`, `default`, `prefix`, `suffix`) VALUES (?, ?, ?, ?, ?, ?)");
+                PreparedStatement statement = connection.prepareStatement("INSERT INTO `basics_ranks` (`name`, `display_name`, `color`, `priority`, `default`, `prefix`, `suffix`) VALUES (?, ?, ?, ?, ?, ?, ?)");
                 statement.setString(1, name);
                 statement.setString(2, name);
                 statement.setString(3, "");
@@ -229,6 +250,8 @@ public class RankManager implements Listener {
             plugin.getConfigManager().getRanksConfig().set("Groups." + name + ".permissions", new ArrayList<>());
             plugin.getConfigManager().saveRanksConfig();
         }
+
+        return rank;
     }
 
     public void deleteRank(String name) {
@@ -237,7 +260,7 @@ public class RankManager implements Listener {
 
         if (storage.getType().equals(StorageType.MYSQL)) {
             storage.getDatabaseManager().useAsynchronousConnection(connection -> {
-                PreparedStatement statement = connection.prepareStatement("DELETE FROM `tags` WHERE `name` = ?");
+                PreparedStatement statement = connection.prepareStatement("DELETE FROM `basics_ranks` WHERE `name` = ?");
                 statement.setString(1, name);
                 statement.execute();
             });
@@ -257,7 +280,7 @@ public class RankManager implements Listener {
 
         if (storage.getType().equals(StorageType.MYSQL)) {
             storage.getDatabaseManager().useAsynchronousConnection(connection -> {
-                PreparedStatement statement = connection.prepareStatement("INSERT INTO `basics_rank_members` (`rank`, `player`, `server`) VALUES (?, ?, ?)");
+                PreparedStatement statement = connection.prepareStatement("INSERT INTO `basics_rank_members` (`rank`, `member`, `server`) VALUES (?, ?, ?)");
                 statement.setString(1, rank);
                 statement.setString(2, player);
                 statement.setString(3, server);
@@ -295,7 +318,7 @@ public class RankManager implements Listener {
 
         if (storage.getType().equals(StorageType.MYSQL)) {
             storage.getDatabaseManager().useAsynchronousConnection(connection -> {
-                PreparedStatement statement = connection.prepareStatement("DELETE FROM `basics_rank_members` WHERE (`rank`, `player`) = (?, ?)");
+                PreparedStatement statement = connection.prepareStatement("DELETE FROM `basics_rank_members` WHERE (`rank`, `member`) = (?, ?)");
                 statement.setString(1, rank);
                 statement.setString(2, player);
                 statement.execute();
@@ -465,7 +488,7 @@ public class RankManager implements Listener {
 
         if (storage.getType().equals(StorageType.MYSQL)) {
             storage.getDatabaseManager().useAsynchronousConnection(connection -> {
-                PreparedStatement statement = connection.prepareStatement("UPDATE `basics_ranks` SET `prefix` = ? WHERE `rank` = ?");
+                PreparedStatement statement = connection.prepareStatement("UPDATE `basics_ranks` SET `prefix` = ? WHERE `name` = ?");
                 statement.setString(1, prefix);
                 statement.setString(2, rank);
                 statement.execute();
@@ -487,7 +510,7 @@ public class RankManager implements Listener {
 
         if (storage.getType().equals(StorageType.MYSQL)) {
             storage.getDatabaseManager().useAsynchronousConnection(connection -> {
-                PreparedStatement statement = connection.prepareStatement("UPDATE `basics_ranks` SET `suffix` = ? WHERE `rank` = ?");
+                PreparedStatement statement = connection.prepareStatement("UPDATE `basics_ranks` SET `suffix` = ? WHERE `name` = ?");
                 statement.setString(1, suffix);
                 statement.setString(2, rank);
                 statement.execute();
@@ -509,7 +532,7 @@ public class RankManager implements Listener {
 
         if (storage.getType().equals(StorageType.MYSQL)) {
             storage.getDatabaseManager().useAsynchronousConnection(connection -> {
-                PreparedStatement statement = connection.prepareStatement("UPDATE `basics_ranks` SET `display_name` = ? WHERE `rank` = ?");
+                PreparedStatement statement = connection.prepareStatement("UPDATE `basics_ranks` SET `display_name` = ? WHERE `name` = ?");
                 statement.setString(1, displayName);
                 statement.setString(2, rank);
                 statement.execute();
@@ -531,7 +554,7 @@ public class RankManager implements Listener {
 
         if (storage.getType().equals(StorageType.MYSQL)) {
             storage.getDatabaseManager().useAsynchronousConnection(connection -> {
-                PreparedStatement statement = connection.prepareStatement("UPDATE `basics_ranks` SET `priority` = ? WHERE `rank` = ?");
+                PreparedStatement statement = connection.prepareStatement("UPDATE `basics_ranks` SET `priority` = ? WHERE `name` = ?");
                 statement.setInt(1, priority);
                 statement.setString(2, rank);
                 statement.execute();
@@ -553,7 +576,7 @@ public class RankManager implements Listener {
 
         if (storage.getType().equals(StorageType.MYSQL)) {
             storage.getDatabaseManager().useAsynchronousConnection(connection -> {
-                PreparedStatement statement = connection.prepareStatement("UPDATE `basics_ranks` SET `color` = ? WHERE `rank` = ?");
+                PreparedStatement statement = connection.prepareStatement("UPDATE `basics_ranks` SET `color` = ? WHERE `name` = ?");
                 statement.setString(1, color);
                 statement.setString(2, rank);
                 statement.execute();
@@ -575,7 +598,7 @@ public class RankManager implements Listener {
 
         if (storage.getType().equals(StorageType.MYSQL)) {
             storage.getDatabaseManager().useAsynchronousConnection(connection -> {
-                PreparedStatement statement = connection.prepareStatement("UPDATE `basics_ranks` SET `default` = ? WHERE `rank` = ?");
+                PreparedStatement statement = connection.prepareStatement("UPDATE `basics_ranks` SET `default` = ? WHERE `name` = ?");
                 statement.setInt(1, def ? 1 : 0);
                 statement.setString(2, rank);
                 statement.execute();
@@ -618,6 +641,7 @@ public class RankManager implements Listener {
 
     public void loadRankData(UUID uuid) {
         storage.getOwnedRanks().computeIfAbsent(uuid, id -> new HashSet<>());
+        storage.getRanks().stream().filter(Rank::isDefault).forEach(rank -> storage.getOwnedRanks().get(uuid).add(rank.getName()));
 
         if (storage.getType().equals(StorageType.MYSQL)) {
             storage.getDatabaseManager().useAsynchronousConnection(connection -> {
@@ -635,8 +659,6 @@ public class RankManager implements Listener {
                     storage.getOwnedRanks().get(uuid).add(name);
                 }
             });
-
-            storage.getRanks().stream().filter(Rank::isDefault).forEach(rank -> storage.getOwnedRanks().get(uuid).add(rank.getName()));
         }
     }
 

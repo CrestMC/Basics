@@ -3,6 +3,7 @@ package me.blurmit.basics.command.defined.rank.subcommands;
 import me.blurmit.basics.Basics;
 import me.blurmit.basics.command.defined.SubCommand;
 import me.blurmit.basics.rank.Rank;
+import me.blurmit.basics.util.UUIDs;
 import me.blurmit.basics.util.lang.Messages;
 import me.blurmit.basics.util.placeholder.Placeholders;
 import org.bukkit.command.Command;
@@ -19,7 +20,7 @@ public class RevokeRankSubCommand extends SubCommand {
         super(plugin.getName(), command);
         setName("revoke");
         setUsage("/rank revoke <rank> <player>");
-        setPermission("basics.commands.rank.revoke");
+        setPermission("basics.command.rank.revoke");
         setDescription("Removes a rank from a player");
 
         this.plugin = plugin;
@@ -32,7 +33,7 @@ public class RevokeRankSubCommand extends SubCommand {
             return;
         }
 
-        plugin.getRankManager().retrieveUUID(args[2].toLowerCase(), uuid -> handleRevokeRank(sender, args, uuid));
+        UUIDs.retrieveUUID(args[2].toLowerCase(), uuid -> handleRevokeRank(sender, args, uuid));
     }
 
     private void handleRevokeRank(CommandSender sender, String[] args, UUID uuid) {

@@ -17,7 +17,7 @@ public class SetSpawnCommand extends CommandBase {
         setName("setspawn");
         setDescription("Sets the spawnpoint for players");
         setUsage("/setspawn");
-        setPermission("basics.commands.setspawn");
+        setPermission("basics.command.setspawn");
 
         this.plugin = plugin;
     }

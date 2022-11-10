@@ -3,7 +3,6 @@ package me.blurmit.basicsbungee.listener;
 import me.blurmit.basicsbungee.BasicsBungee;
 import me.blurmit.basicsbungee.util.Placeholders;
 import me.blurmit.basicsbungee.util.pluginmessage.PluginMessageHelper;
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.ServerDisconnectEvent;

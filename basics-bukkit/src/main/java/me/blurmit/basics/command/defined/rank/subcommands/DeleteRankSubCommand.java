@@ -15,7 +15,7 @@ public class DeleteRankSubCommand extends SubCommand {
         super(plugin.getName(), command);
         setName("delete");
         setUsage("/rank delete <name>");
-        setPermission("basics.commands.rank.delete");
+        setPermission("basics.command.rank.delete");
         setDescription("Deletes a rank");
 
         this.plugin = plugin;

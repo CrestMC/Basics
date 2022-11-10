@@ -25,7 +25,7 @@ public class ReplyCommand extends CommandBase {
         setName("reply");
         setDescription("Replys to the lastest message that the sender received");
         setUsage("/reply <message>");
-        setPermission("basics.commands.reply");
+        setPermission("basics.command.reply");
         setAliases(Collections.singletonList("r"));
 
         this.plugin = plugin;
@@ -77,8 +77,8 @@ public class ReplyCommand extends CommandBase {
 
         String message = Placeholders.parsePlaceholder(String.join(" ", Arrays.copyOfRange(args, 0, args.length)), player, this, args);
 
-        player.sendMessage(Placeholders.parsePlaceholder(Messages.MESSAGE_SEND + "", target.getName(), message));
-        target.sendMessage(Placeholders.parsePlaceholder(Messages.MESSAGE_RECEIVE + "", player.getName(), message));
+        player.sendMessage(Placeholders.parsePlaceholder(Messages.MESSAGE_SEND + "", target, this, null, args, false, message));
+        target.sendMessage(Placeholders.parsePlaceholder(Messages.MESSAGE_RECEIVE + "", player, this, null, args, false, message));
 
         target.playSound(target.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.MASTER, 35, 1);
         return true;

@@ -21,7 +21,7 @@ public class FlyCommand extends CommandBase {
         setDescription("Toggles the ability to fly for a player");
         setAliases(Arrays.asList("flight", "flying"));
         setUsage("/fly [boolean] [player]");
-        setPermission("basics.commands.fly");
+        setPermission("basics.command.fly");
 
         this.plugin = plugin;
     }
@@ -34,7 +34,7 @@ public class FlyCommand extends CommandBase {
         }
 
         if (args.length == 2) {
-            if (!sender.hasPermission("basics.commands.fly.other")) {
+            if (!sender.hasPermission("basics.command.fly.other")) {
                 sender.sendMessage(Placeholders.parsePlaceholder(Messages.NO_PERMISSION_SUBCOMMAND + "", sender, this, args));
                 return true;
             }

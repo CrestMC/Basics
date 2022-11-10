@@ -15,7 +15,7 @@ public class CreateRankSubCommand extends SubCommand {
         super(plugin.getName(), command);
         setName("create");
         setUsage("/rank create <name>");
-        setPermission("basics.commands.rank.create");
+        setPermission("basics.command.rank.create");
         setDescription("Creates a new rank");
 
         this.plugin = plugin;

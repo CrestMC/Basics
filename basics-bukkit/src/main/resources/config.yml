@@ -49,6 +49,22 @@ Ranks:
   MySQL-Password: "password"
   MySQL-Host: "localhost:3306"
   MySQL-Database: "Ranks"
+Punishments:
+  # Punishment storage methods. Available options are "config" or "mysql". More options may be added later.
+  # If you choose config, further configuration will be done in the "punishments.yml" & in-game commands.
+  # If you choose MySQL, further configuration can be done through the in-game commands.
+  Storage-Method: config
+  # MySQL database login information.
+  MySQL-Username: "root"
+  MySQL-Password: "password"
+  MySQL-Host: "localhost:3306"
+  MySQL-Database: "Ranks"
+  # Commands that players are able to run when banned.
+  Ban-Allowed-Commands:
+    - "register"
+  # Commands that are blocked when a player is muted.
+  Mute-Blocked-Commands:
+    - "me"
 
 # Connection messages.
 # Leave blank to disable connection messages.

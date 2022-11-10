@@ -20,7 +20,7 @@ public class SpawnCommand extends CommandBase {
         setName("spawn");
         setDescription("Teleports a player to the spawn location");
         setUsage("/spawn");
-        setPermission("basics.commands.spawn");
+        setPermission("basics.command.spawn");
 
         this.plugin = plugin;
     }

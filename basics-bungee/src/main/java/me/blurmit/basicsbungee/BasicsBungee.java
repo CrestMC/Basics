@@ -2,8 +2,8 @@ package me.blurmit.basicsbungee;
 
 import me.blurmit.basicsbungee.command.ServerAliasCommand;
 import me.blurmit.basicsbungee.configuration.ConfigManager;
-import me.blurmit.basicsbungee.listener.PluginMessageListener;
 import me.blurmit.basicsbungee.listener.PlayerConnectionListener;
+import me.blurmit.basicsbungee.listener.PluginMessageListener;
 import me.blurmit.basicsbungee.placeholder.PlayerPlaceholder;
 import net.md_5.bungee.api.plugin.Plugin;
 

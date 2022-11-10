@@ -24,7 +24,7 @@ public class MessageCommand extends CommandBase {
         setName("message");
         setDescription("Sends a player a message");
         setUsage("/message <player> <message>");
-        setPermission("basics.commands.message");
+        setPermission("basics.command.message");
         setAliases(Arrays.asList("msg", "tell", "whisper", "w"));
 
         this.plugin = plugin;

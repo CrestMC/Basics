@@ -23,7 +23,7 @@ public class RankCommand extends CommandBase {
         super(plugin.getName());
         setName("rank");
         setDescription("Gives a player a rank!");
-        setPermission("basics.commands.rank");
+        setPermission("basics.command.rank");
 
         this.plugin = plugin;
         this.subCommands = new HashMap<>();

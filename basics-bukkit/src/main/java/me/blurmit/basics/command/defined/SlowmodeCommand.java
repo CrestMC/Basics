@@ -28,7 +28,7 @@ public class SlowmodeCommand extends CommandBase implements Listener {
         setDescription("Sets the chat cooldown to a specified amount of seconds");
         setUsage("/slowmode <time>");
         setAliases(Arrays.asList("chatcooldown", "slowchat"));
-        setPermission("basics.commands.slowmode");
+        setPermission("basics.command.slowmode");
 
         this.plugin = plugin;
         this.cooldown = plugin.getConfigManager().getConfig().getLong("Slowmode-Delay");

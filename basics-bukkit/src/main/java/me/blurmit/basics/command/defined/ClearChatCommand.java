@@ -21,7 +21,7 @@ public class ClearChatCommand extends CommandBase {
         setDescription("Echo a message back to the sender");
         setAliases(Collections.singletonList("chatclear"));
         setUsage("/clearchat");
-        setPermission("basics.commands.clearchat");
+        setPermission("basics.command.clearchat");
 
         this.plugin = plugin;
     }

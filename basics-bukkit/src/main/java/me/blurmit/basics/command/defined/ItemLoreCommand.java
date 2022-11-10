@@ -24,7 +24,7 @@ public class ItemLoreCommand extends CommandBase {
         setName("itemlore");
         setDescription("Changes the lore of an item");
         setUsage("/itemlore <add|set|clear> [line number] [lore]");
-        setPermission("basics.commands.itemlore");
+        setPermission("basics.command.itemlore");
 
         this.plugin = plugin;
     }

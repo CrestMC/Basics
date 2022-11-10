@@ -19,7 +19,7 @@ public class EchoCommand extends CommandBase {
         setName("echo");
         setDescription("Echo a message back to the sender");
         setUsage("/echo <message>");
-        setPermission("basics.commands.echo");
+        setPermission("basics.command.echo");
 
         this.plugin = plugin;
     }

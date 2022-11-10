@@ -22,7 +22,7 @@ public class GamemodeCommand extends CommandBase {
         setDescription("Changes the gamemode of a player");
         setAliases(Collections.singletonList("gm"));
         setUsage("/gamemode <gamemode> [player]");
-        setPermission("basics.commands.gamemode");
+        setPermission("basics.command.gamemode");
 
         this.plugin = plugin;
     }
@@ -35,7 +35,7 @@ public class GamemodeCommand extends CommandBase {
         }
 
         if (args.length == 2) {
-            if (!sender.hasPermission("basics.commands.gamemode.other")) {
+            if (!sender.hasPermission("basics.command.gamemode.other")) {
                 sender.sendMessage(Placeholders.parsePlaceholder(Messages.NO_PERMISSION_SUBCOMMAND + "", sender, this, args));
                 return true;
             }

@@ -1,6 +1,7 @@
 package me.blurmit.basics.util.lang;
 
 import me.blurmit.basics.Basics;
+import me.blurmit.basics.util.placeholder.Placeholders;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -549,6 +550,188 @@ public enum Messages {
         @Override
         public String toString() {
             return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("list-message");
+        }
+    },
+
+    FROZEN_MESSAGE() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("frozen.message");
+        }
+    },
+
+    COMMAND_NOT_ALLOWED_BANNED() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("ban.command-not-allowed");
+        }
+    },
+
+    COMMAND_NOT_ALLOWED_MUTED() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("mute.command-not-allowed");
+        }
+    },
+
+    CANT_USE_CHAT_MUTED() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("mute.cant-chat");
+        }
+    },
+
+    CANT_USE_CHAT_BANNED() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("ban.cant-chat");
+        }
+    },
+
+    KICK_MESSAGE() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("kick.message");
+        }
+    },
+
+    KICK_ALERT() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("kick.alert");
+        }
+    },
+
+    BAN_TEMPORARY() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("ban.temporary");
+        }
+    },
+
+    BAN_PERMANENT() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("ban.permanent");
+        }
+    },
+
+    BAN_PERMANENT_ALERT() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("ban.permanent-alert");
+        }
+    },
+
+    BAN_TEMPORARY_ALERT() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("ban.temporary-alert");
+        }
+    },
+
+    NOT_BANNED() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("ban.not-banned");
+        }
+    },
+
+    BLACKLIST_TEMPORARY() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("blacklist.temporary");
+        }
+    },
+
+    BLACKLIST_PERMANENT() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("blacklist.permanent");
+        }
+    },
+
+    BLACKLIST_PERMANENT_ALERT() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("blacklist.permanent-alert");
+        }
+    },
+
+    BLACKLIST_TEMPORARY_ALERT() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("blacklist.temporary-alert");
+        }
+    },
+
+    MUTE_TEMPORARY() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("mute.temporary");
+        }
+    },
+
+    MUTE_PERMANENT() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("mute.permanent");
+        }
+    },
+
+    MUTE_PERMANENT_ALERT() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("mute.permanent-alert");
+        }
+    },
+
+    MUTE_TEMPORARY_ALERT() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("mute.temporary-alert");
+        }
+    },
+
+    NOT_MUTED() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("mute.not-muted");
+        }
+    },
+
+    PARDON_MESSAGE() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("pardon-message");
+        }
+    },
+
+    PUNISHMENT_HOVER() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("punishment-hover");
+        }
+    },
+
+    PUNISHMENT_SILENT_PREFIX() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("punishment-silent-prefix");
+        }
+    },
+
+    PUNISHMENT_MESSAGE() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("punishment-message");
+        }
+    },
+
+    CONSOLE_NAME() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("console-name");
         }
     },
 

@@ -17,7 +17,7 @@ public class WalkSpeedCommand extends CommandBase {
         setName("walkspeed");
         setDescription("Changes the walk speed of a player");
         setUsage("/walkspeed <number> [player]");
-        setPermission("basics.commands.walkspeed");
+        setPermission("basics.command.walkspeed");
 
         this.plugin = plugin;
     }
@@ -30,7 +30,7 @@ public class WalkSpeedCommand extends CommandBase {
         }
 
         if (args.length == 2) {
-            if (!sender.hasPermission("basics.commands.walkspeed.other")) {
+            if (!sender.hasPermission("basics.command.walkspeed.other")) {
                 sender.sendMessage(Placeholders.parsePlaceholder(Messages.NO_PERMISSION_SUBCOMMAND + "", sender, this, args));
                 return true;
             }

@@ -31,7 +31,7 @@ public class CreateWorldCommand extends CommandBase {
         setDescription("Creates a world");
         setAliases(Arrays.asList("worldcreate", "makeworld"));
         setUsage("/createworld <name> [type] [gen structures] [seed]");
-        setPermission("basics.commands.createworld");
+        setPermission("basics.command.createworld");
 
         this.worldName = "newWorld";
         this.worldType = WorldType.NORMAL;

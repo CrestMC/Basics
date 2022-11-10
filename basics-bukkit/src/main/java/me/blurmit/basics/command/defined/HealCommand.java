@@ -22,7 +22,7 @@ public class HealCommand extends CommandBase {
         setDescription("Heal yourself or another player");
         setAliases(Collections.singletonList("healme"));
         setUsage("/heal [player]");
-        setPermission("basics.commands.heal");
+        setPermission("basics.command.heal");
 
         this.plugin = plugin;
     }
