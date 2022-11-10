@@ -57,16 +57,20 @@ public class BlacklistCommand extends CommandBase {
             UUID uuid;
 
             if (target != null) {
-                targetName = target.getName();
                 uuid = target.getUniqueId();
             } else {
                 uuid = UUIDs.synchronouslyRetrieveUUID(finalArgs[0]);
-                targetName = UUIDs.synchronouslyGetNameFromUUID(uuid);
             }
 
             if (uuid == null) {
                 sender.sendMessage(Placeholders.parsePlaceholder(Messages.ACCOUNT_DOESNT_EXIST + "", true, finalArgs[0]));
                 return;
+            }
+
+            if (target != null) {
+                targetName = target.getName();
+            }  else {
+                targetName = UUIDs.synchronouslyGetNameFromUUID(uuid);
             }
 
             targetName = plugin.getRankManager().getHighestRankByPriority(uuid).getColor() + targetName;

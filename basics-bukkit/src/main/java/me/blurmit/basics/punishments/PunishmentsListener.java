@@ -32,7 +32,7 @@ public class PunishmentsListener implements Listener {
         }, 20);
 
         if (plugin.getPunishmentManager().isMuted(event.getUniqueId())) {
-            plugin.getPunishmentManager().getBannedPlayers().add(event.getUniqueId());
+            plugin.getPunishmentManager().getMutedPlayers().add(event.getUniqueId());
         }
     }
 
@@ -63,6 +63,7 @@ public class PunishmentsListener implements Listener {
         if (plugin.getPunishmentManager().getMutedPlayers().contains(event.getPlayer().getUniqueId())) {
             event.getPlayer().sendMessage(Placeholders.parsePlaceholder(Messages.CANT_USE_CHAT_MUTED + ""));
             event.setCancelled(true);
+            return;
         }
 
         if (plugin.getPunishmentManager().getBannedPlayers().contains(event.getPlayer().getUniqueId())) {
