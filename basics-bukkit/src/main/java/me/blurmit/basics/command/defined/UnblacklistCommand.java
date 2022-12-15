@@ -15,16 +15,17 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class MuteCommand extends CommandBase {
+public class UnblacklistCommand extends CommandBase {
 
     private final Basics plugin;
 
-    public MuteCommand(Basics plugin) {
+    public UnblacklistCommand(Basics plugin) {
         super(plugin.getName());
-        setName("mute");
-        setDescription("Prevents a player from speaking in chat");
-        setUsage("/mute [-s] <player> <reason>");
-        setPermission("basics.command.mute");
+        setName("unblacklist");
+        setDescription("Unblacklists a player");
+        setUsage("/unblacklist [-s] <player> <reason>");
+        setPermission("basics.command.unblacklist");
+        setAliases(Arrays.asList("unipban", "pardonip", "unipban", "removeipban"));
 
         this.plugin = plugin;
     }
@@ -73,24 +74,23 @@ public class MuteCommand extends CommandBase {
                 targetName = UUIDs.synchronouslyGetNameFromUUID(uuid);
             }
 
+            if (!plugin.getPunishmentManager().isBlacklisted(uuid)) {
+                sender.sendMessage(Placeholders.parsePlaceholder(Messages.NOT_BLACKLISTED + "", true, finalArgs[0]));
+                return;
+            }
+
             targetName = plugin.getRankManager().getHighestRankByPriority(uuid).getColor() + targetName;
             String reason = String.join(" ", Arrays.copyOfRange(finalArgs, 1, finalArgs.length));
 
-            if (target != null) {
-                target.sendMessage(Placeholders.parsePlaceholder(Messages.MUTE_PERMANENT_ALERT + "", true, reason, "never"));
-            }
+            plugin.getPunishmentManager().getBannedPlayers().remove(uuid);
+            sender.sendMessage(Placeholders.parsePlaceholder(Messages.PUNISHMENT_MESSAGE + "", true, "unblacklisted", targetName, reason));
 
-            plugin.getPunishmentManager().getMutedPlayers().add(uuid);
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.PUNISHMENT_MESSAGE + "", true, "muted", targetName, reason));
-
-            plugin.getPunishmentManager().storeMute(
-                    uuid,
+            plugin.getPunishmentManager().storeUnblacklist(
+                    "0.0.0.0",
                     (sender instanceof Player) ? ((Player) sender).getUniqueId() : null,
-                    -1,
-                    plugin.getConfigManager().getConfig().getString("Server-Name.Default-Value"),
                     reason
             );
-            plugin.getPunishmentManager().broadcastPunishment(sender, targetName, PunishmentType.PERM_MUTE, reason, silent.get());
+            plugin.getPunishmentManager().broadcastPardon(sender, targetName, PunishmentType.UNBLACKLIST, reason, silent.get());
         });
 
         return true;

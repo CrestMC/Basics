@@ -4,15 +4,20 @@ import me.blurmit.basics.Basics;
 import me.blurmit.basics.command.CommandBase;
 import me.blurmit.basics.command.defined.SubCommand;
 import me.blurmit.basics.command.defined.rank.subcommands.*;
+import me.blurmit.basics.rank.Rank;
 import me.blurmit.basics.util.lang.Messages;
 import me.blurmit.basics.util.placeholder.Placeholders;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class RankCommand extends CommandBase {
 
@@ -24,6 +29,7 @@ public class RankCommand extends CommandBase {
         setName("rank");
         setDescription("Gives a player a rank!");
         setPermission("basics.command.rank");
+        setTabCompleter(this);
 
         this.plugin = plugin;
         this.subCommands = new HashMap<>();
@@ -67,6 +73,25 @@ public class RankCommand extends CommandBase {
 
         subCommand.execute(sender, this, args);
         return true;
+    }
+
+    @Nullable
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
+        if (args.length < 2) {
+            return (List<String>) subCommands.keySet();
+        }
+
+        if (args.length == 2) {
+            return (List<String>) plugin.getRankManager().getStorage().getRanks().stream().map(Rank::getName).collect(Collectors.toSet());
+        }
+
+        if (args.length < 4) {
+            return subCommands.get(args[0]).getTabCompletion();
+        }
+
+        return null;
     }
 
 }

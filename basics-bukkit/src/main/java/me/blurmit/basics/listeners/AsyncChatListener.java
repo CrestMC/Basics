@@ -18,15 +18,14 @@ public class AsyncChatListener implements Listener {
     }
 
     @EventHandler
-    public void onChat(AsyncPlayerChatEvent event) {
-        String chatFormat = plugin.getConfigManager().getConfig().getString("Chat-Format");
-        String chatMessage = event.getMessage();
+    public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
+        String format = plugin.getConfigManager().getConfig().getString("Chat-Format");
 
         if (event.getPlayer().hasPermission("basics.chat.colors")) {
-            event.setMessage(ChatColor.translateAlternateColorCodes('&', chatMessage));
+            event.setMessage(ChatColor.translateAlternateColorCodes('&', event.getMessage()));
         }
 
-        event.setFormat(Placeholders.parsePlaceholder(chatFormat, event.getPlayer(), event.isAsynchronous()));
+        event.setFormat(Placeholders.parsePlaceholder(format, event.getPlayer(), event.isAsynchronous()));
 
     }
 

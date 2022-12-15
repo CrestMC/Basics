@@ -59,6 +59,10 @@ Punishments:
   MySQL-Password: "password"
   MySQL-Host: "localhost:3306"
   MySQL-Database: "Ranks"
+
+  # Weather you should allow players to join while banned.
+  # If this is set to true, players will be able to join the server, but not execute and commands or use chat.
+  Ban-Allow-Join: false
   # Commands that players are able to run when banned.
   Ban-Allowed-Commands:
     - "register"
@@ -82,8 +86,8 @@ MOTD:
   - "&7&m                                                &r"
 
 # The current chat format
-# %s pertains to the player name and/or message.
-Chat-Format: "{player-rank-prefix}%s &7» &f%s"
+# %s pertains to the chat message.
+Chat-Format: "{player-name} &7» &f%2$s"
 
 # The stored slow-mode delay.
 # Do not mess with this option unless you know what you are doing.

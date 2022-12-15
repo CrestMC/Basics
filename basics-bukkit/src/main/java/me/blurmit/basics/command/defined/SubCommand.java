@@ -1,8 +1,12 @@
 package me.blurmit.basics.command.defined;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public abstract class SubCommand {
 
@@ -32,6 +36,10 @@ public abstract class SubCommand {
      * @param args All arguments passed to the command, split via ' '
      */
     public abstract void execute(CommandSender sender, Command command, String[] args);
+
+    public List<String> getTabCompletion() {
+        return null;
+    }
 
     /**
      *

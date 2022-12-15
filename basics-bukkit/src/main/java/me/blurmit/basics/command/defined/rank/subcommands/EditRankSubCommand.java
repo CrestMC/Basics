@@ -1,5 +1,6 @@
 package me.blurmit.basics.command.defined.rank.subcommands;
 
+import com.google.common.collect.Maps;
 import me.blurmit.basics.Basics;
 import me.blurmit.basics.command.defined.SubCommand;
 import me.blurmit.basics.rank.Rank;
@@ -9,6 +10,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class EditRankSubCommand extends SubCommand {
 
@@ -155,6 +159,11 @@ public class EditRankSubCommand extends SubCommand {
                     "\n&c  - Sets the priority of a rank"));
             }
         }
+    }
+
+    @Override
+    public List<String> getTabCompletion() {
+        return Arrays.asList("addpermission", "removepermission", "setprefix", "setsuffix", "setdefault", "setdisplayname", "setcolor", "setpriority");
     }
 
 }

@@ -25,6 +25,13 @@ public enum PunishmentType {
         }
     },
 
+    UNBLACKLIST() {
+        @Override
+        public Messages message() {
+            return Messages.PARDON_MESSAGE;
+        }
+    },
+
     PERM_BAN() {
         @Override
         public Messages message() {

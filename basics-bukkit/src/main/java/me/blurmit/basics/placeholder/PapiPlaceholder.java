@@ -2,6 +2,7 @@ package me.blurmit.basics.placeholder;
 
 import me.blurmit.basics.Basics;
 import me.blurmit.basics.events.PlaceholderRequestEvent;
+import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -17,11 +18,12 @@ public class PapiPlaceholder implements Listener {
 
     @EventHandler
     public void onPlaceholderRequest(PlaceholderRequestEvent event) {
-        String placeholder = event.getPlaceholder().toLowerCase();
+        String placeholder = event.getPlaceholder();
+        String modifiedPlaceholder = "%" + placeholder.replaceFirst("papi-", "") + "%";
 
         if (placeholder.startsWith("papi-")) {
             try {
-                event.setResponse("Papi Test");
+                event.setResponse(PlaceholderAPI.setPlaceholders(event.getPlayer(), modifiedPlaceholder));
             } catch (Exception e) {
                 event.setResponse("");
             }

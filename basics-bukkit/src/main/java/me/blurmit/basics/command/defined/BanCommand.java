@@ -6,6 +6,7 @@ import me.blurmit.basics.punishments.PunishmentType;
 import me.blurmit.basics.util.UUIDs;
 import me.blurmit.basics.util.lang.Messages;
 import me.blurmit.basics.util.placeholder.Placeholders;
+import me.blurmit.basics.util.pluginmessage.PluginMessageHelper;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -46,7 +47,7 @@ public class BanCommand extends CommandBase {
 
         final String[] finalArgs = arguments.get();
 
-        if (args.length < 2) {
+        if (finalArgs.length < 2) {
             sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_ARGS + "", sender, this, args));
             return true;
         }
@@ -60,11 +61,11 @@ public class BanCommand extends CommandBase {
                 uuid = target.getUniqueId();
             } else {
                 uuid = UUIDs.synchronouslyRetrieveUUID(finalArgs[0]);
-            }
 
-            if (uuid == null) {
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.ACCOUNT_DOESNT_EXIST + "", true, finalArgs[0]));
-                return;
+                if (uuid == null) {
+                    sender.sendMessage(Placeholders.parsePlaceholder(Messages.ACCOUNT_DOESNT_EXIST + "", true, finalArgs[0]));
+                    return;
+                }
             }
 
             if (target != null) {
@@ -73,8 +74,11 @@ public class BanCommand extends CommandBase {
                 targetName = UUIDs.synchronouslyGetNameFromUUID(uuid);
             }
 
+            String name = targetName;
             targetName = plugin.getRankManager().getHighestRankByPriority(uuid).getColor() + targetName;
             String reason = String.join(" ", Arrays.copyOfRange(finalArgs, 1, finalArgs.length));
+
+            PluginMessageHelper.sendData("BungeeCord", "KickPlayer", name, Placeholders.parsePlaceholder(Messages.BAN_PERMANENT_ALERT + "", true, reason, "never"));
 
             if (target != null) {
                 plugin.getServer().getScheduler().runTask(plugin, () -> {

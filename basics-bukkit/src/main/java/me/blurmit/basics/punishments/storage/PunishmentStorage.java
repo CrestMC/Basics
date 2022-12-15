@@ -10,8 +10,6 @@ import org.bukkit.entity.Player;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 public class PunishmentStorage {
@@ -23,10 +21,10 @@ public class PunishmentStorage {
     @Getter
     private StorageType type;
 
-    private static final String CREATE_BANS_TABLE = "CREATE TABLE IF NOT EXISTS `basics_bans` (`id` INT NOT NULL PRIMARY KEY AUTO_INCREMENT`, uuid` CHAR(36) NOT NULL, `moderator_uuid` CHAR(36), `punished_at` bigint(20) NOT NULL, `expires_at` bigint(20) NOT NULL, `server` VARCHAR(256) NOT NULL, `reason` VARCHAR(256))";
-    private static final String CREATE_BLACKLISTS_TABLE = "CREATE TABLE IF NOT EXISTS `basics_blacklists` (`id` INT NOT NULL PRIMARY KEY AUTO_INCREMENT`, `uuid` CHAR(36) NOT NULL, `ip` VARCHAR(45) NOT NULL, `moderator_uuid` CHAR(36), `punished_at` bigint(20) NOT NULL, `expires_at` bigint(20) NOT NULL, `server` VARCHAR(256) NOT NULL, `reason` VARCHAR(256))";
-    private static final String CREATE_MUTES_TABLE = "CREATE TABLE IF NOT EXISTS `basics_mutes` (`id` INT NOT NULL PRIMARY KEY AUTO_INCREMENT`, `uuid` CHAR(36) NOT NULL, `moderator_uuid` CHAR(36), `punished_at` bigint(20) NOT NULL, `expires_at` bigint(20) NOT NULL, `server` VARCHAR(256) NOT NULL, `reason` VARCHAR(256))";
-    private static final String CREATE_HISTORY_TABLE = "CREATE TABLE IF NOT EXISTS `basics_history` (`id` INT NOT NULL PRIMARY KEY AUTO_INCREMENT`, `punishment`, VARCHAR(15), `uuid` CHAR(36) NOT NULL, `moderator_uuid` CHAR(36), `punished_at` bigint(20) NOT NULL, `expires_at` bigint(20) NOT NULL, `server` VARCHAR(256) NOT NULL, `reason` VARCHAR(256) NOT NULL)";
+    private static final String CREATE_BANS_TABLE = "CREATE TABLE IF NOT EXISTS `basics_bans` (`id` INT NOT NULL PRIMARY KEY AUTO_INCREMENT, `uuid` CHAR(36) NOT NULL, `moderator_uuid` CHAR(36), `punished_at` bigint(20) NOT NULL, `expires_at` bigint(20) NOT NULL, `server` VARCHAR(256) NOT NULL, `reason` VARCHAR(256) NOT NULL)";
+    private static final String CREATE_BLACKLISTS_TABLE = "CREATE TABLE IF NOT EXISTS `basics_blacklists` (`id` INT NOT NULL PRIMARY KEY AUTO_INCREMENT, `uuid` CHAR(36) NOT NULL, `ip` VARCHAR(45) NOT NULL, `moderator_uuid` CHAR(36), `punished_at` bigint(20) NOT NULL, `expires_at` bigint(20) NOT NULL, `server` VARCHAR(256) NOT NULL, `reason` VARCHAR(256))";
+    private static final String CREATE_MUTES_TABLE = "CREATE TABLE IF NOT EXISTS `basics_mutes` (`id` INT NOT NULL PRIMARY KEY AUTO_INCREMENT, `uuid` CHAR(36) NOT NULL, `moderator_uuid` CHAR(36), `punished_at` bigint(20) NOT NULL, `expires_at` bigint(20) NOT NULL, `server` VARCHAR(256) NOT NULL, `reason` VARCHAR(256))";
+    private static final String CREATE_HISTORY_TABLE = "CREATE TABLE IF NOT EXISTS `basics_history` (`id` INT NOT NULL PRIMARY KEY AUTO_INCREMENT, `punishment` VARCHAR(15) NOT NULL, `uuid` CHAR(36) NOT NULL, `moderator_uuid` CHAR(36), `punished_at` bigint(20) NOT NULL, `expires_at` bigint(20) NOT NULL, `server` VARCHAR(256) NOT NULL, `reason` VARCHAR(256) NOT NULL)";
 
     public PunishmentStorage(Basics plugin) {
         this.plugin = plugin;
@@ -76,7 +74,7 @@ public class PunishmentStorage {
                     ResultSet results = queryStatement.executeQuery();
                     if (results.next()) {
                         String reason = results.getString("reason");
-                        long until = results.getLong("until");
+                        long until = results.getLong("expires_at");
 
                         if (until == -1) {
                             player.kickPlayer(Placeholders.parsePlaceholder(Messages.BAN_PERMANENT_ALERT + "", reason, "never"));
@@ -103,7 +101,7 @@ public class PunishmentStorage {
                     ResultSet results = queryStatement.executeQuery();
                     if (results.next()) {
                         String reason = results.getString("reason");
-                        long until = results.getLong("until");
+                        long until = results.getLong("expires_at");
 
                         if (until == -1) {
                             player.sendMessage(Placeholders.parsePlaceholder(Messages.MUTE_PERMANENT_ALERT + "", reason, "never"));
@@ -131,7 +129,7 @@ public class PunishmentStorage {
                     if (results.next()) {
                         String ip = results.getString("ip");
                         String reason = results.getString("reason");
-                        long until = results.getLong("until");
+                        long until = results.getLong("expires_at");
 
                         if (until == -1) {
                             for (Player onlinePlayer : plugin.getServer().getOnlinePlayers()) {

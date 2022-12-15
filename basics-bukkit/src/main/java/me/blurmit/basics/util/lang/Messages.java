@@ -1,7 +1,6 @@
 package me.blurmit.basics.util.lang;
 
 import me.blurmit.basics.Basics;
-import me.blurmit.basics.util.placeholder.Placeholders;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -728,10 +727,52 @@ public enum Messages {
         }
     },
 
+    BAN_PERMANENT_JOIN() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("ban.permanent-join");
+        }
+    },
+
+    BAN_TEMPORARY_JOIN() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("ban.temporary-join");
+        }
+    },
+
+    BLACKLIST_PERMANENT_JOIN() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("blacklist.permanent-join");
+        }
+    },
+
+    BLACKLIST_TEMPORARY_JOIN() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("blacklist.temporary-join");
+        }
+    },
+
+    NOT_BLACKLISTED() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("blacklist.not-blacklisted");
+        }
+    },
+
     CONSOLE_NAME() {
         @Override
         public String toString() {
             return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("console-name");
+        }
+    },
+
+    SKIN_SET() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("skin-set");
         }
     },
 

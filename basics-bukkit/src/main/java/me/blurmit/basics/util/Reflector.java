@@ -91,6 +91,14 @@ public class Reflector {
         }
     }
 
+    public static String getNMSName(String name) throws ClassNotFoundException {
+        return "net.minecraft.server" + SERVER_PACKAGE_VERSION + name;
+    }
+
+    public static Class<?> getNMSClass(String name) throws ClassNotFoundException {
+        return Class.forName(getNMSName(name));
+    }
+
     public static String getOBCName(String name) throws ClassNotFoundException {
         return "org.bukkit.craftbukkit" + SERVER_PACKAGE_VERSION + name;
     }

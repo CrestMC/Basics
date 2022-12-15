@@ -1,5 +1,8 @@
 package me.blurmit.basicsbungee.listener;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
+import io.netty.buffer.Unpooled;
 import me.blurmit.basicsbungee.BasicsBungee;
 import me.blurmit.basicsbungee.util.pluginmessage.PluginMessageHelper;
 import net.md_5.bungee.api.ChatColor;
@@ -7,6 +10,8 @@ import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+import net.md_5.bungee.protocol.DefinedPacket;
+import net.md_5.bungee.protocol.packet.PluginMessage;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInput;
@@ -28,6 +33,24 @@ public class PluginMessageListener implements Listener {
 
     @EventHandler
     public void onPluginMessage(PluginMessageEvent event) {
+        if (event.getTag().equals("minecraft:brand") || event.getTag().equals("MC|Brand")) {
+            PluginMessage pluginMessage = new PluginMessage();
+            pluginMessage.setTag(event.getTag());
+
+            ByteBuf brand = Unpooled.wrappedBuffer(event.getData());
+            String serverBrand = DefinedPacket.readString( brand );
+            brand.release();
+
+            brand = ByteBufAllocator.DEFAULT.heapBuffer();
+            DefinedPacket.writeString(plugin.getConfigManager().getConfig().getString("Server-Brand"), brand);
+            pluginMessage.setData(DefinedPacket.toArray(brand));
+            brand.release();
+
+            event.getSender().unsafe().sendPacket(pluginMessage);
+            event.setCancelled(true);
+            return;
+        }
+
         if (!event.getTag().equals("BungeeCord")) {
             return;
         }

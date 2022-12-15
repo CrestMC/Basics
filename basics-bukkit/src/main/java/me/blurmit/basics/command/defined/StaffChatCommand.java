@@ -64,11 +64,11 @@ public class StaffChatCommand extends CommandBase implements Listener, PluginMes
         String format = Placeholders.parsePlaceholder(plugin.getConfigManager().getConfig().getString("StaffChat.Format"), player, this, null, null, false, server, player.getName(), message);
 
         PluginMessageHelper.sendData("BungeeCord", "Staff-Chat", server, player.getName(), message);
-        plugin.getServer().broadcast(format, "basics.staffchat");
+        broadcast(format);
         return true;
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
         if (!event.getPlayer().hasPermission("basics.staffchat")) {
             return;
@@ -91,7 +91,7 @@ public class StaffChatCommand extends CommandBase implements Listener, PluginMes
         String format = Placeholders.parsePlaceholder(plugin.getConfigManager().getConfig().getString("StaffChat.Format"), event.getPlayer(), this, null, null, event.isAsynchronous(), server, event.getPlayer().getName(), event.getMessage());
 
         PluginMessageHelper.sendData("BungeeCord", "Staff-Chat", server, event.getPlayer().getName(), event.getMessage());
-        plugin.getServer().broadcast(format, "basics.staffchat");
+        broadcast(format);
     }
 
     @Override
@@ -112,7 +112,7 @@ public class StaffChatCommand extends CommandBase implements Listener, PluginMes
                 UUIDs.retrieveUUID(playerName, uuid -> {
                     plugin.getRankManager().getHighestRankByPriority(uuid, rank -> {
                         String format = Placeholders.parsePlaceholder(plugin.getConfigManager().getConfig().getString("StaffChat.Format"), true, server, rank.getColor() + playerName, msg);
-                        plugin.getServer().broadcast(format, "basics.staffchat");
+                        broadcast(format);
                     });
                 });
                 break;
@@ -124,7 +124,7 @@ public class StaffChatCommand extends CommandBase implements Listener, PluginMes
                 UUIDs.retrieveUUID(playerName, uuid -> {
                     plugin.getRankManager().getHighestRankByPriority(uuid, rank -> {
                         String format = Placeholders.parsePlaceholder(plugin.getConfigManager().getConfig().getString("StaffChat.Connect"), true, rank.getColor() + playerName, server);
-                        plugin.getServer().broadcast(format, "basics.staffchat");
+                        broadcast(format);
                     });
                 });
                 break;
@@ -136,7 +136,7 @@ public class StaffChatCommand extends CommandBase implements Listener, PluginMes
                 UUIDs.retrieveUUID(playerName, uuid -> {
                     plugin.getRankManager().getHighestRankByPriority(uuid, rank -> {
                         String format = Placeholders.parsePlaceholder(plugin.getConfigManager().getConfig().getString("StaffChat.Disconnect"), true, rank.getColor() + playerName, server);
-                        plugin.getServer().broadcast(format, "basics.staffchat");
+                        broadcast(format);
                     });
                 });
                 break;
@@ -149,11 +149,16 @@ public class StaffChatCommand extends CommandBase implements Listener, PluginMes
                 UUIDs.retrieveUUID(playerName, uuid -> {
                     plugin.getRankManager().getHighestRankByPriority(uuid, rank -> {
                         String format = Placeholders.parsePlaceholder(plugin.getConfigManager().getConfig().getString("StaffChat.Switch"), true, rank.getColor() + playerName, newServer, originalServer);
-                        plugin.getServer().broadcast(format, "basics.staffchat");
+                        broadcast(format);
                     });
                 });
             }
         }
+    }
+    
+    private void broadcast(String message) {
+        plugin.getServer().getLogger().info(message);
+        plugin.getServer().getOnlinePlayers().stream().filter(player -> player.hasPermission("basics.staffchat")).forEach(player -> player.sendMessage(message));
     }
 
 }

@@ -5,7 +5,9 @@ import lombok.SneakyThrows;
 import me.blurmit.basics.Basics;
 import me.blurmit.basics.database.StorageType;
 import me.blurmit.basics.rank.storage.RankStorage;
+import me.blurmit.basics.rank.team.TeamManager;
 import me.blurmit.basics.util.Reflector;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissibleBase;
@@ -27,14 +29,16 @@ public class RankManager {
 
     @Getter
     private final RankStorage storage;
+    @Getter
+    private final TeamManager teamManager;
     private RankListener listener;
-
     @Getter
     private final Map<UUID, PermissionAttachment> activeAttachments;
 
     public RankManager(Basics plugin) {
         this.plugin = plugin;
         this.storage = new RankStorage(plugin);
+        this.teamManager = new TeamManager(plugin);
         this.listener = new RankListener(plugin);
         this.activeAttachments = new HashMap<>();
     }
@@ -61,7 +65,6 @@ public class RankManager {
         return defaultRank;
     }
 
-    @Nullable
     public Rank getHighestRankByPriority(Player player) {
         storage.getOwnedRanks().computeIfAbsent(player.getUniqueId(), id -> new HashSet<>());
 
@@ -219,6 +222,10 @@ public class RankManager {
         return groups;
     }
 
+    public String getRankColor(Player player) {
+        return ChatColor.translateAlternateColorCodes('&', getHighestRankByPriority(player).getColor());
+    }
+
     public Rank createRank(String name) {
         if (storage.getRanks().contains(getRankByName(name))) {
             return getRankByName(name);
@@ -276,6 +283,7 @@ public class RankManager {
         if (user != null) {
             storage.getOwnedRanks().computeIfAbsent(user.getUniqueId(), id -> new HashSet<>()).add(rank);
             getActiveAttachments().replace(user.getUniqueId(), loadPermissions(user));
+            teamManager.addPlayerToRankTeam(user, rank);
         }
 
         if (storage.getType().equals(StorageType.MYSQL)) {
@@ -296,8 +304,6 @@ public class RankManager {
             plugin.getConfigManager().getRanksConfig().set("Groups." + rank.toLowerCase() + ".members", member);
             plugin.getConfigManager().saveRanksConfig();
         }
-
-
     }
 
     public void revokeRank(String rank, String player) {
@@ -322,6 +328,11 @@ public class RankManager {
                 statement.setString(1, rank);
                 statement.setString(2, player);
                 statement.execute();
+
+                if (target != null) {
+                    teamManager.removePlayerFromRankTeam(target, rank);
+                    teamManager.addPlayerToRankTeam(target, getHighestRankByPriority(target).getName());
+                }
             });
         } else {
             List<String> member = plugin.getConfigManager().getRanksConfig().getStringList("Groups." + rank + ".members");
@@ -329,6 +340,11 @@ public class RankManager {
 
             plugin.getConfigManager().getRanksConfig().set("Groups." + rank + ".members", member);
             plugin.getConfigManager().saveRanksConfig();
+
+            if (target != null) {
+                teamManager.removePlayerFromRankTeam(target, rank);
+                teamManager.addPlayerToRankTeam(target, getHighestRankByPriority(target).getName());
+            }
         }
     }
 
@@ -639,26 +655,30 @@ public class RankManager {
         });
     }
 
-    public void loadRankData(UUID uuid) {
-        storage.getOwnedRanks().computeIfAbsent(uuid, id -> new HashSet<>());
-        storage.getRanks().stream().filter(Rank::isDefault).forEach(rank -> storage.getOwnedRanks().get(uuid).add(rank.getName()));
+    public void loadRankData(Player player) {
+        storage.getOwnedRanks().computeIfAbsent(player.getUniqueId(), id -> new HashSet<>());
+        storage.getRanks().stream().filter(Rank::isDefault).forEach(rank -> storage.getOwnedRanks().get(player.getUniqueId()).add(rank.getName()));
 
         if (storage.getType().equals(StorageType.MYSQL)) {
             storage.getDatabaseManager().useAsynchronousConnection(connection -> {
                 PreparedStatement statement = connection.prepareStatement("SELECT `rank` FROM `basics_rank_members` WHERE `member` = ?");
-                statement.setString(1, uuid.toString());
+                statement.setString(1, player.getUniqueId().toString());
                 ResultSet result = statement.executeQuery();
 
                 while (result.next()) {
-                    storage.getOwnedRanks().get(uuid).add(result.getString("rank"));
+                    storage.getOwnedRanks().get(player.getUniqueId()).add(result.getString("rank"));
                 }
+
+                teamManager.addPlayerToRankTeam(player, getHighestRankByPriority(player).getName());
             });
         } else {
             plugin.getConfigManager().getRanksConfig().getConfigurationSection("Groups").getValues(false).forEach((name, section) -> {
-                if (((ConfigurationSection) section).getStringList("members").contains(uuid.toString())) {
-                    storage.getOwnedRanks().get(uuid).add(name);
+                if (((ConfigurationSection) section).getStringList("members").contains(player.getUniqueId().toString())) {
+                    storage.getOwnedRanks().get(player.getUniqueId()).add(name);
                 }
             });
+
+            teamManager.removePlayerFromRankTeam(player, getHighestRankByPriority(player).getName());
         }
     }
 

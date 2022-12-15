@@ -72,8 +72,9 @@ rank-already-owned: "&c✖ &7That player already has the &c{replacement-0} &7ran
 rank-not-owned: "&c✖ &7That player does not have the &c{replacement-0} &7rank."
 rank-permission-not-owned: "&c✖ &7The &c{replacement-0} &7rank does not have the &c{replacement-1} &7permission."
 command-cooldown: "&c✖ &7You are on cooldown. Please wait &c{replacement-0} &7more seconds before using this command again."
+skin-set: "&a✔ &7Successfully set your skin to &a{replacement-0}&7."
 togglehunger:
-  toggled: "&7You have {replacement-0} &7hunger."
+  toggled: "&a✔ &7You have {replacement-0} &7hunger."
   enabled: "&aenabled"
   disabled: "&cdisabled"
 helpop-submitted: "&a✔ &7Your help request has been submitted."
@@ -143,9 +144,12 @@ ban:
     &r
     &aYou can appeal at &2https://www.example.com&a.
     &7&m------------------------------------------
+  permanent-join: "&cYou can't join this server as you are permanently banned."
+  temporary-join: "&cYou can't join this server as you are temporarily banned."
 blacklist:
   temporary: "&2{replacement-0} &ahas been temporarily blacklisted by &2{replacement-1} &afor &2{replacement-2}&a."
-  permanent: "&2{replacement-0} &ahas been permanently blacklisted by &2{replacement-1}&a."\
+  permanent: "&2{replacement-0} &ahas been permanently blacklisted by &2{replacement-1}&a."
+  not-blacklisted: "&2{replacement-0} &adoes not have an active blacklist."
   temporary-alert: |-
     &7&m------------------------------------------
     &aYou have been blacklisted for &2{replacement-0}&a.
@@ -160,3 +164,5 @@ blacklist:
     &r
     &aYou can appeal at &2https://www.example.com&a.
     &7&m------------------------------------------
+  permanent-join: "&cYou can't join this server as you are permanently blacklisted."
+  temporary-join: "&cYou can't join this server as you are temporarily blacklisted."

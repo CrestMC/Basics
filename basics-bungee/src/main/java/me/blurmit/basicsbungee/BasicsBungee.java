@@ -2,14 +2,19 @@ package me.blurmit.basicsbungee;
 
 import me.blurmit.basicsbungee.command.ServerAliasCommand;
 import me.blurmit.basicsbungee.configuration.ConfigManager;
+import me.blurmit.basicsbungee.limbo.LimboManager;
 import me.blurmit.basicsbungee.listener.PlayerConnectionListener;
 import me.blurmit.basicsbungee.listener.PluginMessageListener;
+import me.blurmit.basicsbungee.placeholder.CommandPlaceholder;
 import me.blurmit.basicsbungee.placeholder.PlayerPlaceholder;
 import net.md_5.bungee.api.plugin.Plugin;
 
 public final class BasicsBungee extends Plugin {
 
-    private static ConfigManager configManager;
+    private ConfigManager configManager;
+    private LimboManager limboManager;
+
+    private static BasicsBungee instance;
 
     @Override
     public void onEnable() {
@@ -24,23 +29,36 @@ public final class BasicsBungee extends Plugin {
             );
         });
 
+        getLogger().info("Loading limbo...");
+        this.limboManager = new LimboManager(this);
+
         getLogger().info("Registering listeners...");
         new PluginMessageListener(this);
         new PlayerConnectionListener(this);
 
         getLogger().info("Loading placeholders...");
         new PlayerPlaceholder(this);
+        new CommandPlaceholder(this);
 
+        instance = this;
         getLogger().info(getDescription().getName() + " has been enabled!");
     }
 
     @Override
     public void onDisable() {
-        getLogger().info(getDescription().getName() + " has been enabled!");
+        getLogger().info(getDescription().getName() + " has been disabled!");
     }
 
-    public static ConfigManager getConfigManager() {
+    public static BasicsBungee getInstance() {
+        return instance;
+    }
+
+    public ConfigManager getConfigManager() {
         return configManager;
+    }
+
+    public LimboManager getLimboManager() {
+        return limboManager;
     }
 
 }

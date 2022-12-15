@@ -9,6 +9,8 @@ Tablist:
     - '&fexample.com'
     - '&7&m                                      &r'
 
+Server-Brand: "vanilla"
+
 Server-Aliases:
   Lobby: "Lobby"
   Hub: "Lobby"

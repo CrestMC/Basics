@@ -4,14 +4,12 @@ import me.blurmit.basics.Basics;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class ScoreboardManager implements Listener {
 
@@ -49,17 +47,19 @@ public class ScoreboardManager implements Listener {
     }
 
     private void scheduleUpdate() {
-        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
-            boards.keySet().forEach(player -> boards.get(player).update(plugin.getServer().getPlayer(player)));
+        plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, () -> {
+            try {
+                boards.keySet().forEach(player -> boards.get(player).update(plugin.getServer().getPlayer(player)));
+            } catch (ConcurrentModificationException ignored) {}
         }, 0, 20L);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onJoin(PlayerJoinEvent event) {
         register(event.getPlayer());
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onQuit(PlayerQuitEvent event) {
         unregister(event.getPlayer());
     }

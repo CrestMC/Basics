@@ -4,7 +4,6 @@ import lombok.Getter;
 import me.blurmit.basics.Basics;
 import me.blurmit.basics.database.StorageType;
 import me.blurmit.basics.punishments.storage.PunishmentStorage;
-import me.blurmit.basics.util.UUIDs;
 import me.blurmit.basics.util.lang.Messages;
 import me.blurmit.basics.util.placeholder.Placeholders;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -58,9 +57,9 @@ public class PunishmentManager {
                 // Delete current ban from database if it exists.
                 ResultSet result = queryStatement.executeQuery();
                 while (result.next()) {
-                    PreparedStatement deleteStatement = connection.prepareStatement("DELETE * FROM `basics_bans` WHERE `uuid` = ?");
+                    PreparedStatement deleteStatement = connection.prepareStatement("DELETE FROM `basics_bans` WHERE `uuid` = ?");
                     deleteStatement.setString(1, player.toString());
-                    deleteStatement.executeQuery();
+                    deleteStatement.execute();
                 }
 
                 PreparedStatement banStatement = connection.prepareStatement("INSERT IGNORE INTO `basics_bans` (`uuid`, `moderator_uuid`, `punished_at`, `expires_at`, `server`, `reason`) VALUES (?, ?, ?, ?, ?, ?)");
@@ -102,7 +101,7 @@ public class PunishmentManager {
                     storeHistory(PunishmentType.UNBAN, uuid, moderator_uuid, results.getLong("punished_at"), System.currentTimeMillis(), server, reason);
                 }
 
-                PreparedStatement unbanStatement = connection.prepareStatement("DELETE * FROM `basics_bans` WHERE `uuid` = ?");
+                PreparedStatement unbanStatement = connection.prepareStatement("DELETE FROM `basics_bans` WHERE `uuid` = ?");
                 unbanStatement.setString(1, uuid.toString());
                 unbanStatement.execute();
             });
@@ -117,21 +116,54 @@ public class PunishmentManager {
         }
     }
 
+    public void storeUnblacklist(String ip, UUID moderator_uuid, String reason) {
+        String server = plugin.getConfigManager().getConfig().getString("Server-Name.Default-Value");
+
+        if (storage.getType().equals(StorageType.MYSQL)) {
+            storage.getDatabaseManager().useAsynchronousConnection(connection -> {
+                PreparedStatement queryStatement = connection.prepareStatement("SELECT * FROM `basics_blacklists` WHERE `ip` = ?");
+                queryStatement.setString(1, ip);
+
+                ResultSet results = queryStatement.executeQuery();
+                while (results.next()) {
+                    storeHistory(PunishmentType.UNBLACKLIST, UUID.fromString(results.getString("uuid")), moderator_uuid, results.getLong("punished_at"), System.currentTimeMillis(), server, reason);
+                }
+
+                PreparedStatement unbanStatement = connection.prepareStatement("DELETE FROM `basics_blacklists` WHERE `ip` = ?");
+                unbanStatement.setString(1, ip);
+                unbanStatement.execute();
+            });
+        } else {
+            ConfigurationSection section = plugin.getConfigManager().getPunishmentsConfig().getConfigurationSection("blacklists");
+            section.getValues(false).forEach((player, punishment_data) -> {
+                ConfigurationSection data = (ConfigurationSection) punishment_data;
+
+                if (data.getString("ip").equals(ip)) {
+                    plugin.getConfigManager().getPunishmentsConfig().set("blacklists." + player, null);
+                    plugin.getConfigManager().savePunishmentsConfig();
+
+                    long punishedAt = plugin.getConfigManager().getPunishmentsConfig().getLong("blacklists." + player + ".punished_at");
+                    storeHistory(PunishmentType.UNBLACKLIST, UUID.fromString(player), moderator_uuid, punishedAt, System.currentTimeMillis(), server, reason);
+                }
+            });
+        }
+    }
+
     public void storeBlacklist(UUID player, UUID moderator_uuid, long until, String server, String reason, String ip) {
         if (storage.getType().equals(StorageType.MYSQL)) {
             storage.getDatabaseManager().useAsynchronousConnection(connection -> {
-                PreparedStatement queryStatement = connection.prepareStatement("SELECT * FROM `basics_blacklist` WHERE `uuid` = ?");
+                PreparedStatement queryStatement = connection.prepareStatement("SELECT * FROM `basics_blacklists` WHERE `uuid` = ?");
                 queryStatement.setString(1, player.toString());
 
                 // Delete current blacklist from database if it exists.
                 ResultSet result = queryStatement.executeQuery();
                 while (result.next()) {
-                    PreparedStatement deleteStatement = connection.prepareStatement("DELETE * FROM `basics_blacklist` WHERE `uuid` = ?");
+                    PreparedStatement deleteStatement = connection.prepareStatement("DELETE FROM `basics_blacklists` WHERE `uuid` = ?");
                     deleteStatement.setString(1, player.toString());
-                    deleteStatement.executeQuery();
+                    deleteStatement.execute();
                 }
 
-                PreparedStatement blacklistStatement = connection.prepareStatement("INSERT IGNORE INTO `basics_blacklist` (`uuid`, `ip`, `moderator_uuid`, `punished_at`, `expires_at`, `server`, `reason`) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                PreparedStatement blacklistStatement = connection.prepareStatement("INSERT IGNORE INTO `basics_blacklists` (`uuid`, `ip`, `moderator_uuid`, `punished_at`, `expires_at`, `server`, `reason`) VALUES (?, ?, ?, ?, ?, ?, ?)");
                 blacklistStatement.setString(1, player.toString());
                 blacklistStatement.setString(2, ip);
                 blacklistStatement.setString(3, moderator_uuid == null ? "null" : moderator_uuid.toString());
@@ -168,9 +200,9 @@ public class PunishmentManager {
                 // Delete current mute from database if it exists.
                 ResultSet result = queryStatement.executeQuery();
                 while (result.next()) {
-                    PreparedStatement deleteStatement = connection.prepareStatement("DELETE * FROM `basics_mutes` WHERE `uuid` = ?");
+                    PreparedStatement deleteStatement = connection.prepareStatement("DELETE FROM `basics_mutes` WHERE `uuid` = ?");
                     deleteStatement.setString(1, player.toString());
-                    deleteStatement.executeQuery();
+                    deleteStatement.execute();
                 }
 
                 PreparedStatement muteStatement = connection.prepareStatement("INSERT IGNORE INTO `basics_mutes` (`uuid`, `moderator_uuid`, `punished_at`, `expires_at`, `server`, `reason`) VALUES (?, ?, ?, ?, ?, ?)");
@@ -212,7 +244,7 @@ public class PunishmentManager {
                     storeHistory(PunishmentType.UNMUTE, uuid, moderator_uuid, results.getLong("punished_at"), System.currentTimeMillis(), server, reason);
                 }
 
-                PreparedStatement unbanStatement = connection.prepareStatement("DELETE * FROM `basics_mutes` WHERE `uuid` = ?");
+                PreparedStatement unbanStatement = connection.prepareStatement("DELETE FROM `basics_mutes` WHERE `uuid` = ?");
                 unbanStatement.setString(1, uuid.toString());
                 unbanStatement.execute();
             });
@@ -258,7 +290,7 @@ public class PunishmentManager {
         AtomicReference<String> reason = new AtomicReference<>();
 
         if (storage.getType().equals(StorageType.MYSQL)) {
-            storage.getDatabaseManager().useAsynchronousConnection(connection -> {
+            storage.getDatabaseManager().useConnection(connection -> {
                 PreparedStatement statement = connection.prepareStatement("SELECT * FROM `basics_bans` WHERE `uuid` = ?");
                 statement.setString(1, player.toString());
 
@@ -269,6 +301,62 @@ public class PunishmentManager {
             });
         } else {
             reason.set(plugin.getConfigManager().getPunishmentsConfig().getString("bans." + player + ".reason"));
+        }
+
+        return reason.get();
+    }
+
+    public String getBlacklistReason(UUID player) {
+        AtomicReference<String> reason = new AtomicReference<>();
+
+        if (storage.getType().equals(StorageType.MYSQL)) {
+            storage.getDatabaseManager().useAsynchronousConnection(connection -> {
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM `basics_blacklists` WHERE `uuid` = ?");
+                statement.setString(1, player.toString());
+
+                ResultSet results = statement.executeQuery();
+                while (results.next()) {
+                    reason.set(results.getString("reason"));
+                }
+            });
+        } else {
+            reason.set(plugin.getConfigManager().getPunishmentsConfig().getString("blacklists." + player + ".reason"));
+        }
+
+        return reason.get();
+    }
+
+    public String getBlacklistReason(String ip) {
+        AtomicReference<String> reason = new AtomicReference<>();
+
+        if (storage.getType().equals(StorageType.MYSQL)) {
+            storage.getDatabaseManager().useAsynchronousConnection(connection -> {
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM `basics_blacklists` WHERE `ip` = ?");
+                statement.setString(1, ip);
+
+                ResultSet results = statement.executeQuery();
+                while (results.next()) {
+                    reason.set(results.getString("reason"));
+                }
+            });
+        } else {
+            ConfigurationSection section = plugin.getConfigManager().getPunishmentsConfig().getConfigurationSection("blacklists");
+
+            section.getValues(false).forEach((player, data) -> {
+                ConfigurationSection punishment_data = (ConfigurationSection) data;
+
+                if (punishment_data.getString("ip").equals(ip)) {
+                    long expiresAt = section.getLong("expires_at");
+
+                    if (expiresAt > System.currentTimeMillis() && expiresAt != -1) {
+                        plugin.getConfigManager().getPunishmentsConfig().set("blacklists." + player, null);
+                        plugin.getConfigManager().savePunishmentsConfig();
+                        return;
+                    }
+
+                    reason.set(punishment_data.getString("reason"));
+                }
+            });
         }
 
         return reason.get();
@@ -294,6 +382,91 @@ public class PunishmentManager {
         return reason.get();
     }
 
+    public boolean isBlacklisted(UUID player) {
+        if (storage.getType().equals(StorageType.MYSQL)) {
+            AtomicBoolean isBlacklisted = new AtomicBoolean(false);
+
+            storage.getDatabaseManager().useConnection(connection -> {
+                PreparedStatement queryStatement = connection.prepareStatement("SELECT * FROM `basics_blacklists` WHERE `uuid` = ?");
+                queryStatement.setString(1, player.toString());
+
+                ResultSet result = queryStatement.executeQuery();
+                while (result.next()) {
+                    long expiresAt = result.getLong("expires_at");
+                    if (expiresAt < System.currentTimeMillis() && expiresAt != -1) {
+                        PreparedStatement deleteStatement = connection.prepareStatement("DELETE FROM `basics_blacklists` WHERE `uuid` = ?");
+                        deleteStatement.setString(1, player.toString());
+                        deleteStatement.executeQuery();
+                        return;
+                    }
+
+                    isBlacklisted.set(true);
+                }
+            });
+
+            return isBlacklisted.get();
+        } else {
+            ConfigurationSection section = plugin.getConfigManager().getPunishmentsConfig().getConfigurationSection("blacklists." + player);
+            if (section != null) {
+                long expiresAt = section.getLong("expires_at");
+                if (expiresAt > System.currentTimeMillis() && expiresAt != -1) {
+                    plugin.getConfigManager().getPunishmentsConfig().set("blacklists." + player, null);
+                    plugin.getConfigManager().savePunishmentsConfig();
+                    return false;
+                }
+            }
+
+            return section != null;
+        }
+    }
+
+    public boolean isBlacklisted(String ip) {
+        if (storage.getType().equals(StorageType.MYSQL)) {
+            AtomicBoolean isBlacklisted = new AtomicBoolean(false);
+
+            storage.getDatabaseManager().useConnection(connection -> {
+                PreparedStatement queryStatement = connection.prepareStatement("SELECT * FROM `basics_blacklists` WHERE `ip` = ?");
+                queryStatement.setString(1, ip);
+
+                ResultSet result = queryStatement.executeQuery();
+                while (result.next()) {
+                    long expiresAt = result.getLong("expires_at");
+                    if (expiresAt < System.currentTimeMillis() && expiresAt != -1) {
+                        PreparedStatement deleteStatement = connection.prepareStatement("DELETE FROM `basics_blacklists` WHERE `ip` = ?");
+                        deleteStatement.setString(1, ip);
+                        deleteStatement.executeQuery();
+                        return;
+                    }
+
+                    isBlacklisted.set(true);
+                }
+            });
+
+            return isBlacklisted.get();
+        } else {
+            ConfigurationSection section = plugin.getConfigManager().getPunishmentsConfig().getConfigurationSection("blacklists");
+            AtomicReference<String> address = new AtomicReference<>("");
+
+            section.getValues(false).forEach((player, data) -> {
+                ConfigurationSection punishment_data = (ConfigurationSection) data;
+
+                if (punishment_data.getString("ip").equals(ip)) {
+                    long expiresAt = section.getLong("expires_at");
+
+                    if (expiresAt > System.currentTimeMillis() && expiresAt != -1) {
+                        plugin.getConfigManager().getPunishmentsConfig().set("blacklists." + player, null);
+                        plugin.getConfigManager().savePunishmentsConfig();
+                        return;
+                    }
+
+                    address.set(punishment_data.getString("ip"));
+                }
+            });
+
+            return address.get().equals(ip);
+        }
+    }
+
     public boolean isBanned(UUID player) {
         if (storage.getType().equals(StorageType.MYSQL)) {
             AtomicBoolean isBanned = new AtomicBoolean(false);
@@ -306,9 +479,9 @@ public class PunishmentManager {
                 while (result.next()) {
                     long expiresAt = result.getLong("expires_at");
                     if (expiresAt < System.currentTimeMillis() && expiresAt != -1) {
-                        PreparedStatement deleteStatement = connection.prepareStatement("DELETE * FROM `basics_bans` WHERE `uuid` = ?");
+                        PreparedStatement deleteStatement = connection.prepareStatement("DELETE FROM `basics_bans` WHERE `uuid` = ?");
                         deleteStatement.setString(1, player.toString());
-                        deleteStatement.executeQuery();
+                        deleteStatement.execute();
                         return;
                     }
 
@@ -344,9 +517,9 @@ public class PunishmentManager {
                 while (result.next()) {
                     long expiresAt = result.getLong("expires_at");
                     if (expiresAt > System.currentTimeMillis() && expiresAt != -1) {
-                        PreparedStatement deleteStatement = connection.prepareStatement("DELETE * FROM `basics_mutes` WHERE `uuid` = ?");
+                        PreparedStatement deleteStatement = connection.prepareStatement("DELETE FROM `basics_mutes` WHERE `uuid` = ?");
                         deleteStatement.setString(1, player.toString());
-                        deleteStatement.executeQuery();
+                        deleteStatement.execute();
                         return;
                     }
 
