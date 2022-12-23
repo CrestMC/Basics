@@ -120,7 +120,7 @@ public class SkinCommand extends CommandBase {
             player.setFlying(player.isFlying());
             player.setInvisible(player.isInvisible());
 
-            Collection<PotionEffect> activeEffects = List.copyOf(player.getActivePotionEffects());
+            Collection<PotionEffect> activeEffects = player.getActivePotionEffects();
 
             for (PotionEffect effect : activeEffects) {
                 player.removePotionEffect(effect.getType());

@@ -776,6 +776,13 @@ public enum Messages {
         }
     },
 
+    MAX_PLAYERS_SET() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("max-players-set");
+        }
+    },
+
     HELP_CMD() {
         @Override
         public String toString() {
