@@ -29,12 +29,12 @@ public class PluginMessageHelper {
         if (data.length != 0) {
             switch (name.toLowerCase()) {
                 case "all": {
-                    ProxyServer.getInstance().getServers().forEach((server, info) -> info.sendData("BungeeCord", data));
+                    ProxyServer.getInstance().getServers().forEach((server, info) -> info.sendData("BungeeCord", data, false));
                     return;
                 }
                 case "receivers": {
                     ProxyServer.getInstance().getServers().forEach((server, info) -> {
-                        if (server.equals(sender)) {
+                        if (info.getName().equalsIgnoreCase(sender)) {
                             return;
                         }
 
@@ -42,7 +42,7 @@ public class PluginMessageHelper {
                             return;
                         }
 
-                        info.sendData("BungeeCord", data);
+                        info.sendData("BungeeCord", data, false);
                     });
                     return;
                 }

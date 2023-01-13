@@ -1,12 +1,18 @@
 package me.blurmit.basicsbungee.limbo;
 
+import com.google.common.base.Preconditions;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.TObjectIntMap;
 import me.blurmit.basicsbungee.BasicsBungee;
+import me.blurmit.basicsbungee.limbo.packet.PacketChunkData;
+import me.blurmit.basicsbungee.limbo.protocol.ProtocolMapping;
 import me.blurmit.basicsbungee.util.lang.Messages;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
 import net.md_5.bungee.api.score.Objective;
 import net.md_5.bungee.api.score.Score;
 import net.md_5.bungee.api.score.Team;
+import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.Protocol;
 import net.md_5.bungee.protocol.ProtocolConstants;
 import net.md_5.bungee.protocol.packet.*;
@@ -30,28 +36,91 @@ public class LimboManager {
 
         this.keepAliveTasks = new HashMap<>();
         this.listener = new LimboListener(plugin);
+
+        registerPacket(
+                PacketChunkData.class,
+                PacketChunkData::new,
+                new ProtocolMapping(ProtocolConstants.MINECRAFT_1_8, 0x21),
+                new ProtocolMapping(ProtocolConstants.MINECRAFT_1_9, 0x20),
+                new ProtocolMapping(ProtocolConstants.MINECRAFT_1_9_1, 0x23),
+                new ProtocolMapping(ProtocolConstants.MINECRAFT_1_9_4, 0x20)
+        );
     }
 
     public void handleKeepAlive(ProxiedPlayer player) {
         ScheduledTask task = plugin.getProxy().getScheduler().schedule(plugin, () -> player.unsafe().sendPacket(new KeepAlive()), 10L, 10L, TimeUnit.SECONDS);
-        getKeepAliveTasks().put(player.getUniqueId(), task);
+        keepAliveTasks.put(player.getUniqueId(), task);
     }
 
     public void banishToLimbo(ProxiedPlayer player) {
-        sendLoginPacket(player);
-
         clearClientScoreboard(player);
         clearClientTabList(player);
         clearClientBossBar(player);
 
         sendRespawnPacket(player);
-        handleKeepAlive(player);
+        sendLoginPacket(player);
+        sendChunkDataPacket(player);
 
+        handleKeepAlive(player);
         player.sendMessage(Messages.LIMBO_SPAWN.text());
     }
 
-    public Map<UUID, ScheduledTask> getKeepAliveTasks() {
-        return keepAliveTasks;
+    @SuppressWarnings("unchecked")
+    private void registerPacket(Class<? extends DefinedPacket> packetClass, Supplier<? extends DefinedPacket> constructor, ProtocolMapping... mappings) {
+        try {
+            int mappingIndex = 0;
+            ProtocolMapping mapping = mappings[mappingIndex];
+
+            for (int protocol : ProtocolConstants.SUPPORTED_VERSION_IDS) {
+                if (protocol < mapping.getProtocolVersion()) {
+                    // This is a new packet, skip it till we reach the next protocol
+                    continue;
+                }
+
+                if (mapping.getProtocolVersion() < protocol && mappingIndex + 1 < mappings.length) {
+                    // Mapping is non current, but the next one may be ok
+                    ProtocolMapping nextMapping = mappings[mappingIndex + 1];
+
+                    if (nextMapping.getProtocolVersion() == protocol) {
+                        Preconditions.checkState(nextMapping.getPacketID() != mapping.getPacketID(), "Duplicate packet mapping (%s, %s)", mapping.getProtocolVersion(), nextMapping.getProtocolVersion());
+
+                        mapping = nextMapping;
+                        mappingIndex++;
+                    }
+                }
+
+                if (mapping.getPacketID() < 0) {
+                    break;
+                }
+
+                Field toClientDirectionDataField = Class.forName("net.md_5.bungee.protocol.Protocol").getDeclaredField("TO_CLIENT");
+                toClientDirectionDataField.setAccessible(true);
+                Object toClientDirectionData = toClientDirectionDataField.get(Protocol.GAME);
+
+                Field protocolsField = Arrays.stream(Protocol.class.getDeclaredClasses())
+                        .filter(clazz -> clazz.getName().contains("DirectionData"))
+                        .findFirst()
+                        .get()
+                        .getDeclaredField("protocols");
+                protocolsField.setAccessible(true);
+                TIntObjectMap<Object> protocols = (TIntObjectMap<Object>) protocolsField.get(toClientDirectionData);
+
+                Object data = protocols.get(protocol);
+
+                Field packetMapField = data.getClass().getDeclaredField("packetMap");
+                packetMapField.setAccessible(true);
+                TObjectIntMap<Class<? extends DefinedPacket>> packetMap = (TObjectIntMap<Class<? extends DefinedPacket>>) packetMapField.get(data);
+
+                Field packetConstructorsField = data.getClass().getDeclaredField("packetConstructors");
+                packetConstructorsField.setAccessible(true);
+                Supplier<? extends DefinedPacket>[] packetConstructors = (Supplier<? extends DefinedPacket>[]) packetConstructorsField.get(data);
+
+                packetMap.put(packetClass, mapping.getPacketID());
+                packetConstructors[mapping.getPacketID()] = constructor;
+            }
+        } catch (ReflectiveOperationException e) {
+            plugin.getLogger().log(Level.SEVERE, "An error occurred whilst attempting to register a packet", e);
+        }
     }
 
     private void sendLoginPacket(ProxiedPlayer player) {
@@ -70,7 +139,7 @@ public class LimboManager {
             login.setMaxPlayers(1);
             login.setViewDistance(10);
             login.setReducedDebugInfo(true);
-            login.setNormalRespawn(true);
+            login.setNormalRespawn(false);
             login.setDebug(true);
             login.setFlat(true);
 
@@ -92,6 +161,12 @@ public class LimboManager {
             respawn.setFlat(true);
 
             player.unsafe().sendPacket(respawn);
+        });
+    }
+
+    private void sendChunkDataPacket(ProxiedPlayer player) {
+        plugin.getProxy().getScheduler().runAsync(plugin, () -> {
+           player.unsafe().sendPacket(new PacketChunkData());
         });
     }
 
@@ -169,6 +244,10 @@ public class LimboManager {
         } catch (ReflectiveOperationException e) {
             plugin.getLogger().log(Level.SEVERE, "An error occurred whilst attempting to clear the tab list of " + player.getName(), e);
         }
+    }
+
+    public Map<UUID, ScheduledTask> getKeepAliveTasks() {
+        return keepAliveTasks;
     }
 
 }

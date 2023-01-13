@@ -42,7 +42,7 @@ public class ToggleHungerCommand extends CommandBase implements Listener {
 
     @EventHandler
     public void onHungerChange(FoodLevelChangeEvent event) {
-        if (plugin.getConfigManager().getConfig().getBoolean("hunger-disabled")) {
+        if (isHungerToggled) {
             event.setFoodLevel(20);
         }
     }

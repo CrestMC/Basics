@@ -1,6 +1,5 @@
 package me.blurmit.basics.command.defined.rank.subcommands;
 
-import com.google.common.collect.Maps;
 import me.blurmit.basics.Basics;
 import me.blurmit.basics.command.defined.SubCommand;
 import me.blurmit.basics.rank.Rank;
@@ -10,9 +9,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class EditRankSubCommand extends SubCommand {
 

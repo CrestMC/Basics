@@ -51,6 +51,7 @@ permissions:
       - "basics.command.message"
       - "basics.messagetoggle.bypass"
       - "basics.punishments.viewsilent"
+      - "basics.playerlimit.bypass"
     description: "Gives full permission to the plugin"
     default: op
   basics.clearchat.bypass:
@@ -92,3 +93,6 @@ permissions:
   basics.player:
     description: "All players have this permission"
     default: true
+  basics.playerlimit.bypass:
+    description: "Gives permission to bypass the server player limit"
+    default: op

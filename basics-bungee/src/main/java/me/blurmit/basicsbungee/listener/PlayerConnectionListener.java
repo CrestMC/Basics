@@ -1,19 +1,18 @@
 package me.blurmit.basicsbungee.listener;
 
-import com.mojang.brigadier.Message;
 import me.blurmit.basicsbungee.BasicsBungee;
-import me.blurmit.basicsbungee.limbo.LimboServer;
+import me.blurmit.basicsbungee.limbo.server.LimboServer;
 import me.blurmit.basicsbungee.util.Placeholders;
 import me.blurmit.basicsbungee.util.lang.Messages;
 import me.blurmit.basicsbungee.util.pluginmessage.PluginMessageHelper;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.event.*;
+import net.md_5.bungee.api.event.PlayerDisconnectEvent;
+import net.md_5.bungee.api.event.PostLoginEvent;
+import net.md_5.bungee.api.event.ServerKickEvent;
+import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
-import net.md_5.bungee.protocol.Protocol;
-import net.md_5.bungee.protocol.ProtocolConstants;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -39,8 +38,6 @@ public class PlayerConnectionListener implements Listener {
 
     @EventHandler
     public void onPlayerDisconnect(@NotNull PlayerDisconnectEvent event) {
-        plugin.getLimboManager().getKeepAliveTasks().remove(event.getPlayer().getUniqueId());
-
         // Send staff disconnect message via plugin messaging
         plugin.getProxy().getScheduler().runAsync(plugin, () -> {
             String player = event.getPlayer().getName();
@@ -82,13 +79,14 @@ public class PlayerConnectionListener implements Listener {
 
     @EventHandler
     public void onServerKick(ServerKickEvent event) {
-//        event.setCancelled(true);
-//        event.setKickReasonComponent(event.getKickReasonComponent());
-//
-//        event.getPlayer().sendMessage(Messages.SERVER_KICK.text());
-//        event.getPlayer().sendMessage(event.getKickReasonComponent());
-//
-//        plugin.getLimboManager().banishToLimbo(event.getPlayer());
+        event.setCancelled(true);
+        event.setCancelServer(new LimboServer());
+        event.setKickReasonComponent(event.getKickReasonComponent());
+
+        event.getPlayer().sendMessage(Messages.SERVER_KICK.text());
+        event.getPlayer().sendMessage(event.getKickReasonComponent());
+
+        plugin.getLimboManager().banishToLimbo(event.getPlayer());
     }
 
     private void setupTabListHeader(ProxiedPlayer player) {

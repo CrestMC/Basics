@@ -38,7 +38,6 @@ public class PluginMessageListener implements Listener {
             pluginMessage.setTag(event.getTag());
 
             ByteBuf brand = Unpooled.wrappedBuffer(event.getData());
-            String serverBrand = DefinedPacket.readString( brand );
             brand.release();
 
             brand = ByteBufAllocator.DEFAULT.heapBuffer();
@@ -89,7 +88,7 @@ public class PluginMessageListener implements Listener {
                 }
             }
         } catch (IOException e) {
-            plugin.getLogger().log(Level.SEVERE, "An error occurred whilst attempting to read plugin message", e);
+            plugin.getLogger().log(Level.SEVERE, "An error occurred whilst attempting to handle plugin message", e);
         }
     }
 

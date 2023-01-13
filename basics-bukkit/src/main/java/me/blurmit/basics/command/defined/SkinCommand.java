@@ -9,8 +9,6 @@ import me.blurmit.basics.util.Reflector;
 import me.blurmit.basics.util.UUIDs;
 import me.blurmit.basics.util.lang.Messages;
 import me.blurmit.basics.util.placeholder.Placeholders;
-import org.bukkit.Chunk;
-import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -22,7 +20,6 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 public class SkinCommand extends CommandBase {

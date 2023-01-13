@@ -1,7 +1,6 @@
 package me.blurmit.basics.rank;
 
 import me.blurmit.basics.Basics;
-import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
