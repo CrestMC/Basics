@@ -14,3 +14,10 @@ Server-Brand: "vanilla"
 Server-Aliases:
   Lobby: "Lobby"
   Hub: "Lobby"
+
+Limbo-Schematic-File: ./plugins/BasicsBungee/limbo.schem
+Limbo-Spawn-X: 23
+Limbo-Spawn-Y: 40
+Limbo-Spawn-Z: 17
+Limbo-Spawn-Yaw: 90
+Limbo-Spawn-Pitch: 0

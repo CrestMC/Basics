@@ -2,8 +2,8 @@ package me.blurmit.basics.command.defined;
 
 import me.blurmit.basics.Basics;
 import me.blurmit.basics.command.CommandBase;
+import me.blurmit.basics.util.Placeholders;
 import me.blurmit.basics.util.lang.Messages;
-import me.blurmit.basics.util.placeholder.Placeholders;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -69,10 +69,6 @@ public class SlowmodeCommand extends CommandBase implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onChat(AsyncPlayerChatEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
-
         if (event.getPlayer().hasPermission("basics.slowmode.bypass")) {
             return;
         }

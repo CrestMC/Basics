@@ -4,8 +4,8 @@ import lombok.Getter;
 import me.blurmit.basics.Basics;
 import me.blurmit.basics.database.DatabaseManager;
 import me.blurmit.basics.database.StorageType;
+import me.blurmit.basics.util.Placeholders;
 import me.blurmit.basics.util.lang.Messages;
-import me.blurmit.basics.util.placeholder.Placeholders;
 import org.bukkit.entity.Player;
 
 import java.sql.PreparedStatement;

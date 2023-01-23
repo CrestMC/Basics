@@ -5,10 +5,10 @@ import com.google.gson.JsonParser;
 import lombok.SneakyThrows;
 import me.blurmit.basics.Basics;
 import me.blurmit.basics.command.CommandBase;
-import me.blurmit.basics.util.Reflector;
+import me.blurmit.basics.util.Placeholders;
+import me.blurmit.basics.util.ReflectionUtil;
 import me.blurmit.basics.util.UUIDs;
 import me.blurmit.basics.util.lang.Messages;
-import me.blurmit.basics.util.placeholder.Placeholders;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -133,10 +133,10 @@ public class SkinCommand extends CommandBase {
 
     @SneakyThrows
     private void sendPlayerInfoPacket(Object craftPlayer, Object connection, String action) {
-        Class<?> entityPlayer = Reflector.getNMSClass("EntityPlayer");
+        Class<?> entityPlayer = ReflectionUtil.getNMSClass("EntityPlayer");
 
-        Class<?> packetClass = Reflector.getNMSClass("Packet");
-        Class<?> packetPlayOutPlayerInfoClass = Reflector.getNMSClass("PacketPlayOutPlayerInfo");
+        Class<?> packetClass = ReflectionUtil.getNMSClass("Packet");
+        Class<?> packetPlayOutPlayerInfoClass = ReflectionUtil.getNMSClass("PacketPlayOutPlayerInfo");
         Class enumPlayerInfoActionClass = Arrays.stream(packetPlayOutPlayerInfoClass.getClasses())
                 .filter(Class::isEnum)
                 .findFirst()
@@ -158,8 +158,8 @@ public class SkinCommand extends CommandBase {
 
     @SneakyThrows
     private void sendRespawnPacket(Player player, Object craftPlayer, Object connection) {
-        Class<?> packetClass = Reflector.getNMSClass("Packet");
-        Class<?> packetPlayOutRespawnClass = Reflector.getNMSClass("PacketPlayOutRespawn");
+        Class<?> packetClass = ReflectionUtil.getNMSClass("Packet");
+        Class<?> packetPlayOutRespawnClass = ReflectionUtil.getNMSClass("PacketPlayOutRespawn");
 
         Object worldClass = craftPlayer.getClass().getMethod("getWorld").invoke(craftPlayer);
         Object manager = worldClass.getClass().getMethod("getDimensionManager").invoke(worldClass);

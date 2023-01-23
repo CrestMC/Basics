@@ -1,10 +1,11 @@
 package me.blurmit.basicsbungee.limbo.packet;
 
 import io.netty.buffer.ByteBuf;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import net.md_5.bungee.api.ProxyServer;
+import me.blurmit.basicsbungee.limbo.world.Chunk;
 import net.md_5.bungee.protocol.AbstractPacketHandler;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.ProtocolConstants;
@@ -13,57 +14,56 @@ import java.nio.charset.StandardCharsets;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class PacketChunkData extends DefinedPacket {
 
-    @Override
-    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
-        ProxyServer.getInstance().getLogger().info("If you ever see this message, run. Hide your children. The apocalypse is here.");
-    }
+    private Chunk chunk;
 
     @Override
     public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
-        if (protocolVersion < ProtocolConstants.MINECRAFT_1_8) {
-            buf.writeInt(0);
-            buf.writeByte(0);
-            buf.writeByte(0);
-            buf.writeByte(0);
-            buf.writeByte(100);
-            buf.readBytes("flat".getBytes(StandardCharsets.UTF_8));
-            return;
-        }
-
-        if (protocolVersion < ProtocolConstants.MINECRAFT_1_9_1) {
-            buf.writeInt(0);
-            buf.writeInt(0);
-            buf.writeBoolean(true);
+        if (protocolVersion == ProtocolConstants.MINECRAFT_1_8) {
+            buf.writeInt(chunk.getChunkX()); // Chunk X
+            buf.writeInt(chunk.getChunkZ()); // Chunk Z
+            buf.writeBoolean(true); // Reduced Debug Info
             buf.writeShort((short) 65535);
-            buf.writeBytes(new byte[0]);
+            writeVarInt(chunk.getChunkMap().length, buf);
+            buf.writeBytes(chunk.getChunkMap());
             return;
         }
 
-        if (protocolVersion < ProtocolConstants.MINECRAFT_1_9_4) {
+        if (protocolVersion == ProtocolConstants.MINECRAFT_1_9_1) {
+            buf.writeInt(chunk.getChunkX()); // Chunk X
+            buf.writeInt(chunk.getChunkZ()); // Chunk Z
+            buf.writeBoolean(true); // Reduced Debug Info
+            writeVarInt(25565, buf);
+            writeVarInt(chunk.getChunkMapPalette().length, buf);
+            buf.writeBytes(chunk.getChunkMapPalette());
+            return;
+        }
+
+        if (protocolVersion == ProtocolConstants.MINECRAFT_1_9_4) {
             buf.writeInt(0); // entity id
-            buf.writeInt(0); // game mode
+            buf.writeByte(0); // game mode
             buf.writeInt(0); // dimension
             buf.writeByte(0); // difficulty
             buf.writeByte(100); // max players
             buf.writeBytes("flat".getBytes(StandardCharsets.UTF_8)); // level type
+            buf.writeBoolean(true); // debug info
             return;
         }
 
-        buf.writeInt(0); // chunk x
-        buf.writeInt(0); // chunk y
+        buf.writeInt(1); // chunk x
+        buf.writeInt(1); // chunk y
         buf.writeBoolean(true);
-        buf.writeInt(0);
-        buf.writeBytes(new byte[0]); // chunk map
+        DefinedPacket.writeVarInt(25565, buf);
+        buf.writeBytes(new byte[] { 0, 0 }); // chunk map
         buf.writeBytes(new byte[0]);
     }
 
     @Override
-    public void handle(AbstractPacketHandler handler)
-    {
-        throw new UnsupportedOperationException("Not implemented yet.");
+    public void handle(AbstractPacketHandler handler) {
+        // ... No?
     }
 
 }

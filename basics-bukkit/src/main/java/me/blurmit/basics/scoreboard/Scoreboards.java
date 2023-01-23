@@ -1,7 +1,7 @@
 package me.blurmit.basics.scoreboard;
 
 import me.blurmit.basics.Basics;
-import me.blurmit.basics.util.placeholder.Placeholders;
+import me.blurmit.basics.util.Placeholders;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

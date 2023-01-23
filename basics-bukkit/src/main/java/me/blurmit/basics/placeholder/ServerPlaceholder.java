@@ -4,7 +4,7 @@ import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 import me.blurmit.basics.Basics;
 import me.blurmit.basics.events.PlaceholderRequestEvent;
-import me.blurmit.basics.util.pluginmessage.PluginMessageHelper;
+import me.blurmit.basics.util.PluginMessageHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

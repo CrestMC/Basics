@@ -2,9 +2,9 @@ package me.blurmit.basics.command.defined;
 
 import me.blurmit.basics.Basics;
 import me.blurmit.basics.command.CommandBase;
-import me.blurmit.basics.util.Reflector;
+import me.blurmit.basics.util.Placeholders;
+import me.blurmit.basics.util.ReflectionUtil;
 import me.blurmit.basics.util.lang.Messages;
-import me.blurmit.basics.util.placeholder.Placeholders;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
@@ -54,7 +54,7 @@ public class SetMaxPlayersCommand extends CommandBase {
 
         // Reflectively set the player limit field in the DedicatedPlayerList class
         try {
-            Object playerList = Reflector.getOBCClass("CraftServer").getDeclaredMethod("getHandle").invoke(plugin.getServer());
+            Object playerList = ReflectionUtil.getOBCClass("CraftServer").getDeclaredMethod("getHandle").invoke(plugin.getServer());
             Field maxPlayers = playerList.getClass().getSuperclass().getDeclaredField("maxPlayers");
             maxPlayers.setAccessible(true);
             maxPlayers.set(playerList, max);

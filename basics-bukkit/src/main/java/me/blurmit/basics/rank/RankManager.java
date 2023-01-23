@@ -6,7 +6,7 @@ import me.blurmit.basics.Basics;
 import me.blurmit.basics.database.StorageType;
 import me.blurmit.basics.rank.storage.RankStorage;
 import me.blurmit.basics.rank.team.TeamManager;
-import me.blurmit.basics.util.Reflector;
+import me.blurmit.basics.util.ReflectionUtil;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -165,7 +165,7 @@ public class RankManager {
         try {
             player.removeAttachment(getActiveAttachments().get(player.getUniqueId()));
         } catch (IllegalArgumentException e) {
-            Field permissibleField = Reflector.getOBCClass("entity.CraftHumanEntity").getDeclaredField("perm");
+            Field permissibleField = ReflectionUtil.getOBCClass("entity.CraftHumanEntity").getDeclaredField("perm");
             permissibleField.setAccessible(true);
             PermissibleBase permissibleBase = (PermissibleBase) permissibleField.get(player);
 

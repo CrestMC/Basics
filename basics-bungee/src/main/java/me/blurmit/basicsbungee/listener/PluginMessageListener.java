@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.Unpooled;
 import me.blurmit.basicsbungee.BasicsBungee;
-import me.blurmit.basicsbungee.util.pluginmessage.PluginMessageHelper;
+import me.blurmit.basicsbungee.util.PluginMessageHelper;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.event.PluginMessageEvent;

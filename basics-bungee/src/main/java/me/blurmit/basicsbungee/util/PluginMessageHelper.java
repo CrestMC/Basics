@@ -1,4 +1,4 @@
-package me.blurmit.basicsbungee.util.pluginmessage;
+package me.blurmit.basicsbungee.util;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;

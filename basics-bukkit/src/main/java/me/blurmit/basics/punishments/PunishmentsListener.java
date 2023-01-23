@@ -1,8 +1,8 @@
 package me.blurmit.basics.punishments;
 
 import me.blurmit.basics.Basics;
+import me.blurmit.basics.util.Placeholders;
 import me.blurmit.basics.util.lang.Messages;
-import me.blurmit.basics.util.placeholder.Placeholders;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -95,6 +95,8 @@ public class PunishmentsListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
+        event.getPlayer().getLocation();
+
         if (event.isCancelled()) {
             return;
         }

@@ -1,7 +1,7 @@
 package me.blurmit.basics.listeners;
 
 import me.blurmit.basics.Basics;
-import me.blurmit.basics.util.placeholder.Placeholders;
+import me.blurmit.basics.util.Placeholders;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;

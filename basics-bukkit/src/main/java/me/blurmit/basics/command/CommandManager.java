@@ -1,10 +1,10 @@
 package me.blurmit.basics.command;
 
 import me.blurmit.basics.Basics;
-import me.blurmit.basics.util.Reflector;
+import me.blurmit.basics.util.Placeholders;
+import me.blurmit.basics.util.ReflectionUtil;
 import me.blurmit.basics.util.lang.Messages;
 import me.blurmit.basics.util.lang.Prefixes;
-import me.blurmit.basics.util.placeholder.Placeholders;
 import org.bukkit.command.Command;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.event.EventHandler;
@@ -32,7 +32,7 @@ public class CommandManager implements Listener {
     }
 
     public void registerCommands() {
-        Reflector.consume("me.blurmit.basics.command.defined", Basics.class.getClassLoader(), CommandBase.class, CommandBase::registerCommand, true, plugin);
+        ReflectionUtil.consume("me.blurmit.basics.command.defined", Basics.class.getClassLoader(), CommandBase.class, CommandBase::registerCommand, true, plugin);
     }
 
     public void register(String command, CommandBase commandClass) {

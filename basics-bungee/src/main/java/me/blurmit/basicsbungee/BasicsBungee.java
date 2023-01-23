@@ -1,5 +1,6 @@
 package me.blurmit.basicsbungee;
 
+import me.blurmit.basicsbungee.command.LimboCommand;
 import me.blurmit.basicsbungee.command.ServerAliasCommand;
 import me.blurmit.basicsbungee.configuration.ConfigManager;
 import me.blurmit.basicsbungee.limbo.LimboManager;
@@ -28,6 +29,7 @@ public final class BasicsBungee extends Plugin {
                     new ServerAliasCommand(this, key, configManager.getConfig().getSection("Server-Aliases").getString(key))
             );
         });
+        getProxy().getPluginManager().registerCommand(this, new LimboCommand(this));
 
         getLogger().info("Loading limbo...");
         this.limboManager = new LimboManager(this);

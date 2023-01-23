@@ -1,7 +1,6 @@
-package me.blurmit.basicsbungee.util.lang;
+package me.blurmit.basicsbungee.util;
 
 import me.blurmit.basicsbungee.BasicsBungee;
-import me.blurmit.basicsbungee.util.Placeholders;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 

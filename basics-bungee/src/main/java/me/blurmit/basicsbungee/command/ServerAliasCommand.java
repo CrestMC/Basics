@@ -1,7 +1,7 @@
 package me.blurmit.basicsbungee.command;
 
 import me.blurmit.basicsbungee.BasicsBungee;
-import me.blurmit.basicsbungee.util.lang.Messages;
+import me.blurmit.basicsbungee.util.Messages;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;

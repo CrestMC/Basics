@@ -1,15 +1,12 @@
 package me.blurmit.basicsbungee.listener;
 
 import me.blurmit.basicsbungee.BasicsBungee;
-import me.blurmit.basicsbungee.limbo.server.LimboServer;
 import me.blurmit.basicsbungee.util.Placeholders;
-import me.blurmit.basicsbungee.util.lang.Messages;
-import me.blurmit.basicsbungee.util.pluginmessage.PluginMessageHelper;
+import me.blurmit.basicsbungee.util.PluginMessageHelper;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
-import net.md_5.bungee.api.event.ServerKickEvent;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
@@ -49,7 +46,7 @@ public class PlayerConnectionListener implements Listener {
 
     @EventHandler
     public void onServerSwitch(@NotNull ServerSwitchEvent event) {
-        plugin.getLimboManager().getKeepAliveTasks().remove(event.getPlayer().getUniqueId());
+        plugin.getLimboManager().getLimboPlayers().remove(event.getPlayer().getUniqueId());
 
         if (event.getFrom() == null) {
             // Send staff connect message via plugin messaging
@@ -75,18 +72,6 @@ public class PlayerConnectionListener implements Listener {
 
             PluginMessageHelper.sendData("RECEIVERS", "", "Staff-ServerSwitch", player, originalServer, newServer);
         });
-    }
-
-    @EventHandler
-    public void onServerKick(ServerKickEvent event) {
-        event.setCancelled(true);
-        event.setCancelServer(new LimboServer());
-        event.setKickReasonComponent(event.getKickReasonComponent());
-
-        event.getPlayer().sendMessage(Messages.SERVER_KICK.text());
-        event.getPlayer().sendMessage(event.getKickReasonComponent());
-
-        plugin.getLimboManager().banishToLimbo(event.getPlayer());
     }
 
     private void setupTabListHeader(ProxiedPlayer player) {

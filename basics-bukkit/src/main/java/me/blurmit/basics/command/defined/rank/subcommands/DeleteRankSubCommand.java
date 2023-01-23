@@ -2,8 +2,8 @@ package me.blurmit.basics.command.defined.rank.subcommands;
 
 import me.blurmit.basics.Basics;
 import me.blurmit.basics.command.defined.SubCommand;
+import me.blurmit.basics.util.Placeholders;
 import me.blurmit.basics.util.lang.Messages;
-import me.blurmit.basics.util.placeholder.Placeholders;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 

@@ -1,55 +1,76 @@
 package me.blurmit.basicsbungee.limbo;
 
-import com.google.common.base.Preconditions;
-import gnu.trove.map.TIntObjectMap;
-import gnu.trove.map.TObjectIntMap;
 import me.blurmit.basicsbungee.BasicsBungee;
 import me.blurmit.basicsbungee.limbo.packet.PacketChunkData;
+import me.blurmit.basicsbungee.limbo.packet.PacketPlayerPosition;
 import me.blurmit.basicsbungee.limbo.protocol.ProtocolMapping;
-import me.blurmit.basicsbungee.util.lang.Messages;
+import me.blurmit.basicsbungee.limbo.world.Chunk;
+import me.blurmit.basicsbungee.limbo.world.Schematic;
+import me.blurmit.basicsbungee.limbo.world.World;
+import me.blurmit.basicsbungee.util.Messages;
+import me.blurmit.basicsbungee.util.Protocols;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.scheduler.ScheduledTask;
 import net.md_5.bungee.api.score.Objective;
 import net.md_5.bungee.api.score.Score;
 import net.md_5.bungee.api.score.Team;
-import net.md_5.bungee.protocol.DefinedPacket;
-import net.md_5.bungee.protocol.Protocol;
 import net.md_5.bungee.protocol.ProtocolConstants;
 import net.md_5.bungee.protocol.packet.*;
+import se.llbit.nbt.*;
 
+import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
 import java.util.logging.Level;
+import java.util.zip.GZIPInputStream;
 
 public class LimboManager {
 
-    private final Map<UUID, ScheduledTask> keepAliveTasks;
+    private final Set<UUID> limboPlayers;
 
     private final BasicsBungee plugin;
     private final LimboListener listener;
 
+    private World world;
+
     public LimboManager(BasicsBungee plugin) {
         this.plugin = plugin;
 
-        this.keepAliveTasks = new HashMap<>();
+        this.limboPlayers = new HashSet<>();
         this.listener = new LimboListener(plugin);
 
-        registerPacket(
-                PacketChunkData.class,
-                PacketChunkData::new,
-                new ProtocolMapping(ProtocolConstants.MINECRAFT_1_8, 0x21),
-                new ProtocolMapping(ProtocolConstants.MINECRAFT_1_9, 0x20),
-                new ProtocolMapping(ProtocolConstants.MINECRAFT_1_9_1, 0x23),
-                new ProtocolMapping(ProtocolConstants.MINECRAFT_1_9_4, 0x20)
+        Protocols.registerPacket(
+                PacketPlayerPosition.class,
+                PacketPlayerPosition::new,
+                new ProtocolMapping(ProtocolConstants.MINECRAFT_1_8, 0x08),
+                new ProtocolMapping(ProtocolConstants.MINECRAFT_1_9, 0x2E)
         );
+
+        try (FileInputStream inputStream = new FileInputStream(plugin.getConfigManager().getConfig().getString("Limbo-Schematic-File"))) {
+            world = Schematic.parseWorld((CompoundTag) CompoundTag.read(new DataInputStream(new GZIPInputStream(inputStream))));
+        } catch (IOException e) {
+            world = null;
+            plugin.getLogger().log(Level.SEVERE, "An error occurred whilst attempting to read limbo schematic", e);
+        }
+
+        handleKeepAlive();
     }
 
-    public void handleKeepAlive(ProxiedPlayer player) {
-        ScheduledTask task = plugin.getProxy().getScheduler().schedule(plugin, () -> player.unsafe().sendPacket(new KeepAlive()), 10L, 10L, TimeUnit.SECONDS);
-        keepAliveTasks.put(player.getUniqueId(), task);
+    public void handleKeepAlive() {
+        plugin.getProxy().getScheduler().schedule(plugin, () ->  {
+            limboPlayers.forEach(uuid -> {
+                ProxiedPlayer player = plugin.getProxy().getPlayer(uuid);
+
+                if (player == null) {
+                    return;
+                }
+
+                player.unsafe().sendPacket(new KeepAlive());
+            });
+        }, 10L, 10L, TimeUnit.SECONDS);
     }
 
     public void banishToLimbo(ProxiedPlayer player) {
@@ -58,82 +79,46 @@ public class LimboManager {
         clearClientBossBar(player);
 
         sendRespawnPacket(player);
-        sendLoginPacket(player);
+        sendPlayerPositionPacket(player);
         sendChunkDataPacket(player);
 
-        handleKeepAlive(player);
         player.sendMessage(Messages.LIMBO_SPAWN.text());
-    }
-
-    @SuppressWarnings("unchecked")
-    private void registerPacket(Class<? extends DefinedPacket> packetClass, Supplier<? extends DefinedPacket> constructor, ProtocolMapping... mappings) {
-        try {
-            int mappingIndex = 0;
-            ProtocolMapping mapping = mappings[mappingIndex];
-
-            for (int protocol : ProtocolConstants.SUPPORTED_VERSION_IDS) {
-                if (protocol < mapping.getProtocolVersion()) {
-                    // This is a new packet, skip it till we reach the next protocol
-                    continue;
-                }
-
-                if (mapping.getProtocolVersion() < protocol && mappingIndex + 1 < mappings.length) {
-                    // Mapping is non current, but the next one may be ok
-                    ProtocolMapping nextMapping = mappings[mappingIndex + 1];
-
-                    if (nextMapping.getProtocolVersion() == protocol) {
-                        Preconditions.checkState(nextMapping.getPacketID() != mapping.getPacketID(), "Duplicate packet mapping (%s, %s)", mapping.getProtocolVersion(), nextMapping.getProtocolVersion());
-
-                        mapping = nextMapping;
-                        mappingIndex++;
-                    }
-                }
-
-                if (mapping.getPacketID() < 0) {
-                    break;
-                }
-
-                Field toClientDirectionDataField = Class.forName("net.md_5.bungee.protocol.Protocol").getDeclaredField("TO_CLIENT");
-                toClientDirectionDataField.setAccessible(true);
-                Object toClientDirectionData = toClientDirectionDataField.get(Protocol.GAME);
-
-                Field protocolsField = Arrays.stream(Protocol.class.getDeclaredClasses())
-                        .filter(clazz -> clazz.getName().contains("DirectionData"))
-                        .findFirst()
-                        .get()
-                        .getDeclaredField("protocols");
-                protocolsField.setAccessible(true);
-                TIntObjectMap<Object> protocols = (TIntObjectMap<Object>) protocolsField.get(toClientDirectionData);
-
-                Object data = protocols.get(protocol);
-
-                Field packetMapField = data.getClass().getDeclaredField("packetMap");
-                packetMapField.setAccessible(true);
-                TObjectIntMap<Class<? extends DefinedPacket>> packetMap = (TObjectIntMap<Class<? extends DefinedPacket>>) packetMapField.get(data);
-
-                Field packetConstructorsField = data.getClass().getDeclaredField("packetConstructors");
-                packetConstructorsField.setAccessible(true);
-                Supplier<? extends DefinedPacket>[] packetConstructors = (Supplier<? extends DefinedPacket>[]) packetConstructorsField.get(data);
-
-                packetMap.put(packetClass, mapping.getPacketID());
-                packetConstructors[mapping.getPacketID()] = constructor;
-            }
-        } catch (ReflectiveOperationException e) {
-            plugin.getLogger().log(Level.SEVERE, "An error occurred whilst attempting to register a packet", e);
-        }
     }
 
     private void sendLoginPacket(ProxiedPlayer player) {
         plugin.getProxy().getScheduler().runAsync(plugin, () -> {
             Login login = new Login();
-            login.setWorldName("Limbo");
+            login.setWorldName("limbo");
             login.setLevelType("flat");
-            login.setEntityId(1);
+            login.setEntityId(0);
             login.setHardcore(true);
-            login.setGameMode((short) 3);
+            login.setGameMode((short) 1);
             login.setPreviousGameMode((short) 2);
-            login.setWorldNames(new HashSet<>(Collections.singletonList("Limbo")));
-            login.setDimension(3);
+            login.setWorldNames(new HashSet<>(Collections.singletonList("limbo")));
+
+            int version = player.getPendingConnection().getVersion();
+
+            if (version >= ProtocolConstants.MINECRAFT_1_16) {
+                List<NamedTag> items = new ArrayList<>();
+                items.add(new NamedTag("ambient_light", new ByteTag(1)));
+                items.add(new NamedTag("infiniburn", new StringTag("0")));
+                items.add(new NamedTag("logical_height", new IntTag(1)));
+                items.add(new NamedTag("has_raids", new ByteTag(0)));
+                items.add(new NamedTag("respawn_anchor_works", new ByteTag(1)));
+                items.add(new NamedTag("bed_works", new ByteTag(1)));
+                items.add(new NamedTag("piglin_safe", new ByteTag(0)));
+                items.add(new NamedTag("coordinate_scale", new ByteTag(1)));
+                items.add(new NamedTag("natural", new ByteTag(1)));
+                items.add(new NamedTag("ultrawarm", new ByteTag(0)));
+                items.add(new NamedTag("has_ceiling", new ByteTag(0)));
+                items.add(new NamedTag("has_skylight", new ByteTag(1)));
+
+                SpecificTag payload = new CompoundTag(items);
+                login.setDimension(new NamedTag("dimension", payload));
+            } else {
+                login.setDimension(0);
+            }
+
             login.setSeed(100);
             login.setDifficulty((short) 1);
             login.setMaxPlayers(1);
@@ -150,11 +135,34 @@ public class LimboManager {
     private void sendRespawnPacket(ProxiedPlayer player) {
         plugin.getProxy().getScheduler().runAsync(plugin, () -> {
             Respawn respawn = new Respawn();
-            respawn.setWorldName("Limbo");
+            respawn.setWorldName("limbo");
             respawn.setLevelType("flat");
-            respawn.setGameMode((short) 3);
+            respawn.setGameMode((short) 1);
             respawn.setPreviousGameMode((short) 2);
-            respawn.setDimension(3);
+
+            int version = player.getPendingConnection().getVersion();
+
+            if (version >= ProtocolConstants.MINECRAFT_1_16) {
+                List<NamedTag> items = new ArrayList<>();
+                items.add(new NamedTag("ambient_light", new ByteTag(1)));
+                items.add(new NamedTag("infiniburn", new StringTag("0")));
+                items.add(new NamedTag("logical_height", new IntTag(1)));
+                items.add(new NamedTag("has_raids", new ByteTag(0)));
+                items.add(new NamedTag("respawn_anchor_works", new ByteTag(1)));
+                items.add(new NamedTag("bed_works", new ByteTag(1)));
+                items.add(new NamedTag("piglin_safe", new ByteTag(0)));
+                items.add(new NamedTag("coordinate_scale", new ByteTag(1)));
+                items.add(new NamedTag("natural", new ByteTag(1)));
+                items.add(new NamedTag("ultrawarm", new ByteTag(0)));
+                items.add(new NamedTag("has_ceiling", new ByteTag(0)));
+                items.add(new NamedTag("has_skylight", new ByteTag(1)));
+
+                SpecificTag payload = new CompoundTag(items);
+                respawn.setDimension(new NamedTag("dimension", payload));
+            } else {
+                respawn.setDimension(0);
+            }
+
             respawn.setSeed(100);
             respawn.setDifficulty((short) 1);
             respawn.setDebug(true);
@@ -165,8 +173,38 @@ public class LimboManager {
     }
 
     private void sendChunkDataPacket(ProxiedPlayer player) {
+        plugin.getLogger().info("Sending Limbo chunk map to " + player.getName() + "...");
+
+//        Protocols.registerPacket(
+//                PacketChunkData.class,
+//                PacketChunkData::new,
+//                new ProtocolMapping(ProtocolConstants.MINECRAFT_1_8, 0x21),
+//                new ProtocolMapping(ProtocolConstants.MINECRAFT_1_9, 0x20),
+//                new ProtocolMapping(ProtocolConstants.MINECRAFT_1_9_1, 0x23),
+//                new ProtocolMapping(ProtocolConstants.MINECRAFT_1_9_4, 0x20)
+//        );
+
         plugin.getProxy().getScheduler().runAsync(plugin, () -> {
-           player.unsafe().sendPacket(new PacketChunkData());
+            for (Chunk[] tab : BasicsBungee.getInstance().getLimboManager().getWorld().getChunks()) {
+                for (Chunk chunk : tab) {
+                    if (chunk != null) {
+                        player.unsafe().sendPacket(new PacketChunkData(chunk));
+                    }
+                }
+            }
+        });
+    }
+
+    private void sendPlayerPositionPacket(ProxiedPlayer player) {
+        plugin.getProxy().getScheduler().runAsync(plugin, () -> {
+            PacketPlayerPosition playerPosition = new PacketPlayerPosition();
+            playerPosition.setX(plugin.getConfigManager().getConfig().getDouble("Limbo-Spawn-X"));
+            playerPosition.setY(plugin.getConfigManager().getConfig().getDouble("Limbo-Spawn-Y"));
+            playerPosition.setZ(plugin.getConfigManager().getConfig().getDouble("Limbo-Spawn-Z"));
+            playerPosition.setYaw(plugin.getConfigManager().getConfig().getFloat("Limbo-Spawn-Yaw"));
+            playerPosition.setPitch(plugin.getConfigManager().getConfig().getFloat("Limbo-Spawn-Pitch"));
+
+             player.unsafe().sendPacket(playerPosition);
         });
     }
 
@@ -246,8 +284,12 @@ public class LimboManager {
         }
     }
 
-    public Map<UUID, ScheduledTask> getKeepAliveTasks() {
-        return keepAliveTasks;
+    public Set<UUID> getLimboPlayers() {
+        return limboPlayers;
+    }
+
+    public World getWorld() {
+        return world;
     }
 
 }
