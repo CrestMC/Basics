@@ -96,3 +96,6 @@ permissions:
   basics.playerlimit.bypass:
     description: "Gives permission to bypass the server player limit"
     default: op
+  basics.vanish.see:
+    description: "Default permission for viewing vanished players"
+    default: op

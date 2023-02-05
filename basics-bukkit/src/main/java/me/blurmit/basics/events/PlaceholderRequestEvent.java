@@ -81,7 +81,7 @@ public class PlaceholderRequestEvent extends Event implements Cancellable {
      * @return The sender in which the placeholder is requesting the data from.
      */
     public CommandSender getSender() {
-        return sender;
+        return sender == null ? player : sender;
     }
 
     /**

@@ -1,4 +1,4 @@
-package me.blurmit.basics.command.defined;
+package me.blurmit.basics.command.defined.slowmode;
 
 import me.blurmit.basics.Basics;
 import me.blurmit.basics.command.CommandBase;
@@ -16,11 +16,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class SlowmodeCommand extends CommandBase implements Listener {
+public class SlowmodeCommand extends CommandBase {
 
     private final Basics plugin;
-    private final Map<UUID, Long> cooldownStorage;
-    public long cooldown;
+    private final SlowmodeListener listener;
 
     public SlowmodeCommand(Basics plugin) {
         super(plugin.getName());
@@ -31,10 +30,9 @@ public class SlowmodeCommand extends CommandBase implements Listener {
         setPermission("basics.command.slowmode");
 
         this.plugin = plugin;
-        this.cooldown = plugin.getConfigManager().getConfig().getLong("Slowmode-Delay");
-        this.cooldownStorage = new HashMap<>();
+        this.listener = new SlowmodeListener(plugin, this);
 
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        plugin.getServer().getPluginManager().registerEvents(listener, plugin);
     }
 
     @Override
@@ -58,35 +56,13 @@ public class SlowmodeCommand extends CommandBase implements Listener {
             return true;
         }
 
-        cooldown = delay;
+        listener.cooldown = delay;
         plugin.getConfigManager().getConfig().set("Slowmode-Delay", delay);
         plugin.getConfigManager().saveConfig();
 
         sender.sendMessage(Placeholders.parsePlaceholder(Messages.SLOWMODE_SET + "", sender, this, args));
 
         return true;
-    }
-
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onChat(AsyncPlayerChatEvent event) {
-        if (event.getPlayer().hasPermission("basics.slowmode.bypass")) {
-            return;
-        }
-
-        if (cooldownStorage.containsKey(event.getPlayer().getUniqueId())) {
-
-            long secondsLeft = ((cooldownStorage.get(event.getPlayer().getUniqueId()) / 1000) + cooldown) - (System.currentTimeMillis() / 1000);
-
-            if (secondsLeft > 0) {
-                event.getPlayer().sendMessage(Placeholders.parsePlaceholder(Messages.SLOWMODE_MESSAGE + "", event.getPlayer(), this, null, new String[]{}, event.isAsynchronous(), secondsLeft + ""));
-                event.setCancelled(true);
-                cooldownStorage.remove(event.getPlayer().getUniqueId());
-                return;
-            }
-
-        }
-
-        cooldownStorage.put(event.getPlayer().getUniqueId(), System.currentTimeMillis());
     }
 
 }

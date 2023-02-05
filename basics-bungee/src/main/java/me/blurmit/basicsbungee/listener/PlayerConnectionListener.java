@@ -35,12 +35,16 @@ public class PlayerConnectionListener implements Listener {
 
     @EventHandler
     public void onPlayerDisconnect(@NotNull PlayerDisconnectEvent event) {
+        if (!event.getPlayer().hasPermission("basics.staffchat")) {
+            return;
+        }
+
         // Send staff disconnect message via plugin messaging
         plugin.getProxy().getScheduler().runAsync(plugin, () -> {
             String player = event.getPlayer().getName();
             String server = event.getPlayer().getServer().getInfo().getName();
 
-            PluginMessageHelper.sendData("RECEIVERS", "", "Staff-Disconnected", server, player);
+            PluginMessageHelper.sendData("RECEIVERS", "", "Staff", "Disconnected", server, player);
         });
     }
 
@@ -48,19 +52,19 @@ public class PlayerConnectionListener implements Listener {
     public void onServerSwitch(@NotNull ServerSwitchEvent event) {
         plugin.getLimboManager().getLimboPlayers().remove(event.getPlayer().getUniqueId());
 
+        if (!event.getPlayer().hasPermission("basics.staffchat")) {
+            return;
+        }
+
         if (event.getFrom() == null) {
             // Send staff connect message via plugin messaging
             plugin.getProxy().getScheduler().runAsync(plugin, () -> {
                 String player = event.getPlayer().getDisplayName();
                 String server = event.getPlayer().getServer().getInfo().getName();
 
-                PluginMessageHelper.sendData("RECEIVERS", "", "Staff-Connected", server, player);
+                PluginMessageHelper.sendData("RECEIVERS", "", "Staff", "Connected", server, player);
             });
 
-            return;
-        }
-
-        if (!event.getPlayer().hasPermission("basics.staffchat")) {
             return;
         }
 
@@ -70,7 +74,7 @@ public class PlayerConnectionListener implements Listener {
             String originalServer = event.getFrom().getName();
             String newServer = event.getPlayer().getServer().getInfo().getName();
 
-            PluginMessageHelper.sendData("RECEIVERS", "", "Staff-ServerSwitch", player, originalServer, newServer);
+            PluginMessageHelper.sendData("RECEIVERS", "", "Staff", "ServerSwitch", originalServer, player, newServer);
         });
     }
 

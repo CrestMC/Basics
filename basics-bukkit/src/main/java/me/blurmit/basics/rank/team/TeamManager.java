@@ -19,12 +19,13 @@ public class TeamManager {
         Scoreboard scoreboard = player.getScoreboard();
 
         for (Rank rank : plugin.getRankManager().getStorage().getRanks()) {
-            String prefix = ChatColor.translateAlternateColorCodes('&', rank.getPrefix());
+            String color = ChatColor.translateAlternateColorCodes('&', rank.getColor());
             String displayName = ChatColor.translateAlternateColorCodes('&', rank.getDisplayName());
 
             Team team = scoreboard.registerNewTeam(rank.getName());
-            team.setPrefix(prefix);
+            team.setPrefix(color);
             team.setDisplayName(displayName);
+            team.setColor(ChatColor.BOLD);
         }
     }
 

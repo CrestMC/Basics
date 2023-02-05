@@ -25,7 +25,7 @@ public abstract class CommandBase extends BukkitCommand implements TabCompleter 
     }
 
     public void registerCommand() {
-        JavaPlugin.getPlugin(Basics.class).getCommandManager().register(getName(), this);
+        JavaPlugin.getPlugin(Basics.class).getCommandManager().register(this);
 
         if (tabCompleter != null) {
             PluginCommand command = Bukkit.getPluginCommand(getName());

@@ -5,8 +5,9 @@ import com.google.common.io.ByteStreams;
 import me.blurmit.basics.Basics;
 import me.blurmit.basics.command.CommandBase;
 import me.blurmit.basics.util.Placeholders;
-import me.blurmit.basics.util.PluginMessageHelper;
-import me.blurmit.basics.util.UUIDs;
+import me.blurmit.basics.util.PluginMessageUtil;
+import me.blurmit.basics.util.RankUtil;
+import me.blurmit.basics.util.UUIDUtil;
 import me.blurmit.basics.util.lang.Messages;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -57,19 +58,14 @@ public class HelpopCommand extends CommandBase implements PluginMessageListener 
 
         player.sendMessage(Placeholders.parsePlaceholder(Messages.HELPOP_SUBMITTED + ""));
 
-        plugin.getServer().getOnlinePlayers().forEach(onlinePlayer -> {
-            if (!onlinePlayer.hasPermission("basics.helpop")) {
-                return;
-            }
-
-            UUIDs.retrieveUUID(player.getName(), uuid -> {
-                plugin.getRankManager().getHighestRankByPriority(uuid, rank -> {
-                    onlinePlayer.sendMessage(Placeholders.parsePlaceholder(Messages.HELPOP_REQUEST + "", true, rank.getColor() + player.getName(), ChatColor.stripColor(message)));
-                });
-            });
+        plugin.getRankManager().getHighestRankByPriority(player.getUniqueId(), rank -> {
+            plugin.getServer().broadcast(
+                    Placeholders.parsePlaceholder(Messages.HELPOP_REQUEST + "", true, RankUtil.getColor(player.getUniqueId()) + player.getName(), ChatColor.stripColor(message)),
+                    "basics.helpop.read"
+            );
         });
 
-        PluginMessageHelper.sendData("BungeeCord", "HelpOP-Request", player.getName(), ChatColor.stripColor(message));
+        PluginMessageUtil.sendData("BungeeCord", "HelpOP-Request", player.getName(), ChatColor.stripColor(message));
         return true;
     }
 
@@ -89,15 +85,12 @@ public class HelpopCommand extends CommandBase implements PluginMessageListener 
         String user = input.readUTF();
         String request = input.readUTF();
 
-        plugin.getServer().getOnlinePlayers().forEach(onlinePlayer -> {
-            if (!onlinePlayer.hasPermission("basics.helpop")) {
-                return;
-            }
-
-            UUIDs.retrieveUUID(user, uuid -> {
-                plugin.getRankManager().getHighestRankByPriority(uuid, rank -> {
-                    onlinePlayer.sendMessage(Placeholders.parsePlaceholder(Messages.HELPOP_REQUEST + "", true, rank.getColor() + user, ChatColor.stripColor(request)));
-                });
+        UUIDUtil.asyncGetUUID(user, uuid -> {
+            plugin.getRankManager().getHighestRankByPriority(uuid, rank -> {
+                plugin.getServer().broadcast(
+                        Placeholders.parsePlaceholder(Messages.HELPOP_REQUEST + "", true, RankUtil.getColor(uuid) + user, ChatColor.stripColor(request)),
+                        "basics.helpop.read"
+                );
             });
         });
     }

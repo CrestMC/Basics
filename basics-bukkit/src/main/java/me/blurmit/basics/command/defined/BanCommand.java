@@ -1,11 +1,13 @@
 package me.blurmit.basics.command.defined;
 
+import javafx.util.Pair;
 import me.blurmit.basics.Basics;
 import me.blurmit.basics.command.CommandBase;
 import me.blurmit.basics.punishments.PunishmentType;
 import me.blurmit.basics.util.Placeholders;
-import me.blurmit.basics.util.PluginMessageHelper;
-import me.blurmit.basics.util.UUIDs;
+import me.blurmit.basics.util.PluginMessageUtil;
+import me.blurmit.basics.util.RankUtil;
+import me.blurmit.basics.util.UUIDUtil;
 import me.blurmit.basics.util.lang.Messages;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -13,8 +15,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class BanCommand extends CommandBase {
 
@@ -31,70 +31,57 @@ public class BanCommand extends CommandBase {
     }
 
     @Override
-    public boolean execute(CommandSender sender, @NotNull String commandLabel, String[] args) {
+    public boolean execute(CommandSender sender, @NotNull String commandLabel, String[] arguments) {
         if (!sender.hasPermission(getPermission())) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.NO_PERMISSION + "", sender, this, args));
+            sender.sendMessage(Placeholders.parsePlaceholder(Messages.NO_PERMISSION + "", sender, this, arguments));
             return true;
         }
 
-        AtomicBoolean silent = new AtomicBoolean();
-        AtomicReference<String[]> arguments = new AtomicReference<>();
+        Pair<Boolean, String[]> silentPair = plugin.getPunishmentManager().isSilent(arguments);
+        boolean silent = silentPair.getKey();
+        String[] args = silentPair.getValue();
 
-        plugin.getPunishmentManager().isSilent(args, (isSilent, newArgs) -> {
-            silent.set(isSilent);
-            arguments.set(newArgs);
-        });
-
-        final String[] finalArgs = arguments.get();
-
-        if (finalArgs.length < 2) {
+        if (args.length < 2) {
             sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_ARGS + "", sender, this, args));
             return true;
         }
 
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-            Player target = plugin.getServer().getPlayer(finalArgs[0]);
-            String targetName;
+            Player target = plugin.getServer().getPlayer(args[0]);
+            String name;
             UUID uuid;
 
             if (target != null) {
                 uuid = target.getUniqueId();
             } else {
-                uuid = UUIDs.synchronouslyRetrieveUUID(finalArgs[0]);
+                uuid = UUIDUtil.getUUID(args[0]);
 
                 if (uuid == null) {
-                    sender.sendMessage(Placeholders.parsePlaceholder(Messages.ACCOUNT_DOESNT_EXIST + "", true, finalArgs[0]));
+                    sender.sendMessage(Placeholders.parsePlaceholder(Messages.ACCOUNT_DOESNT_EXIST + "", true, args[0]));
                     return;
                 }
             }
 
             if (target != null) {
-                targetName = target.getName();
+                name = target.getName();
             }  else {
-                targetName = UUIDs.synchronouslyGetNameFromUUID(uuid);
+                name = UUIDUtil.getName(uuid);
             }
 
-            String name = targetName;
-            targetName = plugin.getRankManager().getHighestRankByPriority(uuid).getColor() + targetName;
-            String reason = String.join(" ", Arrays.copyOfRange(finalArgs, 1, finalArgs.length));
+            String fancyName = RankUtil.getColoredName(uuid);
+            String reason = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
 
-            PluginMessageHelper.sendData("BungeeCord", "KickPlayer", name, Placeholders.parsePlaceholder(Messages.BAN_PERMANENT_ALERT + "", true, reason, "never"));
+            PluginMessageUtil.sendData("BungeeCord", "KickPlayer", name, Placeholders.parsePlaceholder(Messages.BAN_PERMANENT_ALERT + "", true, reason, "never"));
 
             if (target != null) {
                 plugin.getServer().getScheduler().runTask(plugin, () -> {
                     target.kickPlayer(Placeholders.parsePlaceholder(Messages.BAN_PERMANENT_ALERT + "", reason, "never"));
                 });
             }
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.PUNISHMENT_MESSAGE + "", true, "banned", targetName, reason));
+            sender.sendMessage(Placeholders.parsePlaceholder(Messages.PUNISHMENT_MESSAGE + "", true, "banned", fancyName, reason));
 
-            plugin.getPunishmentManager().storeBan(
-                    uuid,
-                    (sender instanceof Player) ? ((Player) sender).getUniqueId() : null,
-                    -1,
-                    plugin.getConfigManager().getConfig().getString("Server-Name.Default-Value"),
-                    reason
-            );
-            plugin.getPunishmentManager().broadcastPunishment(sender, targetName, PunishmentType.PERM_BAN, reason, silent.get());
+            plugin.getPunishmentManager().storeBan(uuid, (sender instanceof Player) ? ((Player) sender).getUniqueId() : null, -1, plugin.getConfigManager().getConfig().getString("Server-Name.Default-Value"), reason);
+            plugin.getPunishmentManager().broadcastPunishment(sender, fancyName, PunishmentType.PERM_BAN, reason, silent);
         });
 
         return true;

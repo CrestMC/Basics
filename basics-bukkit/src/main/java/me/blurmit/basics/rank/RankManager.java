@@ -31,7 +31,7 @@ public class RankManager {
     private final RankStorage storage;
     @Getter
     private final TeamManager teamManager;
-    private RankListener listener;
+    private final RankListener listener;
     @Getter
     private final Map<UUID, PermissionAttachment> activeAttachments;
 
@@ -132,6 +132,10 @@ public class RankManager {
         return rank.getPermissions().stream()
                 .map(Permission::getName)
                 .anyMatch(name -> name.equalsIgnoreCase(permission));
+    }
+
+    public boolean hasRank(UUID player, String rank) {
+        return getStorage().getOwnedRanks().get(player).contains(rank);
     }
 
     public void hasRank(UUID player, String rank, Consumer<Boolean> consumer) {

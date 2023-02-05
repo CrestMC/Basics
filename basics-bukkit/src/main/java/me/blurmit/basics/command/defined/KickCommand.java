@@ -1,17 +1,17 @@
 package me.blurmit.basics.command.defined;
 
+import javafx.util.Pair;
 import me.blurmit.basics.Basics;
 import me.blurmit.basics.command.CommandBase;
 import me.blurmit.basics.punishments.PunishmentType;
 import me.blurmit.basics.util.Placeholders;
+import me.blurmit.basics.util.RankUtil;
 import me.blurmit.basics.util.lang.Messages;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class KickCommand extends CommandBase {
 
@@ -28,42 +28,36 @@ public class KickCommand extends CommandBase {
     }
 
     @Override
-    public boolean execute(CommandSender sender, @NotNull String commandLabel, String[] args) {
+    public boolean execute(CommandSender sender, @NotNull String commandLabel, String[] arguments) {
         if (!sender.hasPermission(getPermission())) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.NO_PERMISSION + "", sender, this, args));
+            sender.sendMessage(Placeholders.parsePlaceholder(Messages.NO_PERMISSION + "", sender, this, arguments));
             return true;
         }
 
-        AtomicBoolean silent = new AtomicBoolean();
-        AtomicReference<String[]> arguments = new AtomicReference<>();
+        Pair<Boolean, String[]> silentPair = plugin.getPunishmentManager().isSilent(arguments);
+        boolean silent = silentPair.getKey();
+        String[] args = silentPair.getValue();
 
-        plugin.getPunishmentManager().isSilent(args, (isSilent, newArgs) -> {
-            silent.set(isSilent);
-            arguments.set(newArgs);
-        });
-
-        final String[] finalArgs = arguments.get();
-
-        if (finalArgs.length < 2) {
+        if (args.length < 2) {
             sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_ARGS + "", sender, this, args));
             return true;
         }
 
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-            Player target = plugin.getServer().getPlayer(finalArgs[0]);
+            Player target = plugin.getServer().getPlayer(args[0]);
 
             if (target == null) {
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.PLAYER_NOT_FOUND + "", true, finalArgs[0]));
+                sender.sendMessage(Placeholders.parsePlaceholder(Messages.PLAYER_NOT_FOUND + "", true, args[0]));
                 return;
             }
 
-            String targetName = plugin.getRankManager().getHighestRankByPriority(target.getUniqueId()).getColor() + target.getName();
-            String reason = String.join(" ", Arrays.copyOfRange(finalArgs, 1, finalArgs.length));
+            String fancyName = RankUtil.getColoredName(target.getUniqueId());
+            String reason = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
 
             plugin.getServer().getScheduler().runTask(plugin, () -> {
                 target.kickPlayer(Placeholders.parsePlaceholder(Messages.KICK_ALERT + "", reason));
             });
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.PUNISHMENT_MESSAGE + "", true, "kicked", targetName, reason));
+            sender.sendMessage(Placeholders.parsePlaceholder(Messages.PUNISHMENT_MESSAGE + "", true, "kicked", fancyName, reason));
 
             plugin.getPunishmentManager().storeHistory(
                     PunishmentType.KICK,
@@ -74,7 +68,7 @@ public class KickCommand extends CommandBase {
                     plugin.getConfigManager().getConfig().getString("Server-Name.Default-Value"),
                     reason
             );
-            plugin.getPunishmentManager().broadcastPunishment(sender, targetName, PunishmentType.KICK, reason, silent.get());
+            plugin.getPunishmentManager().broadcastPunishment(sender, fancyName, PunishmentType.KICK, reason, silent);
         });
 
         return true;

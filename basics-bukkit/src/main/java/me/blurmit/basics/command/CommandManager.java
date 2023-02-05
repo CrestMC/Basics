@@ -35,7 +35,43 @@ public class CommandManager implements Listener {
         ReflectionUtil.consume("me.blurmit.basics.command.defined", Basics.class.getClassLoader(), CommandBase.class, CommandBase::registerCommand, true, plugin);
     }
 
-    public void register(String command, CommandBase commandClass) {
+    public void register(CommandBase command) {
+        // Check if the server's plugin manager is SimplePluginManager
+        if (!(plugin.getServer().getPluginManager() instanceof SimplePluginManager)) {
+            plugin.getLogger().severe(Prefixes.ERROR + "Could not register command " + command.getName() + ": SimplePluginManager not found!");
+            return;
+        }
+
+        final Map<String, Command> knownCommandsMap;
+
+        try {
+            // Get the commandmap field
+            Field commandMapField = SimplePluginManager.class.getDeclaredField("commandMap");
+            commandMapField.setAccessible(true);
+            commandMap = (SimpleCommandMap) commandMapField.get(plugin.getServer().getPluginManager());
+
+            // Get the direct hashmap of known commands
+            Field knownCommandsField = SimpleCommandMap.class.getDeclaredField("knownCommands");
+            knownCommandsField.setAccessible(true);
+            knownCommandsMap = (Map<String, Command>) knownCommandsField.get(commandMap);
+        } catch (Exception e) {
+            plugin.getLogger().log(Level.SEVERE, Prefixes.ERROR + "Could not register command " + command + ": " + e.getMessage(), e);
+            return;
+        }
+
+        // Remove command if it's already registered by another plugin
+        knownCommandsMap.remove(command.getName().toLowerCase());
+        command.getAliases().forEach(alias -> knownCommandsMap.remove(alias.toLowerCase()));
+
+        // Register command in the command map
+        commandMap.register(command.getName(), plugin.getName().toLowerCase(), command);
+
+        // Remove fallback prefix command
+        knownCommandsMap.remove(plugin.getName().toLowerCase() + ":" + command);
+        command.getAliases().forEach(alias -> knownCommandsMap.remove(plugin.getName().toLowerCase() + ":" + alias.toLowerCase()));
+    }
+
+    public void unregister(CommandBase command) {
         // Check if the server's plugin manager is SimplePluginManager
         if (!(plugin.getServer().getPluginManager() instanceof SimplePluginManager)) {
             plugin.getLogger().severe(Prefixes.ERROR + "Could not register command " + command + ": SimplePluginManager not found!");
@@ -54,22 +90,14 @@ public class CommandManager implements Listener {
             Field knownCommandsField = SimpleCommandMap.class.getDeclaredField("knownCommands");
             knownCommandsField.setAccessible(true);
             knownCommandsMap = (Map<String, Command>) knownCommandsField.get(commandMap);
-
         } catch (Exception e) {
-            plugin.getLogger().log(Level.SEVERE, Prefixes.ERROR + "Could not register command " + command + ": " + e.getMessage(), e);
+            plugin.getLogger().log(Level.SEVERE, Prefixes.ERROR + "Could not unregister command " + command.getName() + ": " + e.getMessage(), e);
             return;
         }
 
         // Remove command if it's already registered by another plugin
-        knownCommandsMap.remove(command.toLowerCase());
-        commandClass.getAliases().forEach(alias -> knownCommandsMap.remove(alias.toLowerCase()));
-
-        // Register command in the command map
-        commandMap.register(commandClass.getName(), plugin.getName().toLowerCase(), commandClass);
-
-        // Remove fallback prefix command
-        knownCommandsMap.remove(plugin.getName().toLowerCase() + ":" + command);
-        commandClass.getAliases().forEach(alias -> knownCommandsMap.remove(plugin.getName().toLowerCase() + ":" + alias.toLowerCase()));
+        knownCommandsMap.remove(command.getName().toLowerCase());
+        command.getAliases().forEach(alias -> knownCommandsMap.remove(alias.toLowerCase()));
     }
 
     @EventHandler

@@ -7,7 +7,7 @@ import me.blurmit.basics.Basics;
 import me.blurmit.basics.command.CommandBase;
 import me.blurmit.basics.util.Placeholders;
 import me.blurmit.basics.util.ReflectionUtil;
-import me.blurmit.basics.util.UUIDs;
+import me.blurmit.basics.util.UUIDUtil;
 import me.blurmit.basics.util.lang.Messages;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -67,7 +67,7 @@ public class SkinCommand extends CommandBase {
 
         // TODO: 1.8 fix unloaded chunks
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-            UUID uuid = UUIDs.synchronouslyRetrieveUUID(args[0]);
+            UUID uuid = UUIDUtil.getUUID(args[0]);
 
             if (uuid == null) {
                 sender.sendMessage(Placeholders.parsePlaceholder(Messages.ACCOUNT_DOESNT_EXIST + "", true, args[0]));
@@ -79,7 +79,7 @@ public class SkinCommand extends CommandBase {
             sendPlayerInfoPacket(craftPlayer, connection, "ADD_PLAYER");
             refreshPlayer(player, craftPlayer, connection);
 
-            player.sendMessage(Placeholders.parsePlaceholder(Messages.SKIN_SET + "", true, UUIDs.synchronouslyGetNameFromUUID(uuid)));
+            player.sendMessage(Placeholders.parsePlaceholder(Messages.SKIN_SET + "", true, UUIDUtil.getName(uuid)));
         });
         return true;
     }
@@ -178,7 +178,7 @@ public class SkinCommand extends CommandBase {
     private Object getSkinTextureProperty(String name) {
         if (!texturePropertyMap.containsKey(name)) {
             try {
-                UUID uuid = UUIDs.synchronouslyRetrieveUUID(name);
+                UUID uuid = UUIDUtil.getUUID(name);
 
                 URL sessionServer = new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid + "?unsigned=false");
                 InputStreamReader sessionServerReader = new InputStreamReader(sessionServer.openStream());

@@ -2,15 +2,12 @@ package me.blurmit.basics.command.defined;
 
 import me.blurmit.basics.Basics;
 import me.blurmit.basics.command.CommandBase;
-import me.blurmit.basics.rank.Rank;
 import me.blurmit.basics.util.Placeholders;
+import me.blurmit.basics.util.RankUtil;
 import me.blurmit.basics.util.lang.Messages;
-import net.luckperms.api.LuckPermsProvider;
-import net.luckperms.api.model.group.Group;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -39,66 +36,21 @@ public class ListCommand extends CommandBase {
             return true;
         }
 
-        if (!(sender instanceof Player)) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.ONLY_PLAYERS + "", sender, this, args));
-            return true;
-        }
+        String players = plugin.getServer().getOnlinePlayers().stream()
+                .filter(onlinePlayer -> {
+                    if (!(sender instanceof Player)) {
+                        return true;
+                    }
 
-        String players;
-        Player player = (Player) sender;
-        String ranks;
+                    Player player = (Player) sender;
+                    return player.canSee(onlinePlayer);
+                })
+                .sorted(Comparator.comparingInt(onlinePlayer -> -RankUtil.getPriority(onlinePlayer.getUniqueId())))
+                .map(onlinePlayer -> RankUtil.getColoredName(onlinePlayer.getUniqueId()))
+                .collect(Collectors.joining(ChatColor.GRAY + ", " + ChatColor.RESET, ChatColor.GRAY + "", ChatColor.RESET + ""));
+        String ranks = RankUtil.getOrderedRanks();
 
-        if (plugin.getConfigManager().getConfig().getBoolean("Ranks.Enabled")) {
-            ranks = plugin.getRankManager().getStorage().getRanks().stream()
-                    .sorted(Comparator.comparingLong(Rank::getPriority).reversed())
-                    .map(Rank::getDisplayName)
-                    .collect(Collectors.joining(ChatColor.GRAY + ", " + ChatColor.RESET, ChatColor.GRAY + "", ChatColor.RESET + ""));
-
-            players = plugin.getServer().getOnlinePlayers().stream()
-                    .filter(player::canSee)
-                    .sorted(Comparator.comparingLong(onlinePlayer -> -plugin.getRankManager().getHighestRankByPriority(onlinePlayer).getPriority()))
-                    .map(onlinePlayer -> plugin.getRankManager().getHighestRankByPriority(onlinePlayer).getColor() + onlinePlayer.getName())
-                    .collect(Collectors.joining(ChatColor.GRAY + ", " + ChatColor.RESET, ChatColor.GRAY + "", ChatColor.RESET + ""));
-        } else if (plugin.getServer().getPluginManager().getPlugin("LuckPerms") != null) {
-            ranks = LuckPermsProvider.get().getGroupManager().getLoadedGroups().stream()
-                    .sorted(Comparator.comparing(group -> -group.getWeight().getAsInt()))
-                    .map(Group::getDisplayName)
-                    .sorted(Comparator.reverseOrder())
-                    .collect(Collectors.joining(ChatColor.GRAY + ", " + ChatColor.RESET, ChatColor.GRAY + "", ChatColor.RESET + ""));
-
-            players = plugin.getServer().getOnlinePlayers().stream()
-                    .filter(player::canSee)
-                    .sorted(Comparator.comparingInt(onlinePlayer -> {
-                        String group = LuckPermsProvider.get().getUserManager().getUser(onlinePlayer.getUniqueId()).getPrimaryGroup();
-                        return -LuckPermsProvider.get().getGroupManager().getGroup(group).getWeight().getAsInt();
-                    }))
-                    .map(onlinePlayer -> {
-                        String group = LuckPermsProvider.get().getUserManager().getUser(onlinePlayer.getUniqueId()).getPrimaryGroup();
-                        return LuckPermsProvider.get().getGroupManager().getGroup(group).getDisplayName() + " " + onlinePlayer.getName();
-                    })
-                    .sorted(Comparator.reverseOrder())
-                    .collect(Collectors.joining(ChatColor.GRAY + ", " + ChatColor.RESET, ChatColor.GRAY + "", ChatColor.RESET + ""));
-        } else {
-            ranks = plugin.getServer().getScoreboardManager().getMainScoreboard().getTeams().stream()
-                    .sorted()
-                    .map(Team::getDisplayName)
-                    .collect(Collectors.joining(ChatColor.GRAY + ", " + ChatColor.RESET, ChatColor.GRAY + "", ChatColor.RESET + ""));
-
-            players = plugin.getServer().getOnlinePlayers().stream()
-                    .filter(player::canSee)
-                    .sorted()
-                    .map(onlinePlayer -> {
-                        Team team = plugin.getServer().getScoreboardManager().getMainScoreboard().getTeams().stream()
-                                .filter(team1 -> team1.getPlayers().contains(onlinePlayer))
-                                .findFirst()
-                                .get();
-
-                        return team.getDisplayName();
-                    })
-                    .collect(Collectors.joining(ChatColor.GRAY + ", " + ChatColor.RESET, ChatColor.GRAY + "", ChatColor.RESET + ""));
-        }
-
-        player.sendMessage(Placeholders.parsePlaceholder(Messages.LIST_MESSAGE + "", player, this, null, args, false, ranks, players));
+        sender.sendMessage(Placeholders.parsePlaceholder(Messages.LIST_MESSAGE + "", sender, this, null, args, false, ranks, players));
         return true;
     }
 

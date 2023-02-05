@@ -29,6 +29,15 @@ public final class Basics extends JavaPlugin {
         getLogger().info("Loading configurations...");
         this.configManager = new ConfigManager(this);
 
+        if (configManager.getConfig().getBoolean("Ranks.Enabled")) {
+            getLogger().info("Loading ranks...");
+            this.rankManager = new RankManager(this);
+            rankManager.createDefaultRank();
+        }
+
+        getLogger().info("Loading punishments...");
+        this.punishmentManager = new PunishmentManager(this);
+
         getLogger().info("Registering commands...");
         this.commandManager = new CommandManager(this);
         getCommandManager().registerCommands();
@@ -50,26 +59,17 @@ public final class Basics extends JavaPlugin {
         new AsyncChatListener(this);
         new PlayerConnectionListener(this);
 
-        if (configManager.getConfig().getBoolean("Ranks.Enabled")) {
-            getLogger().info("Loading ranks...");
-            this.rankManager = new RankManager(this);
-            rankManager.createDefaultRank();
-        }
-
-        getLogger().info("Loading punishments...");
-        this.punishmentManager = new PunishmentManager(this);
-
 
         getLogger().info(getName() + " has been enabled!");
     }
 
     @Override
     public void onDisable() {
-        if (getRankManager().getStorage().getDatabaseManager() != null) {
+        if (getRankManager() != null && getRankManager().getStorage().getDatabaseManager() != null) {
             getRankManager().getStorage().getDatabaseManager().shutdown();
         }
 
-        if (getPunishmentManager().getStorage().getDatabaseManager() != null) {
+        if (getPunishmentManager() != null && getPunishmentManager().getStorage().getDatabaseManager() != null) {
             getPunishmentManager().getStorage().getDatabaseManager().shutdown();
         }
 

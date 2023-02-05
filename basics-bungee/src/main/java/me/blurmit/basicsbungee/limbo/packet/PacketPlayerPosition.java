@@ -36,7 +36,7 @@ public class PacketPlayerPosition extends DefinedPacket {
 
         data = buf.readByte();
 
-        if (protocolVersion > ProtocolConstants.MINECRAFT_1_9) {
+        if (protocolVersion >= 79) {
             teleportedID = DefinedPacket.readVarInt(buf);
         }
     }
@@ -50,7 +50,7 @@ public class PacketPlayerPosition extends DefinedPacket {
         buf.writeFloat(pitch);
         buf.writeByte(data);
 
-        if (protocolVersion > ProtocolConstants.MINECRAFT_1_9) {
+        if (protocolVersion >= 79) {
             DefinedPacket.writeVarInt(teleportedID, buf);
         }
     }

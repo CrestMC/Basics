@@ -4,7 +4,7 @@ import me.blurmit.basics.Basics;
 import me.blurmit.basics.command.defined.SubCommand;
 import me.blurmit.basics.rank.Rank;
 import me.blurmit.basics.util.Placeholders;
-import me.blurmit.basics.util.UUIDs;
+import me.blurmit.basics.util.UUIDUtil;
 import me.blurmit.basics.util.lang.Messages;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -33,7 +33,7 @@ public class RevokeRankSubCommand extends SubCommand {
             return;
         }
 
-        UUIDs.retrieveUUID(args[2].toLowerCase(), uuid -> handleRevokeRank(sender, args, uuid));
+        UUIDUtil.asyncGetUUID(args[2].toLowerCase(), uuid -> handleRevokeRank(sender, args, uuid));
     }
 
     private void handleRevokeRank(CommandSender sender, String[] args, UUID uuid) {

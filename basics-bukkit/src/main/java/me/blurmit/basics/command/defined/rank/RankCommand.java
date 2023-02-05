@@ -7,6 +7,8 @@ import me.blurmit.basics.command.defined.rank.subcommands.*;
 import me.blurmit.basics.rank.Rank;
 import me.blurmit.basics.util.Placeholders;
 import me.blurmit.basics.util.lang.Messages;
+import net.luckperms.api.LuckPermsProvider;
+import net.luckperms.api.model.group.Group;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
@@ -38,6 +40,12 @@ public class RankCommand extends CommandBase {
         subCommands.put("edit", new EditRankSubCommand(plugin, this));
         subCommands.put("give", new GiveRankSubCommand(plugin, this));
         subCommands.put("revoke", new RevokeRankSubCommand(plugin, this));
+
+        if (plugin.getRankManager() == null) {
+            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+                plugin.getCommandManager().unregister(this);
+            });
+        }
     }
 
     @Override
@@ -83,7 +91,11 @@ public class RankCommand extends CommandBase {
         }
 
         if (args.length == 2) {
-            return (List<String>) plugin.getRankManager().getStorage().getRanks().stream().map(Rank::getName).collect(Collectors.toSet());
+            if (plugin.getRankManager() != null) {
+                return (List<String>) plugin.getRankManager().getStorage().getRanks().stream().map(Rank::getName).collect(Collectors.toSet());
+            } else if (plugin.getServer().getPluginManager().getPlugin("LuckPerms") != null) {
+                return (List<String>) LuckPermsProvider.get().getGroupManager().getLoadedGroups().stream().map(Group::getName).collect(Collectors.toSet());
+            }
         }
 
         if (args.length < 4) {

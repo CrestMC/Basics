@@ -74,11 +74,15 @@ public class PluginMessageListener implements Listener {
                     }
                     break;
                 }
-                case "Staff-Chat": {
+                case "Staff": {
+                    if (!input.readUTF().equals("Chat")) {
+                        return;
+                    }
+
                     String server = input.readUTF();
                     String player = input.readUTF();
                     String message = ChatColor.translateAlternateColorCodes('&', input.readUTF());
-                    PluginMessageHelper.sendData("RECEIVERS", serverData.getName(), "Staff-Chat", server, player, message);
+                    PluginMessageHelper.sendData("RECEIVERS", serverData.getName(), "Staff", "Chat", server, player, message);
                     break;
                 }
                 case "HelpOP-Request": {

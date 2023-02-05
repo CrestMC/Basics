@@ -3,17 +3,14 @@ package me.blurmit.basicsbungee.limbo;
 import me.blurmit.basicsbungee.BasicsBungee;
 import me.blurmit.basicsbungee.limbo.packet.PacketChunkData;
 import me.blurmit.basicsbungee.limbo.packet.PacketPlayerPosition;
-import me.blurmit.basicsbungee.limbo.protocol.ProtocolMapping;
 import me.blurmit.basicsbungee.limbo.world.Chunk;
 import me.blurmit.basicsbungee.limbo.world.Schematic;
 import me.blurmit.basicsbungee.limbo.world.World;
 import me.blurmit.basicsbungee.util.Messages;
-import me.blurmit.basicsbungee.util.Protocols;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.score.Objective;
 import net.md_5.bungee.api.score.Score;
 import net.md_5.bungee.api.score.Team;
-import net.md_5.bungee.protocol.ProtocolConstants;
 import net.md_5.bungee.protocol.packet.*;
 import se.llbit.nbt.*;
 
@@ -42,12 +39,55 @@ public class LimboManager {
         this.limboPlayers = new HashSet<>();
         this.listener = new LimboListener(plugin);
 
-        Protocols.registerPacket(
-                PacketPlayerPosition.class,
-                PacketPlayerPosition::new,
-                new ProtocolMapping(ProtocolConstants.MINECRAFT_1_8, 0x08),
-                new ProtocolMapping(ProtocolConstants.MINECRAFT_1_9, 0x2E)
-        );
+        // 80 = Snapshot 15w43a
+        // 86 = Snapshot 15w46a
+        // 318 = Snapshot 17w13a
+        // 332 = 1.12-pre5
+        // 336 = Snapshot 17w31a
+        // 345 = Snapshot 17w46a
+        // 352 = Snapshot 18w01a
+        // 389 = 1.13-pre7
+        // 451 = Snapshot 18w50a
+        // 471 = Snapshot 19w14b
+        // 550 = Snapshot 19w34a
+//        Protocols.registerPacket(
+//                PacketPlayerPosition.class,
+//                PacketPlayerPosition::new,
+//                new ProtocolMapping(ProtocolConstants.MINECRAFT_1_8, 0x08),
+//                new ProtocolMapping(ProtocolConstants.MINECRAFT_1_9, 0x2E),
+//                new ProtocolMapping(80, 0x2F),
+//                new ProtocolMapping(86, 0x2E),
+//                new ProtocolMapping(318, 0x2F),
+//                new ProtocolMapping(332, 0x2E),
+//                new ProtocolMapping(336, 0x2F),
+//                new ProtocolMapping(345, 0x30),
+//                new ProtocolMapping(352, 0x31),
+//                new ProtocolMapping(389, 0x32),
+//                new ProtocolMapping(451, 0x33),
+//                new ProtocolMapping(471, 0x35),
+//                new ProtocolMapping(550, 0x36)
+//        );
+
+        // 318 = Snapshot 17w13a
+        // 332 = 1.12-pre5
+        // 345 = Snapshot 17w46a
+        // 389 = 1.13-pre7
+        // 471 = Snapshot 19w14b
+        // 550 = Snapshot 19w34a
+//        Protocols.registerPacket(
+//                PacketChunkData.class,
+//                PacketChunkData::new,
+//                new ProtocolMapping(ProtocolConstants.MINECRAFT_1_8, 0x21),
+//                new ProtocolMapping(ProtocolConstants.MINECRAFT_1_9, 0x20),
+//                new ProtocolMapping(ProtocolConstants.MINECRAFT_1_9_1, 0x23),
+//                new ProtocolMapping(ProtocolConstants.MINECRAFT_1_9_4, 0x20),
+//                new ProtocolMapping(318, 0x21),
+//                new ProtocolMapping(332, 0x20),
+//                new ProtocolMapping(345, 0x21),
+//                new ProtocolMapping(389, 0x22),
+//                new ProtocolMapping(471, 0x21),
+//                new ProtocolMapping(550, 0x22)
+//        );
 
         try (FileInputStream inputStream = new FileInputStream(plugin.getConfigManager().getConfig().getString("Limbo-Schematic-File"))) {
             world = Schematic.parseWorld((CompoundTag) CompoundTag.read(new DataInputStream(new GZIPInputStream(inputStream))));
@@ -79,9 +119,10 @@ public class LimboManager {
         clearClientBossBar(player);
 
         sendRespawnPacket(player);
-        sendPlayerPositionPacket(player);
+//        sendPlayerPositionPacket(player);
         sendChunkDataPacket(player);
 
+        limboPlayers.add(player.getUniqueId());
         player.sendMessage(Messages.LIMBO_SPAWN.text());
     }
 
@@ -98,7 +139,7 @@ public class LimboManager {
 
             int version = player.getPendingConnection().getVersion();
 
-            if (version >= ProtocolConstants.MINECRAFT_1_16) {
+            if (version >= 552) {
                 List<NamedTag> items = new ArrayList<>();
                 items.add(new NamedTag("ambient_light", new ByteTag(1)));
                 items.add(new NamedTag("infiniburn", new StringTag("0")));
@@ -142,7 +183,7 @@ public class LimboManager {
 
             int version = player.getPendingConnection().getVersion();
 
-            if (version >= ProtocolConstants.MINECRAFT_1_16) {
+            if (version >= 552) {
                 List<NamedTag> items = new ArrayList<>();
                 items.add(new NamedTag("ambient_light", new ByteTag(1)));
                 items.add(new NamedTag("infiniburn", new StringTag("0")));
@@ -173,17 +214,6 @@ public class LimboManager {
     }
 
     private void sendChunkDataPacket(ProxiedPlayer player) {
-        plugin.getLogger().info("Sending Limbo chunk map to " + player.getName() + "...");
-
-//        Protocols.registerPacket(
-//                PacketChunkData.class,
-//                PacketChunkData::new,
-//                new ProtocolMapping(ProtocolConstants.MINECRAFT_1_8, 0x21),
-//                new ProtocolMapping(ProtocolConstants.MINECRAFT_1_9, 0x20),
-//                new ProtocolMapping(ProtocolConstants.MINECRAFT_1_9_1, 0x23),
-//                new ProtocolMapping(ProtocolConstants.MINECRAFT_1_9_4, 0x20)
-//        );
-
         plugin.getProxy().getScheduler().runAsync(plugin, () -> {
             for (Chunk[] tab : BasicsBungee.getInstance().getLimboManager().getWorld().getChunks()) {
                 for (Chunk chunk : tab) {
@@ -203,11 +233,14 @@ public class LimboManager {
             playerPosition.setZ(plugin.getConfigManager().getConfig().getDouble("Limbo-Spawn-Z"));
             playerPosition.setYaw(plugin.getConfigManager().getConfig().getFloat("Limbo-Spawn-Yaw"));
             playerPosition.setPitch(plugin.getConfigManager().getConfig().getFloat("Limbo-Spawn-Pitch"));
+            playerPosition.setData((byte) 0);
+            playerPosition.setTeleportedID(1);
 
              player.unsafe().sendPacket(playerPosition);
         });
     }
 
+    @SuppressWarnings("unchecked")
     private void clearClientScoreboard(ProxiedPlayer player) {
         try {
             Field scoreboardField = Class.forName("net.md_5.bungee.UserConnection").getDeclaredField("serverSentScoreboard");

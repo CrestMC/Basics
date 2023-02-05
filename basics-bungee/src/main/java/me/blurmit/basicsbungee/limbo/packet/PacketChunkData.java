@@ -10,8 +10,6 @@ import net.md_5.bungee.protocol.AbstractPacketHandler;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.ProtocolConstants;
 
-import java.nio.charset.StandardCharsets;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -37,28 +35,37 @@ public class PacketChunkData extends DefinedPacket {
             buf.writeInt(chunk.getChunkZ()); // Chunk Z
             buf.writeBoolean(true); // Reduced Debug Info
             writeVarInt(25565, buf);
-            writeVarInt(chunk.getChunkMapPalette().length, buf);
-            buf.writeBytes(chunk.getChunkMapPalette());
+            writeVarInt(chunk.getChunkMap().length, buf);
+            buf.writeBytes(chunk.getChunkMap());
             return;
         }
 
-        if (protocolVersion == ProtocolConstants.MINECRAFT_1_9_4) {
-            buf.writeInt(0); // entity id
-            buf.writeByte(0); // game mode
-            buf.writeInt(0); // dimension
-            buf.writeByte(0); // difficulty
-            buf.writeByte(100); // max players
-            buf.writeBytes("flat".getBytes(StandardCharsets.UTF_8)); // level type
-            buf.writeBoolean(true); // debug info
+        if (protocolVersion >= ProtocolConstants.MINECRAFT_1_9_4) {
+            buf.writeInt(chunk.getChunkX());
+            buf.writeInt(chunk.getChunkZ());
+            buf.writeBoolean(true);
+            DefinedPacket.writeVarInt(chunk.getChunkMap().length, buf);
+            buf.writeBytes(chunk.getChunkMap());
+            buf.writeBytes(new byte[0]);
             return;
         }
-
-        buf.writeInt(1); // chunk x
-        buf.writeInt(1); // chunk y
-        buf.writeBoolean(true);
-        DefinedPacket.writeVarInt(25565, buf);
-        buf.writeBytes(new byte[] { 0, 0 }); // chunk map
-        buf.writeBytes(new byte[0]);
+//
+//        buf.writeInt(chunk.getChunkX());
+//        buf.writeInt(chunk.getChunkZ());
+//        buf.writeBytes(new NamedTag("MOTION_BLOCKING", new CompoundTag(Collections.emptyList())).byteArray());
+//        DefinedPacket.writeVarInt(chunk.getChunkMap().length, buf);
+//        buf.writeBytes(chunk.getChunkMap());
+//        DefinedPacket.writeVarInt(0, buf);
+//        buf.writeBytes(new byte[0]);
+//        buf.writeBoolean(false);
+//        buf.writeBytes(new byte[0]);
+//        buf.writeBytes(new byte[0]);
+//        buf.writeBytes(new byte[0]);
+//        buf.writeBytes(new byte[0]);
+//        DefinedPacket.writeVarInt(0, buf);
+//        buf.writeBytes(new byte[2048]);
+//        DefinedPacket.writeVarInt(0, buf);
+//        buf.writeBytes(new byte[2048]);
     }
 
     @Override

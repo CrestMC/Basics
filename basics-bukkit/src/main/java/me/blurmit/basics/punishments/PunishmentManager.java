@@ -1,10 +1,12 @@
 package me.blurmit.basics.punishments;
 
+import javafx.util.Pair;
 import lombok.Getter;
 import me.blurmit.basics.Basics;
 import me.blurmit.basics.database.StorageType;
 import me.blurmit.basics.punishments.storage.PunishmentStorage;
 import me.blurmit.basics.util.Placeholders;
+import me.blurmit.basics.util.RankUtil;
 import me.blurmit.basics.util.lang.Messages;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -21,7 +23,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BiConsumer;
 
 public class PunishmentManager {
 
@@ -543,16 +544,15 @@ public class PunishmentManager {
         }
     }
 
-    public void isSilent(String[] args, BiConsumer<Boolean, String[]> consumer) {
+    public Pair<Boolean, String[]> isSilent(String[] args) {
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("-s")) {
                 args = Arrays.stream(args).filter(argument -> !argument.equals("-s")).toArray(String[]::new);
-                consumer.accept(true, args);
-                return;
+                return new Pair<>(true, args);
             }
         }
 
-        consumer.accept(false, args);
+        return new Pair<>(false, args);
     }
 
     public void broadcastPunishment(CommandSender sender, String targetName, PunishmentType punishment, String reason, boolean silent) {
@@ -561,7 +561,7 @@ public class PunishmentManager {
                 continue;
             }
 
-            String senderName = getSenderName(sender);
+            String senderName = RankUtil.getColoredName(sender);
 
             TextComponent message = new TextComponent(Placeholders.parsePlaceholder(
                     (silent ? Messages.PUNISHMENT_SILENT_PREFIX.toString() : "") + punishment.message(),
@@ -589,13 +589,13 @@ public class PunishmentManager {
                 continue;
             }
 
-            String senderName = getSenderName(sender);
+            String senderName = RankUtil.getColoredName(sender);
 
             TextComponent message = new TextComponent(Placeholders.parsePlaceholder(
                     (silent ? Messages.PUNISHMENT_SILENT_PREFIX.toString() : "") + punishment.message(),
                     true,
                     targetName,
-                    punishment.equals(PunishmentType.UNBAN) ? "unbanned" : "unmuted",
+                    punishment.equals(PunishmentType.UNBAN) ? "unbanned" : punishment.equals(PunishmentType.UNBLACKLIST) ? "unblacklisted" : "unmuted",
                     senderName));
 
             if (player.hasPermission("basics.punishments.viewdetails")) {
@@ -610,18 +610,6 @@ public class PunishmentManager {
 
             player.spigot().sendMessage(message);
         }
-    }
-
-    public String getSenderName(CommandSender sender) {
-        String senderName = sender.getName();
-
-        if (!(sender instanceof Player)) {
-            senderName = Placeholders.parsePlaceholder(Messages.CONSOLE_NAME + "", true);
-        } else {
-            senderName = plugin.getRankManager().getHighestRankByPriority((Player) sender).getColor() + senderName;
-        }
-
-        return senderName;
     }
 
 }

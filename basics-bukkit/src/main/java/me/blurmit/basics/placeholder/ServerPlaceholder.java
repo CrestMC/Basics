@@ -4,7 +4,7 @@ import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 import me.blurmit.basics.Basics;
 import me.blurmit.basics.events.PlaceholderRequestEvent;
-import me.blurmit.basics.util.PluginMessageHelper;
+import me.blurmit.basics.util.PluginMessageUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -40,13 +40,13 @@ public class ServerPlaceholder implements Listener, PluginMessageListener {
     }
 
     private void requestOnlineServers() {
-        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> PluginMessageHelper.sendData("BungeeCord", "ServerStatus"), 0L, 20 * 3L);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> PluginMessageUtil.sendData("BungeeCord", "ServerStatus"), 0L, 20 * 3L);
     }
 
     private void requestServerName() {
         serverNameRetriever = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
             if (currentServerName.equals("Unknown")) {
-                PluginMessageHelper.sendData("BungeeCord", "GetServer");
+                PluginMessageUtil.sendData("BungeeCord", "GetServer");
             } else {
                 serverNameRetriever.cancel();
             }
@@ -75,7 +75,13 @@ public class ServerPlaceholder implements Listener, PluginMessageListener {
 
         if (placeholder.equalsIgnoreCase("server-playercount-filtered")) {
             try {
-                long players = plugin.getServer().getOnlinePlayers().stream().filter(onlinePlayer -> event.getPlayer().canSee(onlinePlayer)).count();
+                if (!(event.getSender() instanceof Player)) {
+                    event.setResponse(plugin.getServer().getOnlinePlayers().size() + "");
+                    return;
+                }
+
+                Player player = (Player) event.getSender();
+                long players = plugin.getServer().getOnlinePlayers().stream().filter(player::canSee).count();
                 event.setResponse(players + "");
             } catch (Exception e) {
                 event.setResponse("");

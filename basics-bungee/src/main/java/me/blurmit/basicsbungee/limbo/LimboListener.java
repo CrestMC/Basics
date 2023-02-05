@@ -1,7 +1,6 @@
 package me.blurmit.basicsbungee.limbo;
 
 import me.blurmit.basicsbungee.BasicsBungee;
-import me.blurmit.basicsbungee.limbo.server.LimboServer;
 import me.blurmit.basicsbungee.util.Messages;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.ServerKickEvent;
@@ -25,14 +24,14 @@ public class LimboListener implements Listener {
 
     @EventHandler
     public void onServerKick(ServerKickEvent event) {
-        event.setCancelled(true);
-        event.setCancelServer(new LimboServer());
+//        event.setCancelled(true);
+//        event.setCancelServer(new LimboServer());
         event.setKickReasonComponent(event.getKickReasonComponent());
 
         event.getPlayer().sendMessage(Messages.SERVER_KICK.text());
         event.getPlayer().sendMessage(event.getKickReasonComponent());
 
-        plugin.getLimboManager().banishToLimbo(event.getPlayer());
+//        plugin.getLimboManager().banishToLimbo(event.getPlayer());
     }
 
 }

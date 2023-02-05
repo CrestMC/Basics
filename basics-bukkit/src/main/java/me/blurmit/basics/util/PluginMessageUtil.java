@@ -8,7 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class PluginMessageHelper {
+public class PluginMessageUtil {
 
     /**
      * Sends a plugin message to the specified channel
@@ -23,7 +23,7 @@ public class PluginMessageHelper {
 
         Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
         if (player != null) {
-            player.sendPluginMessage(JavaPlugin.getPlugin(Basics.class), "BungeeCord", output.toByteArray());
+            player.sendPluginMessage(JavaPlugin.getPlugin(Basics.class), channel, output.toByteArray());
         }
     }
 
