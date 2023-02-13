@@ -9,6 +9,10 @@ Tablist:
     - '&fexample.com'
     - '&7&m                                      &r'
 
+Motd:
+  - "&a&lServer &7[1.8-1.19]"
+  - "&7» &2&lInformative Message Here"
+
 Server-Brand: "vanilla"
 
 Server-Aliases:

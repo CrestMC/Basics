@@ -67,7 +67,7 @@ public class CommandManager implements Listener {
         commandMap.register(command.getName(), plugin.getName().toLowerCase(), command);
 
         // Remove fallback prefix command
-        knownCommandsMap.remove(plugin.getName().toLowerCase() + ":" + command);
+        knownCommandsMap.remove(plugin.getName().toLowerCase() + ":" + command.getName());
         command.getAliases().forEach(alias -> knownCommandsMap.remove(plugin.getName().toLowerCase() + ":" + alias.toLowerCase()));
     }
 

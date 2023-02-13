@@ -1,4 +1,4 @@
-package me.blurmit.basics.placeholder;
+package me.blurmit.basics.listeners;
 
 import me.blurmit.basics.Basics;
 import me.blurmit.basics.events.PlaceholderRequestEvent;

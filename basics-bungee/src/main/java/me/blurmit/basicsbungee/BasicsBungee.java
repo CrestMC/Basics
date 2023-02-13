@@ -6,9 +6,13 @@ import me.blurmit.basicsbungee.configuration.ConfigManager;
 import me.blurmit.basicsbungee.limbo.LimboManager;
 import me.blurmit.basicsbungee.listener.PlayerConnectionListener;
 import me.blurmit.basicsbungee.listener.PluginMessageListener;
+import me.blurmit.basicsbungee.listener.ProxyPingListener;
 import me.blurmit.basicsbungee.placeholder.CommandPlaceholder;
 import me.blurmit.basicsbungee.placeholder.PlayerPlaceholder;
+import me.blurmit.basicsbungee.util.Requests;
 import net.md_5.bungee.api.plugin.Plugin;
+
+import java.util.HashMap;
 
 public final class BasicsBungee extends Plugin {
 
@@ -37,6 +41,7 @@ public final class BasicsBungee extends Plugin {
         getLogger().info("Registering listeners...");
         new PluginMessageListener(this);
         new PlayerConnectionListener(this);
+        new ProxyPingListener(this);
 
         getLogger().info("Loading placeholders...");
         new PlayerPlaceholder(this);

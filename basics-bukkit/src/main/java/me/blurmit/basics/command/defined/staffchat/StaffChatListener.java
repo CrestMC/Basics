@@ -47,6 +47,10 @@ public class StaffChatListener implements Listener, PluginMessageListener {
             return;
         }
 
+        if (event.getMessage().startsWith(prefix + " ")) {
+            prefix += " ";
+        }
+
         event.setCancelled(true);
         event.setMessage(event.getMessage().replaceFirst(prefix, ""));
 

@@ -7,6 +7,7 @@ import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.group.Group;
 import net.luckperms.api.model.group.GroupManager;
+import net.luckperms.api.model.user.User;
 import net.luckperms.api.model.user.UserManager;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -43,7 +44,14 @@ public class RankUtil {
             LuckPerms luckPerms = LuckPermsProvider.get();
             GroupManager groupManager = luckPerms.getGroupManager();
             UserManager userManager = luckPerms.getUserManager();
-            Group primaryGroup = groupManager.getGroup(userManager.getUser(uuid).getPrimaryGroup());
+
+            User user = userManager.getUser(uuid);
+
+            if (user == null) {
+                return color;
+            }
+
+            Group primaryGroup = groupManager.getGroup(user.getPrimaryGroup());
             color = primaryGroup.getCachedData().getMetaData().getMetaValue("color");
         }
 
@@ -80,7 +88,7 @@ public class RankUtil {
 
             ranks = groupManager.getLoadedGroups()
                     .stream()
-                    .sorted(Comparator.comparingInt(group -> group.getWeight().getAsInt()))
+                    .sorted(Comparator.comparingInt(group -> -group.getWeight().getAsInt()))
                     .map(Group::getDisplayName)
                     .collect(Collectors.joining(ChatColor.GRAY + ", " + ChatColor.RESET, ChatColor.GRAY + "", ChatColor.RESET + ""));
         }

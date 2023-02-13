@@ -4,10 +4,7 @@ main: me.blurmit.basics.Basics
 api-version: 1.16
 prefix: Basics
 authors: [ Blurmit ]
-loadbefore:
-  - LiteBans
 softdepend:
-  - Essentials
   - PlaceholderAPI
   - LuckPerms
 description: A plugin containing general server utilities

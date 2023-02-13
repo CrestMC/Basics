@@ -26,7 +26,7 @@ public class ToggleHungerCommand extends CommandBase implements Listener {
         setAliases(Arrays.asList("hungertoggle", "th"));
 
         this.plugin = plugin;
-        this.isHungerToggled = plugin.getConfigManager().getConfig().getBoolean("hunger-disabled");
+        this.isHungerToggled = plugin.getConfigManager().getConfig().getBoolean("Hunger-Disabled");
 
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }

@@ -5,16 +5,9 @@ import me.blurmit.basics.command.CommandBase;
 import me.blurmit.basics.util.Placeholders;
 import me.blurmit.basics.util.lang.Messages;
 import org.bukkit.command.CommandSender;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 public class SlowmodeCommand extends CommandBase {
 

@@ -448,6 +448,10 @@ public class PunishmentManager {
             ConfigurationSection section = plugin.getConfigManager().getPunishmentsConfig().getConfigurationSection("blacklists");
             AtomicReference<String> address = new AtomicReference<>("");
 
+            if (section == null) {
+                return false;
+            }
+
             section.getValues(false).forEach((player, data) -> {
                 ConfigurationSection punishment_data = (ConfigurationSection) data;
 
