@@ -2,6 +2,7 @@ package me.blurmit.basics.listeners;
 
 import me.blurmit.basics.Basics;
 import me.blurmit.basics.util.Placeholders;
+import me.blurmit.basics.util.lang.Messages;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -22,9 +23,14 @@ public class PlayerConnectionListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerLogin(PlayerLoginEvent event) {
         if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL) {
-            if (event.getPlayer().hasPermission("basics.playerlimit.bypass")) {
+            Player player = event.getPlayer();
+
+            if (player.hasPermission("basics.playerlimit.bypass")) {
                 event.allow();
+                return;
             }
+
+            event.setKickMessage(Placeholders.parsePlaceholder(Messages.SERVER_FULL + "", player));
         }
     }
 

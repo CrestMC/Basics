@@ -11,13 +11,13 @@ public class PlaceholderRequestEvent extends Event implements Cancellable {
     private final String placeholder;
     private final Command command;
     private final String[] arguments;
-    private final Object[] replacements;
+    private final String[] replacements;
     private boolean cancelled;
     private ProxiedPlayer player = null;
     private CommandSender sender = null;
     private String response;
 
-    public PlaceholderRequestEvent(String placeholder, ProxiedPlayer player, Command command, String[] arguments, Object... replacements) {
+    public PlaceholderRequestEvent(String placeholder, ProxiedPlayer player, Command command, String[] arguments, boolean async, String... replacements) {
         this.placeholder = placeholder;
         this.cancelled = false;
         this.player = player;
@@ -27,7 +27,7 @@ public class PlaceholderRequestEvent extends Event implements Cancellable {
         this.replacements = replacements;
     }
 
-    public PlaceholderRequestEvent(String placeholder, CommandSender sender, Command command, String[] arguments, Object... replacements) {
+    public PlaceholderRequestEvent(String placeholder, CommandSender sender, Command command, String[] arguments, boolean async, String... replacements) {
         this.placeholder = placeholder;
         this.cancelled = false;
         this.sender = sender;

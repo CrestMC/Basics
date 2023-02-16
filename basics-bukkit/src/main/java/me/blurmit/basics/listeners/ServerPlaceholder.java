@@ -33,6 +33,7 @@ public class ServerPlaceholder implements Listener, PluginMessageListener {
         plugin.getServer().getMessenger().registerIncomingPluginChannel(plugin, "BungeeCord", this);
 
         requestOnlineServers();
+        sendWhitelistState();
 
         if (plugin.getConfigManager().getConfig().getBoolean("Server-Name.Auto-Detect")) {
             requestServerName();
@@ -40,7 +41,7 @@ public class ServerPlaceholder implements Listener, PluginMessageListener {
     }
 
     private void requestOnlineServers() {
-        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> PluginMessageUtil.sendData("BungeeCord", "ServerStatus"), 0L, 20 * 3L);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> PluginMessageUtil.sendData("BungeeCord", "ServerStatus"), 5L, 40L);
     }
 
     private void requestServerName() {
@@ -51,6 +52,10 @@ public class ServerPlaceholder implements Listener, PluginMessageListener {
                 serverNameRetriever.cancel();
             }
         }, 0L, 20 * 3L);
+    }
+
+    private void sendWhitelistState() {
+        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> PluginMessageUtil.sendData("BungeeCord", "WhitelistStatus", plugin.getServer().hasWhitelist() + ""), 0L, 40L);
     }
 
     @EventHandler
@@ -73,7 +78,7 @@ public class ServerPlaceholder implements Listener, PluginMessageListener {
             }
         }
 
-        if (placeholder.equalsIgnoreCase("server-playercount-filtered")) {
+        if (placeholder.equalsIgnoreCase("server-players-filtered")) {
             try {
                 if (!(event.getSender() instanceof Player)) {
                     event.setResponse(plugin.getServer().getOnlinePlayers().size() + "");
@@ -88,15 +93,9 @@ public class ServerPlaceholder implements Listener, PluginMessageListener {
             }
         }
 
-        if (placeholder.startsWith("playercount-")) {
+        if (placeholder.startsWith("server-playercount-")) {
             try {
-                String serverName = placeholder.replace("playercount-", "").toLowerCase();
-
-                if (serverName.equalsIgnoreCase(currentServerName)) {
-                    event.setResponse(plugin.getServer().getOnlinePlayers().size() + "/" + plugin.getServer().getMaxPlayers());
-                    return;
-                }
-
+                String serverName = placeholder.replace("server-playercount-", "").toLowerCase();
                 event.setResponse(playerCountMap.get(serverName) == null ? ChatColor.RED + "Offline" : playerCountMap.get(serverName));
             } catch (Exception e) {
                 event.setResponse("");

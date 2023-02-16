@@ -788,6 +788,13 @@ public enum Messages {
         public String toString() {
             return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("help-command");
         }
+    },
+
+    SERVER_FULL() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("server-full");
+        }
     };
 
     @NotNull

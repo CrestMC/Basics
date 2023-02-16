@@ -15,6 +15,11 @@ Motd:
 
 Server-Brand: "vanilla"
 
+Server-Status:
+  Online: "&f{replacement-0}/{replacement-1}"
+  Whitelist: "&eWhitelisted"
+  Offline: "&cOffline"
+
 Server-Aliases:
   Lobby: "Lobby"
   Hub: "Lobby"

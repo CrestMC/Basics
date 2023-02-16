@@ -4,8 +4,10 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.Unpooled;
 import me.blurmit.basicsbungee.BasicsBungee;
+import me.blurmit.basicsbungee.util.Placeholders;
 import me.blurmit.basicsbungee.util.PluginMessageHelper;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -17,16 +19,17 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 
 public class PluginMessageListener implements Listener {
 
     private final BasicsBungee plugin;
+    private final Set<String> whitelistedServers;
 
     public PluginMessageListener(BasicsBungee plugin) {
         this.plugin = plugin;
+        this.whitelistedServers = new HashSet<>();
 
         plugin.getProxy().getPluginManager().registerListener(plugin, this);
     }
@@ -63,15 +66,45 @@ public class PluginMessageListener implements Listener {
                 case "ServerStatus": {
                     Set<String> serverStatus = new HashSet<>();
 
-                    for (ServerInfo server : plugin.getProxy().getServers().values()) {
-                        server.ping((result, error) -> {
-                            serverStatus.add(error == null ? server.getName() + ":" + result.getPlayers().getOnline() + "/" + result.getPlayers().getMax() : server.getName() + ":" + ChatColor.RED + "Offline");
+                    for (int serverID = 0; serverID < plugin.getProxy().getServers().values().size(); serverID++) {
+                        ServerInfo server = new ArrayList<>(plugin.getProxy().getServers().values()).get(serverID);
+                        String senderName = serverData.getName();
+                        int finalServerID = serverID;
 
-                            if (serverStatus.size() == plugin.getProxy().getServers().values().size()) {
-                                PluginMessageHelper.sendData(serverData.getName(), serverData.getName(), channel, String.join(", ", serverStatus));
+                        server.ping((result, error) -> {
+                            if (whitelistedServers.contains(server.getName())) {
+                                String whitelistMessage = Placeholders.parsePlaceholder(plugin.getConfigManager().getConfig().getString("Server-Status.Whitelist"));
+                                serverStatus.add(server.getName() + ":" + whitelistMessage);
+                            } else if (error == null) {
+                                ServerPing.Players players = result.getPlayers();
+                                String onlineMessage = Placeholders.parsePlaceholder(plugin.getConfigManager().getConfig().getString("Server-Status.Online"), players.getOnline() + "", players.getMax() + "");
+                                serverStatus.add(server.getName() + ":" + onlineMessage);
+                            } else {
+                                String offlineMessage = Placeholders.parsePlaceholder(plugin.getConfigManager().getConfig().getString("Server-Status.Offline"));
+                                serverStatus.add(server.getName() + ":" + offlineMessage);
+                            }
+
+                            if (finalServerID == (plugin.getProxy().getServers().values().size() - 1)) {
+                                PluginMessageHelper.sendData(senderName, senderName, channel, String.join(", ", serverStatus));
                             }
                         });
                     }
+                    break;
+                }
+                case "WhitelistStatus": {
+                    String serverName = serverData.getName();
+                    boolean isWhitelisted = Boolean.parseBoolean(input.readUTF());
+
+                    if (!isWhitelisted) {
+                        whitelistedServers.remove(serverName);
+                        return;
+                    }
+
+                    if (whitelistedServers.contains(serverName)) {
+                        return;
+                    }
+
+                    whitelistedServers.add(serverName);
                     break;
                 }
                 case "Staff": {

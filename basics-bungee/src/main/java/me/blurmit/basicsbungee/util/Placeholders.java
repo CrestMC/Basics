@@ -24,11 +24,11 @@ public class Placeholders {
         return parsePlaceholder(placeholder, null, null, null, null, async);
     }
 
-    public static String parsePlaceholder(String placeholder, CommandSender sender, boolean async, Object... replacements) {
+    public static String parsePlaceholder(String placeholder, CommandSender sender, boolean async, String... replacements) {
         return parsePlaceholder(placeholder, sender, null, null, replacements, async);
     }
 
-    public static String parsePlaceholder(String placeholder, ProxiedPlayer player, boolean async, Object... replacements) {
+    public static String parsePlaceholder(String placeholder, ProxiedPlayer player, boolean async, String... replacements) {
         return parsePlaceholder(placeholder, player, null, null, replacements, async);
     }
 
@@ -64,12 +64,12 @@ public class Placeholders {
         return parsePlaceholder(placeholder, sender, command, args, null, async);
     }
 
-    public static String parsePlaceholder(String placeholder, ProxiedPlayer player, Command command, String[] args, Object[] replacements, boolean async) {
+    public static String parsePlaceholder(String placeholder, ProxiedPlayer player, Command command, String[] args, boolean async, String... replacements) {
         Matcher placeholderValue = Pattern.compile("\\{(.*?)}(?!\\s*})\\s*", Pattern.DOTALL).matcher(placeholder);
         String response;
 
         while (placeholderValue.find()) {
-            PlaceholderRequestEvent event = new PlaceholderRequestEvent(placeholderValue.group(1), player, command, args, replacements, async);
+            PlaceholderRequestEvent event = new PlaceholderRequestEvent(placeholderValue.group(1), player, command, args, async, replacements);
             ProxyServer.getInstance().getPluginManager().callEvent(event);
             response = event.getResponse() == null ? "null" : event.getResponse();
             placeholder = placeholder.replace("{" + placeholderValue.group(1) + "}", response);
@@ -78,12 +78,12 @@ public class Placeholders {
         return ChatColor.translateAlternateColorCodes('&', placeholder);
     }
 
-    public static String parsePlaceholder(String placeholder, CommandSender sender, Command command, String[] args, Object[] replacements, boolean async) {
+    public static String parsePlaceholder(String placeholder, CommandSender sender, Command command, String[] args, String[] replacements, boolean async) {
         Matcher placeholderValue = Pattern.compile("\\{(.*?)}(?!\\s*})\\s*", Pattern.DOTALL).matcher(placeholder);
         String response;
 
         while (placeholderValue.find()) {
-            PlaceholderRequestEvent event = new PlaceholderRequestEvent(placeholderValue.group(1), sender, command, args, replacements, async);
+            PlaceholderRequestEvent event = new PlaceholderRequestEvent(placeholderValue.group(1), sender, command, args, async, replacements);
             ProxyServer.getInstance().getPluginManager().callEvent(event);
             response = event.getResponse();
             placeholder = placeholder.replace("{" + placeholderValue.group(1) + "}", response);
