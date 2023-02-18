@@ -21,7 +21,7 @@ public class HelpopCommand extends CommandBase implements PluginMessageListener 
 
     private final Basics plugin;
 
-    public HelpopCommand (Basics plugin){
+    public HelpopCommand(Basics plugin) {
         super(plugin.getName());
         setName("helpop");
         setAliases(Arrays.asList("helpme", "messagestaff"));
@@ -58,12 +58,10 @@ public class HelpopCommand extends CommandBase implements PluginMessageListener 
 
         player.sendMessage(Placeholders.parsePlaceholder(Messages.HELPOP_SUBMITTED + ""));
 
-        plugin.getRankManager().getHighestRankByPriority(player.getUniqueId(), rank -> {
-            plugin.getServer().broadcast(
-                    Placeholders.parsePlaceholder(Messages.HELPOP_REQUEST + "", true, RankUtil.getColor(player.getUniqueId()) + player.getName(), ChatColor.stripColor(message)),
-                    "basics.helpop.read"
-            );
-        });
+        plugin.getServer().broadcast(
+                Placeholders.parsePlaceholder(Messages.HELPOP_REQUEST + "", true, RankUtil.getColor(player.getUniqueId()) + player.getName(), ChatColor.stripColor(message)),
+                "basics.helpop.read"
+        );
 
         PluginMessageUtil.sendData("BungeeCord", "HelpOP-Request", player.getName(), ChatColor.stripColor(message));
         return true;
@@ -86,12 +84,10 @@ public class HelpopCommand extends CommandBase implements PluginMessageListener 
         String request = input.readUTF();
 
         UUIDUtil.asyncGetUUID(user, uuid -> {
-            plugin.getRankManager().getHighestRankByPriority(uuid, rank -> {
-                plugin.getServer().broadcast(
-                        Placeholders.parsePlaceholder(Messages.HELPOP_REQUEST + "", true, RankUtil.getColor(uuid) + user, ChatColor.stripColor(request)),
-                        "basics.helpop.read"
-                );
-            });
+            plugin.getServer().broadcast(
+                    Placeholders.parsePlaceholder(Messages.HELPOP_REQUEST + "", true, RankUtil.getColor(uuid) + user, ChatColor.stripColor(request)),
+                    "basics.helpop.read"
+            );
         });
     }
 
