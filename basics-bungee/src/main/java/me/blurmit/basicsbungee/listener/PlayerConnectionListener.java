@@ -5,14 +5,17 @@ import me.blurmit.basicsbungee.util.Placeholders;
 import me.blurmit.basicsbungee.util.PluginMessageHelper;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
+import net.md_5.bungee.api.event.ServerConnectedEvent;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class PlayerConnectionListener implements Listener {
 
@@ -35,47 +38,51 @@ public class PlayerConnectionListener implements Listener {
 
     @EventHandler
     public void onPlayerDisconnect(@NotNull PlayerDisconnectEvent event) {
-        if (!event.getPlayer().hasPermission("basics.staffchat")) {
+        ProxiedPlayer player = event.getPlayer();
+
+        if (!player.hasPermission("basics.staffchat")) {
             return;
         }
 
         // Send staff disconnect message via plugin messaging
-        plugin.getProxy().getScheduler().runAsync(plugin, () -> {
-            String player = event.getPlayer().getName();
-            String server = event.getPlayer().getServer().getInfo().getName();
+        plugin.getProxy().getScheduler().schedule(plugin, () -> {
+            String playerName = player.getName();
+            String server = player.getServer().getInfo().getName();
 
-            PluginMessageHelper.sendData("RECEIVERS", "", "Staff", "Disconnected", server, player);
-        });
+            PluginMessageHelper.sendData("receivers", "", "Staff", "Disconnected", server, playerName);
+        }, 25, TimeUnit.MILLISECONDS);
     }
 
     @EventHandler
     public void onServerSwitch(@NotNull ServerSwitchEvent event) {
         plugin.getLimboManager().getLimboPlayers().remove(event.getPlayer().getUniqueId());
+    }
 
-        if (!event.getPlayer().hasPermission("basics.staffchat")) {
+    @EventHandler
+    public void onServerConnected(ServerConnectedEvent event) {
+        ProxiedPlayer player = event.getPlayer();
+        Server server = player.getServer();
+        String serverName = event.getServer().getInfo().getName();
+
+        if (!player.hasPermission("basics.staffchat")) {
             return;
         }
 
-        if (event.getFrom() == null) {
-            // Send staff connect message via plugin messaging
-            plugin.getProxy().getScheduler().runAsync(plugin, () -> {
-                String player = event.getPlayer().getDisplayName();
-                String server = event.getPlayer().getServer().getInfo().getName();
+        plugin.getProxy().getScheduler().schedule(plugin, () -> {
+            if (server == null) {
+                // Send staff connect message via plugin messaging
+                String playerName = player.getDisplayName();
 
-                PluginMessageHelper.sendData("RECEIVERS", "", "Staff", "Connected", server, player);
-            });
+                PluginMessageHelper.sendData("receivers", "", "Staff", "Connected", serverName, playerName);
+                return;
+            }
 
-            return;
-        }
+            // Send staff server switch message via plugin messaging
+            String playerName = player.getDisplayName();
+            String originalServer = server.getInfo().getName();
 
-        // Send staff server switch message via plugin messaging
-        plugin.getProxy().getScheduler().runAsync(plugin, () -> {
-            String player = event.getPlayer().getDisplayName();
-            String originalServer = event.getFrom().getName();
-            String newServer = event.getPlayer().getServer().getInfo().getName();
-
-            PluginMessageHelper.sendData("RECEIVERS", "", "Staff", "ServerSwitch", originalServer, player, newServer);
-        });
+            PluginMessageHelper.sendData("receivers", "", "Staff", "ServerSwitch", originalServer, playerName, serverName);
+        }, 25, TimeUnit.MILLISECONDS);
     }
 
     private void setupTabListHeader(ProxiedPlayer player) {

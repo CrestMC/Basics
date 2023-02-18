@@ -145,17 +145,25 @@ public class ServerPlaceholder implements Listener, PluginMessageListener {
                 String data = input.readUTF();
 
                 Set<String> servers = new HashSet<>(Arrays.asList(data.split(", ")));
-                servers.forEach(server -> {
-                    String name = server.split(":")[0].toLowerCase();
-                    String status = server.split(":")[1];
+
+                for (String server : servers) {
+                    String name;
+                    String status;
+
+                    try {
+                        name = server.split(":")[0].toLowerCase();
+                        status = server.split(":")[1];
+                    } catch (ArrayIndexOutOfBoundsException ignored) {
+                        continue;
+                    }
 
                     if (playerCountMap.containsKey(name)) {
                         playerCountMap.replace(name, status);
-                        return;
+                        continue;
                     }
 
                     playerCountMap.put(name, status);
-                });
+                }
 
                 break;
             }
