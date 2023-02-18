@@ -59,7 +59,7 @@ public class HelpopCommand extends CommandBase implements PluginMessageListener 
         player.sendMessage(Placeholders.parsePlaceholder(Messages.HELPOP_SUBMITTED + ""));
 
         plugin.getServer().broadcast(
-                Placeholders.parsePlaceholder(Messages.HELPOP_REQUEST + "", true, RankUtil.getColor(player.getUniqueId()) + player.getName(), ChatColor.stripColor(message)),
+                Placeholders.parsePlaceholder(Messages.HELPOP_REQUEST + "", RankUtil.getColor(player.getUniqueId()) + player.getName(), ChatColor.stripColor(message)),
                 "basics.helpop.read"
         );
 
@@ -85,7 +85,7 @@ public class HelpopCommand extends CommandBase implements PluginMessageListener 
 
         UUIDUtil.asyncGetUUID(user, uuid -> {
             plugin.getServer().broadcast(
-                    Placeholders.parsePlaceholder(Messages.HELPOP_REQUEST + "", true, RankUtil.getColor(uuid) + user, ChatColor.stripColor(request)),
+                    Placeholders.parsePlaceholder(Messages.HELPOP_REQUEST + "", RankUtil.getColor(uuid) + user, ChatColor.stripColor(request)),
                     "basics.helpop.read"
             );
         });
