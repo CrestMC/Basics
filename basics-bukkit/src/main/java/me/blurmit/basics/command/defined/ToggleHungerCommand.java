@@ -15,7 +15,7 @@ import java.util.Arrays;
 public class ToggleHungerCommand extends CommandBase implements Listener {
 
     private final Basics plugin;
-    private boolean isHungerToggled;
+    private boolean isHungerDisabled;
 
     public ToggleHungerCommand (Basics plugin) {
         super (plugin.getName());
@@ -26,23 +26,23 @@ public class ToggleHungerCommand extends CommandBase implements Listener {
         setAliases(Arrays.asList("hungertoggle", "th"));
 
         this.plugin = plugin;
-        this.isHungerToggled = plugin.getConfigManager().getConfig().getBoolean("Hunger-Disabled");
+        this.isHungerDisabled = plugin.getConfigManager().getConfig().getBoolean("Hunger-Disabled");
 
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     @Override
     public boolean execute(@NotNull CommandSender sender, @NotNull String label, @NotNull String[] args) {
-        isHungerToggled = !isHungerToggled;
+        isHungerDisabled = !isHungerDisabled;
 
-        plugin.getConfigManager().getConfig().set("hunger-disabled", isHungerToggled);
-        sender.sendMessage(Placeholders.parsePlaceholder(Messages.HUNGER_TOGGLED + "", plugin.getConfigManager().getLanguageConfig().getString("togglehunger." + (isHungerToggled ? "enabled" : "disabled"))));
+        plugin.getConfigManager().getConfig().set("Hunger-Disabled", isHungerDisabled);
+        sender.sendMessage(Placeholders.parsePlaceholder(Messages.HUNGER_TOGGLED + "", plugin.getConfigManager().getLanguageConfig().getString("togglehunger." + (isHungerDisabled ? "disabled" : "enabled"))));
         return true;
     }
 
     @EventHandler
     public void onHungerChange(FoodLevelChangeEvent event) {
-        if (isHungerToggled) {
+        if (isHungerDisabled) {
             event.setFoodLevel(20);
         }
     }
