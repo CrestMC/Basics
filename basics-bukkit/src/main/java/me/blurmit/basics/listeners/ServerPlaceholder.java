@@ -178,11 +178,8 @@ public class ServerPlaceholder extends PlaceholderExpansion implements Listener,
 
     @Override
     public String onRequest(OfflinePlayer player, String params) {
-        if (player == null || !player.isOnline())
-            return null;
-
-        if (params.startsWith("server-playercount-")) {
-            String serverName = params.replace("server-playercount-", "").toLowerCase();
+        if (params.startsWith("server_playercount_")) {
+            String serverName = params.replace("server_playercount_", "").toLowerCase();
             return playerCountMap.get(serverName) == null ? ChatColor.RED + "Offline" : playerCountMap.get(serverName);
         }
 
@@ -191,7 +188,7 @@ public class ServerPlaceholder extends PlaceholderExpansion implements Listener,
 
     @Override
     public @NotNull String getIdentifier() {
-        return plugin.getName();
+        return "basics";
     }
 
     @Override
