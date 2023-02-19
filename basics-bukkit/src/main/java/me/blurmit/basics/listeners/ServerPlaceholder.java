@@ -5,8 +5,10 @@ import com.google.common.io.ByteStreams;
 import me.blurmit.basics.Basics;
 import me.blurmit.basics.events.PlaceholderRequestEvent;
 import me.blurmit.basics.util.PluginMessageUtil;
+import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -15,8 +17,9 @@ import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
-public class ServerPlaceholder implements Listener, PluginMessageListener {
+public class ServerPlaceholder extends PlaceholderExpansion implements Listener, PluginMessageListener {
 
     private final Basics plugin;
     private final Map<String, String> playerCountMap;
@@ -172,4 +175,38 @@ public class ServerPlaceholder implements Listener, PluginMessageListener {
             }
         }
     }
+
+    @Override
+    public String onRequest(OfflinePlayer player, String params) {
+        if (player == null || !player.isOnline())
+            return null;
+
+        if (params.startsWith("server-playercount-")) {
+            String serverName = params.replace("server-playercount-", "").toLowerCase();
+            return playerCountMap.get(serverName) == null ? ChatColor.RED + "Offline" : playerCountMap.get(serverName);
+        }
+
+        return null;
+    }
+
+    @Override
+    public @NotNull String getIdentifier() {
+        return plugin.getName();
+    }
+
+    @Override
+    public @NotNull String getAuthor() {
+        return String.join(", ", plugin.getDescription().getAuthors());
+    }
+
+    @Override
+    public @NotNull String getVersion() {
+        return plugin.getDescription().getVersion();
+    }
+
+    @Override
+    public boolean persist() {
+        return true;
+    }
+
 }

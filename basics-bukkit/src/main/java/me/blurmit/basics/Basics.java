@@ -7,6 +7,7 @@ import me.blurmit.basics.listeners.*;
 import me.blurmit.basics.punishments.PunishmentManager;
 import me.blurmit.basics.rank.RankManager;
 import me.blurmit.basics.scoreboard.ScoreboardManager;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Basics extends JavaPlugin {
@@ -44,10 +45,12 @@ public final class Basics extends JavaPlugin {
         new CommandPlaceholder(this);
         new PlayerPlaceholder(this);
         new RankPlaceholder(this);
-        new ServerPlaceholder(this);
+        ServerPlaceholder serverPlaceholder = new ServerPlaceholder(this);
 
-        if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null ) {
+        Plugin papi = getServer().getPluginManager().getPlugin("PlaceholderAPI");
+        if (papi != null && papi.isEnabled()) {
             new PapiPlaceholder(this);
+            serverPlaceholder.register();
         }
 
         getLogger().info("Registering scoreboard...");
