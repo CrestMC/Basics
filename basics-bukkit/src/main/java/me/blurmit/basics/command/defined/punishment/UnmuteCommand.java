@@ -1,4 +1,4 @@
-package me.blurmit.basics.command.defined;
+package me.blurmit.basics.command.defined.punishment;
 
 import javafx.util.Pair;
 import me.blurmit.basics.Basics;
@@ -15,17 +15,16 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 import java.util.UUID;
 
-public class UnblacklistCommand extends CommandBase {
+public class UnmuteCommand extends CommandBase {
 
     private final Basics plugin;
 
-    public UnblacklistCommand(Basics plugin) {
+    public UnmuteCommand(Basics plugin) {
         super(plugin.getName());
-        setName("unblacklist");
-        setDescription("Unblacklists a player");
-        setUsage("/unblacklist [-s] <player> <reason>");
-        setPermission("basics.command.unblacklist");
-        setAliases(Arrays.asList("unipban", "pardonip", "unipban", "removeipban"));
+        setName("unmute");
+        setDescription("Unmutes a player");
+        setUsage("/unmute [-s] <player> <reason>");
+        setPermission("basics.command.unmute");
 
         this.plugin = plugin;
     }
@@ -61,23 +60,23 @@ public class UnblacklistCommand extends CommandBase {
                 }
             }
 
-            if (!plugin.getPunishmentManager().isBlacklisted(uuid)) {
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.NOT_BLACKLISTED + "", true, args[0]));
+            if (!plugin.getPunishmentManager().isMuted(uuid)) {
+                sender.sendMessage(Placeholders.parsePlaceholder(Messages.NOT_MUTED + "", true, args[0]));
                 return;
             }
 
             String fancyName = RankUtil.getColoredName(uuid);
             String reason = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
 
-            plugin.getPunishmentManager().getBannedPlayers().remove(uuid);
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.PUNISHMENT_MESSAGE + "", true, "unblacklisted", fancyName, reason));
+            plugin.getPunishmentManager().getMutedPlayers().remove(uuid);
+            sender.sendMessage(Placeholders.parsePlaceholder(Messages.PUNISHMENT_MESSAGE + "", true, "unmuted", fancyName, reason));
 
-            plugin.getPunishmentManager().storeUnblacklist(
-                    "0.0.0.0",
+            plugin.getPunishmentManager().storeUnmute(
+                    uuid,
                     (sender instanceof Player) ? ((Player) sender).getUniqueId() : null,
                     reason
             );
-            plugin.getPunishmentManager().broadcastPardon(sender, fancyName, PunishmentType.UNBLACKLIST, reason, silent);
+            plugin.getPunishmentManager().broadcastPardon(sender, fancyName, PunishmentType.UNMUTE, reason, silent);
         });
 
         return true;

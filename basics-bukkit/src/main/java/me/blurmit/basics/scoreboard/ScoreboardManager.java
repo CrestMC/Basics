@@ -41,8 +41,8 @@ public class ScoreboardManager implements Listener {
         return boards.get(player.getUniqueId());
     }
 
-    public Collection<Scoreboards> getBoards() {
-        return boards.values();
+    public Map<UUID, Scoreboards> getBoards() {
+        return this.boards;
     }
 
     private void scheduleUpdate() {

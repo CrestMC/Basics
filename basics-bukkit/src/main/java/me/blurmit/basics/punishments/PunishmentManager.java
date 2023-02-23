@@ -7,6 +7,7 @@ import me.blurmit.basics.database.StorageType;
 import me.blurmit.basics.punishments.storage.PunishmentStorage;
 import me.blurmit.basics.util.Placeholders;
 import me.blurmit.basics.util.RankUtil;
+import me.blurmit.basics.util.TimeUtil;
 import me.blurmit.basics.util.lang.Messages;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -21,6 +22,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -49,24 +51,22 @@ public class PunishmentManager {
         this.bannedPlayers = new HashSet<>();
     }
 
-    public void storeBan(UUID player, UUID moderator_uuid, long until, String server, String reason) {
+    public void storeBan(UUID target, UUID moderator, long until, String server, String reason) {
         if (storage.getType().equals(StorageType.MYSQL)) {
             storage.getDatabaseManager().useAsynchronousConnection(connection -> {
                 PreparedStatement queryStatement = connection.prepareStatement("SELECT * FROM `basics_bans` WHERE `uuid` = ?");
-                queryStatement.setString(1, player.toString());
+                queryStatement.setString(1, target.toString());
 
                 // Delete current ban from database if it exists.
                 ResultSet result = queryStatement.executeQuery();
-                while (result.next()) {
-                    PreparedStatement deleteStatement = connection.prepareStatement("DELETE FROM `basics_bans` WHERE `uuid` = ?");
-                    deleteStatement.setString(1, player.toString());
-                    deleteStatement.execute();
+                if (result.next()) {
+                    storeUnban(target, moderator, "Ban Override");
                 }
 
                 PreparedStatement banStatement = connection.prepareStatement("INSERT IGNORE INTO `basics_bans` (`uuid`, `moderator_uuid`, `punished_at`, `expires_at`, `server`, `reason`) VALUES (?, ?, ?, ?, ?, ?)");
-                banStatement.setString(1, player.toString());
-                banStatement.setString(2, moderator_uuid == null ? "null" : moderator_uuid.toString());
-                banStatement.setLong(3, System.currentTimeMillis());
+                banStatement.setString(1, target.toString());
+                banStatement.setString(2, moderator == null ? "null" : moderator.toString());
+                banStatement.setLong(3, TimeUtil.getCurrentTimeSeconds());
                 banStatement.setLong(4, until);
                 banStatement.setString(5, server);
                 banStatement.setString(6, reason);
@@ -74,19 +74,19 @@ public class PunishmentManager {
             });
         } else {
             // Delete current ban from database if it exists.
-            if (plugin.getConfigManager().getPunishmentsConfig().getConfigurationSection("bans." + player) != null) {
-                plugin.getConfigManager().getPunishmentsConfig().set("bans." + player, null);
+            if (plugin.getConfigManager().getPunishmentsConfig().getConfigurationSection("bans." + target) != null) {
+                storeUnban(target, moderator, "Ban Override");
             }
 
-            plugin.getConfigManager().getPunishmentsConfig().set("bans." + player + ".moderator-uuid", moderator_uuid == null ? "null" : moderator_uuid.toString());
-            plugin.getConfigManager().getPunishmentsConfig().set("bans." + player + ".punished_at", System.currentTimeMillis());
-            plugin.getConfigManager().getPunishmentsConfig().set("bans." + player + ".expires_at", until);
-            plugin.getConfigManager().getPunishmentsConfig().set("bans." + player + ".reason", reason);
-            plugin.getConfigManager().getPunishmentsConfig().set("bans." + player + ".server", server);
+            plugin.getConfigManager().getPunishmentsConfig().set("bans." + target + ".moderator-uuid", moderator == null ? "null" : moderator.toString());
+            plugin.getConfigManager().getPunishmentsConfig().set("bans." + target + ".punished_at", TimeUtil.getCurrentTimeSeconds());
+            plugin.getConfigManager().getPunishmentsConfig().set("bans." + target + ".expires_at", until);
+            plugin.getConfigManager().getPunishmentsConfig().set("bans." + target + ".reason", reason);
+            plugin.getConfigManager().getPunishmentsConfig().set("bans." + target + ".server", server);
             plugin.getConfigManager().savePunishmentsConfig();
         }
 
-        storeHistory(PunishmentType.BAN, player, moderator_uuid, System.currentTimeMillis(), until, server, reason);
+        storeHistory(PunishmentType.BAN, target, moderator, TimeUtil.getCurrentTimeSeconds(), until, server, reason);
     }
 
     public void storeUnban(UUID uuid, UUID moderator_uuid, String reason) {
@@ -99,7 +99,7 @@ public class PunishmentManager {
 
                 ResultSet results = queryStatement.executeQuery();
                 while (results.next()) {
-                    storeHistory(PunishmentType.UNBAN, uuid, moderator_uuid, results.getLong("punished_at"), System.currentTimeMillis(), server, reason);
+                    storeHistory(PunishmentType.UNBAN, uuid, moderator_uuid, results.getLong("punished_at"), TimeUtil.getCurrentTimeSeconds(), server, reason);
                 }
 
                 PreparedStatement unbanStatement = connection.prepareStatement("DELETE FROM `basics_bans` WHERE `uuid` = ?");
@@ -108,13 +108,53 @@ public class PunishmentManager {
             });
         } else {
             long punishedAt = plugin.getConfigManager().getPunishmentsConfig().getLong("bans." + uuid + ".punished_at");
-            storeHistory(PunishmentType.UNBAN, uuid, moderator_uuid, punishedAt, System.currentTimeMillis(), server, reason);
+            storeHistory(PunishmentType.UNBAN, uuid, moderator_uuid, punishedAt, TimeUtil.getCurrentTimeSeconds(), server, reason);
 
             if (plugin.getConfigManager().getPunishmentsConfig().getConfigurationSection("bans." + uuid) != null) {
                 plugin.getConfigManager().getPunishmentsConfig().set("bans." + uuid, null);
                 plugin.getConfigManager().savePunishmentsConfig();
             }
         }
+    }
+
+    public void storeBlacklist(UUID player, UUID moderator_uuid, long until, String server, String reason, String ip) {
+        if (storage.getType().equals(StorageType.MYSQL)) {
+            storage.getDatabaseManager().useAsynchronousConnection(connection -> {
+                PreparedStatement queryStatement = connection.prepareStatement("SELECT * FROM `basics_blacklists` WHERE `uuid` = ?");
+                queryStatement.setString(1, player.toString());
+
+                // Delete current blacklist from database if it exists.
+                ResultSet result = queryStatement.executeQuery();
+                if (result.next()) {
+                    storeUnblacklist(ip, moderator_uuid, "Blacklist Override");
+                }
+
+                PreparedStatement blacklistStatement = connection.prepareStatement("INSERT IGNORE INTO `basics_blacklists` (`uuid`, `ip`, `moderator_uuid`, `punished_at`, `expires_at`, `server`, `reason`) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                blacklistStatement.setString(1, player.toString());
+                blacklistStatement.setString(2, ip);
+                blacklistStatement.setString(3, moderator_uuid == null ? "null" : moderator_uuid.toString());
+                blacklistStatement.setLong(4, TimeUtil.getCurrentTimeSeconds());
+                blacklistStatement.setLong(5, until);
+                blacklistStatement.setString(6, server);
+                blacklistStatement.setString(7, reason);
+                blacklistStatement.execute();
+            });
+        } else {
+            // Delete current blacklist from database if it exists.
+            if (plugin.getConfigManager().getPunishmentsConfig().getConfigurationSection("blacklists." + player) != null) {
+                storeUnblacklist(ip, moderator_uuid, "Ban Override");
+            }
+
+            plugin.getConfigManager().getPunishmentsConfig().set("blacklists." + player + ".ip", ip);
+            plugin.getConfigManager().getPunishmentsConfig().set("blacklists." + player + ".moderator-uuid", moderator_uuid == null ? "null" : moderator_uuid.toString());
+            plugin.getConfigManager().getPunishmentsConfig().set("blacklists." + player + ".punished_at", TimeUtil.getCurrentTimeSeconds());
+            plugin.getConfigManager().getPunishmentsConfig().set("blacklists." + player + ".expires_at", until);
+            plugin.getConfigManager().getPunishmentsConfig().set("blacklists." + player + ".reason", reason);
+            plugin.getConfigManager().getPunishmentsConfig().set("blacklists." + player + ".server", server);
+            plugin.getConfigManager().savePunishmentsConfig();
+        }
+
+        storeHistory(PunishmentType.BLACKLIST, player, moderator_uuid, TimeUtil.getCurrentTimeSeconds(), until, server, reason);
     }
 
     public void storeUnblacklist(String ip, UUID moderator_uuid, String reason) {
@@ -127,7 +167,7 @@ public class PunishmentManager {
 
                 ResultSet results = queryStatement.executeQuery();
                 while (results.next()) {
-                    storeHistory(PunishmentType.UNBLACKLIST, UUID.fromString(results.getString("uuid")), moderator_uuid, results.getLong("punished_at"), System.currentTimeMillis(), server, reason);
+                    storeHistory(PunishmentType.UNBLACKLIST, UUID.fromString(results.getString("uuid")), moderator_uuid, results.getLong("punished_at"), TimeUtil.getCurrentTimeSeconds(), server, reason);
                 }
 
                 PreparedStatement unbanStatement = connection.prepareStatement("DELETE FROM `basics_blacklists` WHERE `ip` = ?");
@@ -144,52 +184,10 @@ public class PunishmentManager {
                     plugin.getConfigManager().savePunishmentsConfig();
 
                     long punishedAt = plugin.getConfigManager().getPunishmentsConfig().getLong("blacklists." + player + ".punished_at");
-                    storeHistory(PunishmentType.UNBLACKLIST, UUID.fromString(player), moderator_uuid, punishedAt, System.currentTimeMillis(), server, reason);
+                    storeHistory(PunishmentType.UNBLACKLIST, UUID.fromString(player), moderator_uuid, punishedAt, TimeUtil.getCurrentTimeSeconds(), server, reason);
                 }
             });
         }
-    }
-
-    public void storeBlacklist(UUID player, UUID moderator_uuid, long until, String server, String reason, String ip) {
-        if (storage.getType().equals(StorageType.MYSQL)) {
-            storage.getDatabaseManager().useAsynchronousConnection(connection -> {
-                PreparedStatement queryStatement = connection.prepareStatement("SELECT * FROM `basics_blacklists` WHERE `uuid` = ?");
-                queryStatement.setString(1, player.toString());
-
-                // Delete current blacklist from database if it exists.
-                ResultSet result = queryStatement.executeQuery();
-                while (result.next()) {
-                    PreparedStatement deleteStatement = connection.prepareStatement("DELETE FROM `basics_blacklists` WHERE `uuid` = ?");
-                    deleteStatement.setString(1, player.toString());
-                    deleteStatement.execute();
-                }
-
-                PreparedStatement blacklistStatement = connection.prepareStatement("INSERT IGNORE INTO `basics_blacklists` (`uuid`, `ip`, `moderator_uuid`, `punished_at`, `expires_at`, `server`, `reason`) VALUES (?, ?, ?, ?, ?, ?, ?)");
-                blacklistStatement.setString(1, player.toString());
-                blacklistStatement.setString(2, ip);
-                blacklistStatement.setString(3, moderator_uuid == null ? "null" : moderator_uuid.toString());
-                blacklistStatement.setLong(4, System.currentTimeMillis());
-                blacklistStatement.setLong(5, until);
-                blacklistStatement.setString(6, server);
-                blacklistStatement.setString(7, reason);
-                blacklistStatement.execute();
-            });
-        } else {
-            // Delete current blacklist from database if it exists.
-            if (plugin.getConfigManager().getPunishmentsConfig().getConfigurationSection("blacklists." + player) != null) {
-                plugin.getConfigManager().getPunishmentsConfig().set("blacklists." + player, null);
-            }
-
-            plugin.getConfigManager().getPunishmentsConfig().set("blacklists." + player + ".ip", ip);
-            plugin.getConfigManager().getPunishmentsConfig().set("blacklists." + player + ".moderator-uuid", moderator_uuid == null ? "null" : moderator_uuid.toString());
-            plugin.getConfigManager().getPunishmentsConfig().set("blacklists." + player + ".punished_at", System.currentTimeMillis());
-            plugin.getConfigManager().getPunishmentsConfig().set("blacklists." + player + ".expires_at", until);
-            plugin.getConfigManager().getPunishmentsConfig().set("blacklists." + player + ".reason", reason);
-            plugin.getConfigManager().getPunishmentsConfig().set("blacklists." + player + ".server", server);
-            plugin.getConfigManager().savePunishmentsConfig();
-        }
-
-        storeHistory(PunishmentType.BLACKLIST, player, moderator_uuid, System.currentTimeMillis(), until, server, reason);
     }
 
     public void storeMute(UUID player, UUID moderator_uuid, long until, String server, String reason) {
@@ -200,16 +198,14 @@ public class PunishmentManager {
 
                 // Delete current mute from database if it exists.
                 ResultSet result = queryStatement.executeQuery();
-                while (result.next()) {
-                    PreparedStatement deleteStatement = connection.prepareStatement("DELETE FROM `basics_mutes` WHERE `uuid` = ?");
-                    deleteStatement.setString(1, player.toString());
-                    deleteStatement.execute();
+                if (result.next()) {
+                    storeUnmute(player, moderator_uuid, "Mute Override");
                 }
 
                 PreparedStatement muteStatement = connection.prepareStatement("INSERT IGNORE INTO `basics_mutes` (`uuid`, `moderator_uuid`, `punished_at`, `expires_at`, `server`, `reason`) VALUES (?, ?, ?, ?, ?, ?)");
                 muteStatement.setString(1, player.toString());
                 muteStatement.setString(2, moderator_uuid == null ? "null" : moderator_uuid.toString());
-                muteStatement.setLong(3, System.currentTimeMillis());
+                muteStatement.setLong(3, TimeUtil.getCurrentTimeSeconds());
                 muteStatement.setLong(4, until);
                 muteStatement.setString(5, server);
                 muteStatement.setString(6, reason);
@@ -218,18 +214,18 @@ public class PunishmentManager {
         } else {
             // Delete current mute from database if it exists.
             if (plugin.getConfigManager().getPunishmentsConfig().getConfigurationSection("mutes." + player) != null) {
-                plugin.getConfigManager().getPunishmentsConfig().set("mutes." + player, null);
+                storeUnmute(player, moderator_uuid, "Mute Override");
             }
 
             plugin.getConfigManager().getPunishmentsConfig().set("mutes." + player + ".moderator-uuid", moderator_uuid == null ? "null" : moderator_uuid.toString());
-            plugin.getConfigManager().getPunishmentsConfig().set("mutes." + player + ".punished_at", System.currentTimeMillis());
+            plugin.getConfigManager().getPunishmentsConfig().set("mutes." + player + ".punished_at", TimeUtil.getCurrentTimeSeconds());
             plugin.getConfigManager().getPunishmentsConfig().set("mutes." + player + ".expires_at", until);
             plugin.getConfigManager().getPunishmentsConfig().set("mutes." + player + ".reason", reason);
             plugin.getConfigManager().getPunishmentsConfig().set("mutes." + player + ".server", server);
             plugin.getConfigManager().savePunishmentsConfig();
         }
 
-        storeHistory(PunishmentType.MUTE, player, moderator_uuid, System.currentTimeMillis(), until, server, reason);
+        storeHistory(PunishmentType.MUTE, player, moderator_uuid, TimeUtil.getCurrentTimeSeconds(), until, server, reason);
     }
 
     public void storeUnmute(UUID uuid, UUID moderator_uuid, String reason) {
@@ -242,7 +238,7 @@ public class PunishmentManager {
 
                 ResultSet results = queryStatement.executeQuery();
                 while (results.next()) {
-                    storeHistory(PunishmentType.UNMUTE, uuid, moderator_uuid, results.getLong("punished_at"), System.currentTimeMillis(), server, reason);
+                    storeHistory(PunishmentType.UNMUTE, uuid, moderator_uuid, results.getLong("punished_at"), TimeUtil.getCurrentTimeSeconds(), server, reason);
                 }
 
                 PreparedStatement unbanStatement = connection.prepareStatement("DELETE FROM `basics_mutes` WHERE `uuid` = ?");
@@ -251,7 +247,7 @@ public class PunishmentManager {
             });
         } else {
             long punishedAt = plugin.getConfigManager().getPunishmentsConfig().getLong("mutes." + uuid + ".punished_at");
-            storeHistory(PunishmentType.UNMUTE, uuid, moderator_uuid, punishedAt, System.currentTimeMillis(), server, reason);
+            storeHistory(PunishmentType.UNMUTE, uuid, moderator_uuid, punishedAt, TimeUtil.getCurrentTimeSeconds(), server, reason);
 
             if (plugin.getConfigManager().getPunishmentsConfig().getConfigurationSection("mutes." + uuid) != null) {
                 plugin.getConfigManager().getPunishmentsConfig().set("mutes." + uuid, null);
@@ -349,7 +345,7 @@ public class PunishmentManager {
                 if (punishment_data.getString("ip").equals(ip)) {
                     long expiresAt = section.getLong("expires_at");
 
-                    if (expiresAt > System.currentTimeMillis() && expiresAt != -1) {
+                    if (expiresAt > TimeUtil.getCurrentTimeSeconds() && expiresAt != -1) {
                         plugin.getConfigManager().getPunishmentsConfig().set("blacklists." + player, null);
                         plugin.getConfigManager().savePunishmentsConfig();
                         return;
@@ -394,10 +390,12 @@ public class PunishmentManager {
                 ResultSet result = queryStatement.executeQuery();
                 while (result.next()) {
                     long expiresAt = result.getLong("expires_at");
-                    if (expiresAt < System.currentTimeMillis() && expiresAt != -1) {
+                    if (expiresAt < TimeUtil.getCurrentTimeSeconds() && expiresAt != -1) {
                         PreparedStatement deleteStatement = connection.prepareStatement("DELETE FROM `basics_blacklists` WHERE `uuid` = ?");
                         deleteStatement.setString(1, player.toString());
                         deleteStatement.executeQuery();
+
+                        storeUnblacklist(result.getString("ip"), null, "Expired");
                         return;
                     }
 
@@ -410,9 +408,11 @@ public class PunishmentManager {
             ConfigurationSection section = plugin.getConfigManager().getPunishmentsConfig().getConfigurationSection("blacklists." + player);
             if (section != null) {
                 long expiresAt = section.getLong("expires_at");
-                if (expiresAt > System.currentTimeMillis() && expiresAt != -1) {
+                if (TimeUtil.getCurrentTimeSeconds() > expiresAt && expiresAt != -1) {
                     plugin.getConfigManager().getPunishmentsConfig().set("blacklists." + player, null);
                     plugin.getConfigManager().savePunishmentsConfig();
+
+                    storeUnblacklist(section.getString("ip"), null, "Expired");
                     return false;
                 }
             }
@@ -432,10 +432,12 @@ public class PunishmentManager {
                 ResultSet result = queryStatement.executeQuery();
                 while (result.next()) {
                     long expiresAt = result.getLong("expires_at");
-                    if (expiresAt < System.currentTimeMillis() && expiresAt != -1) {
+                    if (TimeUtil.getCurrentTimeSeconds() > expiresAt && expiresAt != -1) {
                         PreparedStatement deleteStatement = connection.prepareStatement("DELETE FROM `basics_blacklists` WHERE `ip` = ?");
                         deleteStatement.setString(1, ip);
                         deleteStatement.executeQuery();
+
+                        storeUnblacklist(result.getString("ip"), null, "Expired");
                         return;
                     }
 
@@ -458,9 +460,11 @@ public class PunishmentManager {
                 if (punishment_data.getString("ip").equals(ip)) {
                     long expiresAt = section.getLong("expires_at");
 
-                    if (expiresAt > System.currentTimeMillis() && expiresAt != -1) {
+                    if (TimeUtil.getCurrentTimeSeconds() > expiresAt && expiresAt != -1) {
                         plugin.getConfigManager().getPunishmentsConfig().set("blacklists." + player, null);
                         plugin.getConfigManager().savePunishmentsConfig();
+
+                        storeUnblacklist(section.getString("ip"), null, "Expired");
                         return;
                     }
 
@@ -483,10 +487,13 @@ public class PunishmentManager {
                 ResultSet result = queryStatement.executeQuery();
                 while (result.next()) {
                     long expiresAt = result.getLong("expires_at");
-                    if (expiresAt < System.currentTimeMillis() && expiresAt != -1) {
+
+                    if (TimeUtil.getCurrentTimeSeconds() > expiresAt && expiresAt != -1) {
                         PreparedStatement deleteStatement = connection.prepareStatement("DELETE FROM `basics_bans` WHERE `uuid` = ?");
                         deleteStatement.setString(1, player.toString());
                         deleteStatement.execute();
+
+                        storeUnban(player, null, "Expired");
                         return;
                     }
 
@@ -499,9 +506,11 @@ public class PunishmentManager {
             ConfigurationSection section = plugin.getConfigManager().getPunishmentsConfig().getConfigurationSection("bans." + player);
             if (section != null) {
                 long expiresAt = section.getLong("expires_at");
-                if (expiresAt > System.currentTimeMillis() && expiresAt != -1) {
+                if (TimeUtil.getCurrentTimeSeconds() > expiresAt && expiresAt != -1) {
                     plugin.getConfigManager().getPunishmentsConfig().set("bans." + player, null);
                     plugin.getConfigManager().savePunishmentsConfig();
+
+                    storeUnban(player, null, "Expired");
                     return false;
                 }
             }
@@ -521,10 +530,12 @@ public class PunishmentManager {
                 ResultSet result = queryStatement.executeQuery();
                 while (result.next()) {
                     long expiresAt = result.getLong("expires_at");
-                    if (expiresAt > System.currentTimeMillis() && expiresAt != -1) {
+                    if (TimeUtil.getCurrentTimeSeconds() > expiresAt && expiresAt != -1) {
                         PreparedStatement deleteStatement = connection.prepareStatement("DELETE FROM `basics_mutes` WHERE `uuid` = ?");
                         deleteStatement.setString(1, player.toString());
                         deleteStatement.execute();
+
+                        storeUnmute(player, null, "Expired");
                         return;
                     }
 
@@ -537,9 +548,11 @@ public class PunishmentManager {
             ConfigurationSection section = plugin.getConfigManager().getPunishmentsConfig().getConfigurationSection("mutes." + player);
             if (section != null) {
                 long expiresAt = section.getLong("expires_at");
-                if (expiresAt < System.currentTimeMillis() && expiresAt != -1) {
+                if (expiresAt < TimeUtil.getCurrentTimeSeconds() && expiresAt != -1) {
                     plugin.getConfigManager().getPunishmentsConfig().set("mutes." + player, null);
                     plugin.getConfigManager().savePunishmentsConfig();
+
+                    storeUnmute(player, null, "Expired");
                     return false;
                 }
             }
@@ -560,6 +573,10 @@ public class PunishmentManager {
     }
 
     public void broadcastPunishment(CommandSender sender, String targetName, PunishmentType punishment, String reason, boolean silent) {
+        broadcastPunishment(sender, targetName, punishment, reason, "forever", silent);
+    }
+
+    public void broadcastPunishment(CommandSender sender, String targetName, PunishmentType punishment, String reason, String duration, boolean silent) {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
             if (!player.hasPermission(silent ? "basics.punishments.viewsilent" : "basics.player")) {
                 continue;
@@ -571,14 +588,16 @@ public class PunishmentManager {
                     (silent ? Messages.PUNISHMENT_SILENT_PREFIX.toString() : "") + punishment.message(),
                     true,
                     targetName,
-                    senderName));
+                    senderName,
+                    duration));
 
             if (player.hasPermission("basics.punishments.viewdetails")) {
                 HoverEvent hover = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(Placeholders.parsePlaceholder(
                         Messages.PUNISHMENT_HOVER.toString(),
                         true,
                         senderName,
-                        reason
+                        reason,
+                        duration
                 )).create());
                 message.setHoverEvent(hover);
             }

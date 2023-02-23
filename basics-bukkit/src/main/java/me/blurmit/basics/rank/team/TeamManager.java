@@ -22,7 +22,13 @@ public class TeamManager {
             String color = ChatColor.translateAlternateColorCodes('&', rank.getColor());
             String displayName = ChatColor.translateAlternateColorCodes('&', rank.getDisplayName());
 
-            Team team = scoreboard.registerNewTeam(rank.getName());
+            Team team;
+            try {
+                team = scoreboard.registerNewTeam(rank.getName());
+            } catch (IllegalArgumentException e) {
+                continue;
+            }
+
             team.setPrefix(color);
             team.setDisplayName(displayName);
             team.setColor(ChatColor.BOLD);

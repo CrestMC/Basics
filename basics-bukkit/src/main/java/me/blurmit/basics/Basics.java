@@ -7,8 +7,13 @@ import me.blurmit.basics.listeners.*;
 import me.blurmit.basics.punishments.PunishmentManager;
 import me.blurmit.basics.rank.RankManager;
 import me.blurmit.basics.scoreboard.ScoreboardManager;
+import me.blurmit.basics.scoreboard.Scoreboards;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.Map;
+import java.util.UUID;
 
 public final class Basics extends JavaPlugin {
 
@@ -66,13 +71,27 @@ public final class Basics extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        if (getRankManager() != null && getRankManager().getStorage().getDatabaseManager() != null) {
+        getLogger().info("Saving rank storage...");
+        RankManager rManager = getRankManager();
+        if (rManager != null && rManager.getStorage().getDatabaseManager() != null) {
             getRankManager().getStorage().getDatabaseManager().shutdown();
         }
 
-        if (getPunishmentManager() != null && getPunishmentManager().getStorage().getDatabaseManager() != null) {
-            getPunishmentManager().getStorage().getDatabaseManager().shutdown();
+        getLogger().info("Saving punishment storage....");
+        PunishmentManager pManager = getPunishmentManager();
+        if (pManager != null && pManager.getStorage().getDatabaseManager() != null) {
+            pManager.getStorage().getDatabaseManager().shutdown();
         }
+
+        getLogger().info("Unregistering scoreboards...");
+        ScoreboardManager sManager = getScoreboardManager();
+        if (sManager == null) {
+            return;
+        }
+
+        Map<UUID, Scoreboards> scoreboards = sManager.getBoards();
+        scoreboards.forEach((uuid, scoreboard) -> scoreboard.getObjective().unregister());
+        scoreboards.clear();
 
         getLogger().info(getName() + " has been disabled!");
     }

@@ -93,6 +93,13 @@ public enum PunishmentType {
         public Messages message() {
             return Messages.KICK_MESSAGE;
         }
+    },
+
+    WARN() {
+        @Override
+        public Messages message() {
+            return Messages.WARN_MESSAGE;
+        }
     };
 
     public abstract Messages message();

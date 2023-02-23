@@ -601,6 +601,20 @@ public enum Messages {
         }
     },
 
+    WARN_MESSAGE() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("warn.message");
+        }
+    },
+
+    WARN_ALERT() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("warn.alert");
+        }
+    },
+
     BAN_TEMPORARY() {
         @Override
         public String toString() {
@@ -787,6 +801,13 @@ public enum Messages {
         @Override
         public String toString() {
             return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("help-command");
+        }
+    },
+
+    PUNISHMENT_NO_TIME_PROVIDED() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("punishment-no-time-provided");
         }
     },
 

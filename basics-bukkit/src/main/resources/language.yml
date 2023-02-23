@@ -98,6 +98,7 @@ punishment-hover: |-
   &aModerator: {replacement-0}
   &aReason: {replacement-1}
   &7&m--------------
+punishment-no-time-provided: "&cNo valid time duration was found."
 frozen:
   message: "&cYou cannot move as you are currently frozen. Please wait for instructions from staff."
 kick:
@@ -105,6 +106,12 @@ kick:
   alert: |-
     &7&m------------------------------------------
     &aYou have been kicked for &2{replacement-0}&a.
+    &7&m------------------------------------------
+warn:
+  message: "&2{replacement-0} &ahas been warn by &2{replacement-1}&a."
+  alert: |-
+    &7&m------------------------------------------
+    &aYou have been warned for &2{replacement-0}&a.
     &7&m------------------------------------------
 mute:
   temporary: "&2{replacement-0} &ahas been temporarily muted by &2{replacement-1} &afor &2{replacement-2}&a."

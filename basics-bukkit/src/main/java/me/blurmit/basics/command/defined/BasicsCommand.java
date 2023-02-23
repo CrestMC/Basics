@@ -40,7 +40,7 @@ public class BasicsCommand extends CommandBase {
                 plugin.getConfigManager().reloadScoreboardConfig();
                 plugin.getConfigManager().reloadLanguageConfig();
                 plugin.getConfigManager().reloadRanksConfig();
-                plugin.getScoreboardManager().getBoards().forEach(Scoreboards::reload);
+                plugin.getScoreboardManager().getBoards().values().forEach(Scoreboards::reload);
                 sender.sendMessage(Placeholders.parsePlaceholder(Messages.PLUGIN_RELOADED + ""));
                 return true;
             }

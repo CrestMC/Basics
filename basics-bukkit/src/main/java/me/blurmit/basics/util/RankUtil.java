@@ -1,5 +1,6 @@
 package me.blurmit.basics.util;
 
+import javafx.util.Pair;
 import me.blurmit.basics.Basics;
 import me.blurmit.basics.rank.Rank;
 import me.blurmit.basics.util.lang.Messages;
@@ -33,6 +34,11 @@ public class RankUtil {
 
     public static String getColoredName(UUID uuid) {
         return getColor(uuid) + UUIDUtil.getName(uuid);
+    }
+
+    public static Pair<String, String> getColoredNamePair(UUID uuid) {
+        String name = UUIDUtil.getName(uuid);
+        return new Pair<>(getColor(uuid) + name, name);
     }
 
     public static String getColor(UUID uuid) {

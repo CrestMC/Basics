@@ -1,4 +1,4 @@
-package me.blurmit.basics.command.defined;
+package me.blurmit.basics.command.defined.punishment;
 
 import javafx.util.Pair;
 import me.blurmit.basics.Basics;
@@ -6,23 +6,26 @@ import me.blurmit.basics.command.CommandBase;
 import me.blurmit.basics.punishments.PunishmentType;
 import me.blurmit.basics.util.Placeholders;
 import me.blurmit.basics.util.RankUtil;
+import me.blurmit.basics.util.UUIDUtil;
 import me.blurmit.basics.util.lang.Messages;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
+import java.util.UUID;
 
-public class KickCommand extends CommandBase {
+public class UnblacklistCommand extends CommandBase {
 
     private final Basics plugin;
 
-    public KickCommand(Basics plugin) {
+    public UnblacklistCommand(Basics plugin) {
         super(plugin.getName());
-        setName("kick");
-        setDescription("Kicks a player from the server");
-        setUsage("/kick [-s] <player> <reason>");
-        setPermission("basics.command.kick");
+        setName("unblacklist");
+        setDescription("Unblacklists a player");
+        setUsage("/unblacklist [-s] <player> <reason>");
+        setPermission("basics.command.unblacklist");
+        setAliases(Arrays.asList("unipban", "pardonip", "unipban", "removeipban"));
 
         this.plugin = plugin;
     }
@@ -45,30 +48,36 @@ public class KickCommand extends CommandBase {
 
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
             Player target = plugin.getServer().getPlayer(args[0]);
+            UUID uuid;
 
-            if (target == null) {
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.PLAYER_NOT_FOUND + "", true, args[0]));
+            if (target != null) {
+                uuid = target.getUniqueId();
+            } else {
+                uuid = UUIDUtil.getUUID(args[0]);
+
+                if (uuid == null) {
+                    sender.sendMessage(Placeholders.parsePlaceholder(Messages.ACCOUNT_DOESNT_EXIST + "", true, args[0]));
+                    return;
+                }
+            }
+
+            if (!plugin.getPunishmentManager().isBlacklisted(uuid)) {
+                sender.sendMessage(Placeholders.parsePlaceholder(Messages.NOT_BLACKLISTED + "", true, args[0]));
                 return;
             }
 
-            String fancyName = RankUtil.getColoredName(target.getUniqueId());
+            String fancyName = RankUtil.getColoredName(uuid);
             String reason = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
 
-            plugin.getServer().getScheduler().runTask(plugin, () -> {
-                target.kickPlayer(Placeholders.parsePlaceholder(Messages.KICK_ALERT + "", reason));
-            });
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.PUNISHMENT_MESSAGE + "", true, "kicked", fancyName, reason));
+            plugin.getPunishmentManager().getBannedPlayers().remove(uuid);
+            sender.sendMessage(Placeholders.parsePlaceholder(Messages.PUNISHMENT_MESSAGE + "", true, "unblacklisted", fancyName, reason));
 
-            plugin.getPunishmentManager().storeHistory(
-                    PunishmentType.KICK,
-                    target.getUniqueId(),
+            plugin.getPunishmentManager().storeUnblacklist(
+                    "0.0.0.0",
                     (sender instanceof Player) ? ((Player) sender).getUniqueId() : null,
-                    System.currentTimeMillis(),
-                    -1,
-                    plugin.getConfigManager().getConfig().getString("Server-Name.Default-Value"),
                     reason
             );
-            plugin.getPunishmentManager().broadcastPunishment(sender, fancyName, PunishmentType.KICK, reason, silent);
+            plugin.getPunishmentManager().broadcastPardon(sender, fancyName, PunishmentType.UNBLACKLIST, reason, silent);
         });
 
         return true;
