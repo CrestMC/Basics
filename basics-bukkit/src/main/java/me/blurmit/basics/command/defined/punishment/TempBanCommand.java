@@ -18,7 +18,7 @@ public class TempBanCommand extends PunishmentCommand {
         super(plugin);
         setName("tempban");
         setDescription("Temporarily bans a player from the server");
-        setUsage("/ban [-s] <player> [duration] <reason>");
+        setUsage("/tempban [-s] <player> [duration] <reason>");
         setPermission("basics.command.tempban");
 
         this.plugin = plugin;

@@ -18,7 +18,7 @@ public class TempBlacklistCommand extends PunishmentCommand {
         super(plugin);
         setName("tempblacklist");
         setDescription("Temporarily blacklists a player from the server");
-        setUsage("/blacklist [-s] <player> [duration] <reason>");
+        setUsage("/tempblacklist [-s] <player> [duration] <reason>");
         setPermission("basics.command.tempblacklist");
         setAliases(Arrays.asList("tempipban", "tempban-ip", "tempip-ban", "bl"));
 

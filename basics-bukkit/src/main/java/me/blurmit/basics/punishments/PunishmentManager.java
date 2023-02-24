@@ -15,13 +15,11 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -35,20 +33,20 @@ public class PunishmentManager {
     private final PunishmentStorage storage;
 
     @Getter
-    private final Set<UUID> frozenPlayers;
+    private final Map<UUID, BukkitTask> frozenPlayers;
     @Getter
-    private final Set<UUID> mutedPlayers;
+    private final Map<UUID, BukkitTask> mutedPlayers;
     @Getter
-    private final Set<UUID> bannedPlayers;
+    private final Map<UUID, BukkitTask> bannedPlayers;
 
     public PunishmentManager(Basics plugin) {
         this.plugin = plugin;
         this.storage = new PunishmentStorage(plugin);
         this.listener = new PunishmentsListener(plugin);
 
-        this.frozenPlayers = new HashSet<>();
-        this.mutedPlayers = new HashSet<>();
-        this.bannedPlayers = new HashSet<>();
+        this.frozenPlayers = new HashMap<>();
+        this.mutedPlayers = new HashMap<>();
+        this.bannedPlayers = new HashMap<>();
     }
 
     public void storeBan(UUID target, UUID moderator, long until, String server, String reason) {
@@ -114,6 +112,11 @@ public class PunishmentManager {
                 plugin.getConfigManager().getPunishmentsConfig().set("bans." + uuid, null);
                 plugin.getConfigManager().savePunishmentsConfig();
             }
+        }
+
+        if (getBannedPlayers().containsKey(uuid)) {
+            getBannedPlayers().get(uuid).cancel();
+            getBannedPlayers().remove(uuid);
         }
     }
 
@@ -254,6 +257,11 @@ public class PunishmentManager {
                 plugin.getConfigManager().savePunishmentsConfig();
             }
         }
+
+        if (getMutedPlayers().containsKey(uuid)) {
+            getMutedPlayers().get(uuid).cancel();
+            getMutedPlayers().remove(uuid);
+        }
     }
 
     public void storeHistory(PunishmentType punishment, UUID player, UUID moderator_uuid, long punished_at, long until, String server, String reason) {
@@ -284,43 +292,11 @@ public class PunishmentManager {
     }
 
     public String getBanReason(UUID player) {
-        AtomicReference<String> reason = new AtomicReference<>();
-
-        if (storage.getType().equals(StorageType.MYSQL)) {
-            storage.getDatabaseManager().useConnection(connection -> {
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM `basics_bans` WHERE `uuid` = ?");
-                statement.setString(1, player.toString());
-
-                ResultSet results = statement.executeQuery();
-                while (results.next()) {
-                    reason.set(results.getString("reason"));
-                }
-            });
-        } else {
-            reason.set(plugin.getConfigManager().getPunishmentsConfig().getString("bans." + player + ".reason"));
-        }
-
-        return reason.get();
+        return getPunishmentReason(player, "bans");
     }
 
     public String getBlacklistReason(UUID player) {
-        AtomicReference<String> reason = new AtomicReference<>();
-
-        if (storage.getType().equals(StorageType.MYSQL)) {
-            storage.getDatabaseManager().useAsynchronousConnection(connection -> {
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM `basics_blacklists` WHERE `uuid` = ?");
-                statement.setString(1, player.toString());
-
-                ResultSet results = statement.executeQuery();
-                while (results.next()) {
-                    reason.set(results.getString("reason"));
-                }
-            });
-        } else {
-            reason.set(plugin.getConfigManager().getPunishmentsConfig().getString("blacklists." + player + ".reason"));
-        }
-
-        return reason.get();
+        return getPunishmentReason(player, "blacklists");
     }
 
     public String getBlacklistReason(String ip) {
@@ -360,11 +336,15 @@ public class PunishmentManager {
     }
 
     public String getMuteReason(UUID player) {
+        return getPunishmentReason(player, "mutes");
+    }
+
+    public String getPunishmentReason(UUID player, String punishment) {
         AtomicReference<String> reason = new AtomicReference<>();
 
         if (storage.getType().equals(StorageType.MYSQL)) {
-            storage.getDatabaseManager().useAsynchronousConnection(connection -> {
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM `basics_mutes` WHERE `uuid` = ?");
+            storage.getDatabaseManager().useConnection(connection -> {
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM `basics_" + punishment + "` WHERE `uuid` = ?");
                 statement.setString(1, player.toString());
 
                 ResultSet results = statement.executeQuery();
@@ -373,10 +353,42 @@ public class PunishmentManager {
                 }
             });
         } else {
-            reason.set(plugin.getConfigManager().getPunishmentsConfig().getString("mutes." + player + ".reason"));
+            reason.set(plugin.getConfigManager().getPunishmentsConfig().getString(punishment + "." + player + ".reason"));
         }
 
         return reason.get();
+    }
+
+    public long getBlacklistDuration(UUID player) {
+        return getPunishmentDuration(player, "blacklists");
+    }
+
+    public long getBanDuration(UUID player) {
+        return getPunishmentDuration(player, "bans");
+    }
+
+    public long getMuteDuration(UUID player) {
+        return getPunishmentDuration(player, "mutes");
+    }
+
+    public long getPunishmentDuration(UUID player, String punishment) {
+        AtomicReference<Long> duration = new AtomicReference<>();
+
+        if (storage.getType().equals(StorageType.MYSQL)) {
+            storage.getDatabaseManager().useConnection(connection -> {
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM `basics_" + punishment + "` WHERE `uuid` = ?");
+                statement.setString(1, player.toString());
+
+                ResultSet results = statement.executeQuery();
+                if (results.next()) {
+                    duration.set(results.getLong("expires_at"));
+                }
+            });
+        } else {
+            duration.set(plugin.getConfigManager().getPunishmentsConfig().getLong(punishment + "." + player + ".expires_at"));
+        }
+
+        return duration.get();
     }
 
     public boolean isBlacklisted(UUID player) {

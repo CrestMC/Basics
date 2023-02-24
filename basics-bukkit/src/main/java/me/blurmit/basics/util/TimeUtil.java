@@ -95,25 +95,15 @@ public class TimeUtil {
 
         if (years > 0) {
             result += years + " year" + (years > 1 ? "s" : "") + " ";
-        }
-
-        if (months > 0) {
+        } else if (months > 0) {
             result += months + " month" + (months > 1 ? "s" : "") + " ";
-        }
-
-        if (days > 0) {
+        } else if (days > 0) {
             result += days + " day" + (days > 1 ? "s" : "") + " ";
-        }
-
-        if (hours > 0) {
+        } else if (hours > 0) {
             result += hours + " hour" + (hours > 1 ? "s" : "") + " ";
-        }
-
-        if (minutes > 0) {
+        } else if (minutes > 0) {
             result += minutes + " minute" + (minutes > 1 ? "s" : "") + " ";
-        }
-
-        if (seconds > 0) {
+        } else if (seconds > 0) {
             result += seconds + " second" + (seconds > 1 ? "s" : "") + " ";
         }
 

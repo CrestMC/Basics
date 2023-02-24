@@ -9,6 +9,7 @@ import me.blurmit.basics.util.PluginMessageUtil;
 import me.blurmit.basics.util.TimeUtil;
 import me.blurmit.basics.util.lang.Messages;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -78,7 +79,7 @@ public class PunishmentStorage {
 
     private void updateBlacklists(Connection connection) throws SQLException {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
-            if (plugin.getPunishmentManager().getBannedPlayers().contains(player.getUniqueId())) {
+            if (plugin.getPunishmentManager().getBannedPlayers().containsKey(player.getUniqueId())) {
                 continue;
             }
 
@@ -117,7 +118,7 @@ public class PunishmentStorage {
 
     private void updateBans(Connection connection) throws SQLException {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
-            if (plugin.getPunishmentManager().getBannedPlayers().contains(player.getUniqueId())) {
+            if (plugin.getPunishmentManager().getBannedPlayers().containsKey(player.getUniqueId())) {
                 continue;
             }
 
@@ -151,7 +152,7 @@ public class PunishmentStorage {
 
     private void updateMutes(Connection connection) throws SQLException {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
-            if (plugin.getPunishmentManager().getMutedPlayers().contains(player.getUniqueId())) {
+            if (plugin.getPunishmentManager().getMutedPlayers().containsKey(player.getUniqueId())) {
                 continue;
             }
 
@@ -162,8 +163,10 @@ public class PunishmentStorage {
             if (results.next()) {
                 String reason = results.getString("reason");
                 long expiresAt = results.getLong("expires_at");
+                long timeLeft = expiresAt - TimeUtil.getCurrentTimeSeconds();
+                BukkitTask task = plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, () -> plugin.getPunishmentManager().storeUnmute(player.getUniqueId(), null, "Expired"), timeLeft * 20L);
 
-                plugin.getPunishmentManager().getMutedPlayers().add(player.getUniqueId());
+                plugin.getPunishmentManager().getMutedPlayers().put(player.getUniqueId(), task);
 
                 if (expiresAt == -1) {
                     player.sendMessage(Placeholders.parsePlaceholder(

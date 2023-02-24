@@ -4,13 +4,11 @@ import javafx.util.Pair;
 import me.blurmit.basics.Basics;
 import me.blurmit.basics.command.CommandBase;
 import me.blurmit.basics.punishments.PunishmentType;
-import me.blurmit.basics.util.Placeholders;
-import me.blurmit.basics.util.PluginMessageUtil;
-import me.blurmit.basics.util.RankUtil;
-import me.blurmit.basics.util.UUIDUtil;
+import me.blurmit.basics.util.*;
 import me.blurmit.basics.util.lang.Messages;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -59,7 +57,14 @@ public class MuteCommand extends PunishmentCommand {
                     getReason(),
                     getExpiresInText()
             ));
-            plugin.getPunishmentManager().getMutedPlayers().add(target);
+
+            long timeLeft = expiresAt - TimeUtil.getCurrentTimeSeconds();
+            BukkitTask task = null;
+            if (getExpiresAt() != -1) {
+                task = plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, () -> plugin.getPunishmentManager().storeUnmute(target, null, "Expired"), timeLeft * 20L);
+            }
+
+            plugin.getPunishmentManager().getMutedPlayers().put(target, task);
         }
 
         plugin.getPunishmentManager().storeMute(
