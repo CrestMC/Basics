@@ -59,6 +59,8 @@ public class PunishmentManager {
                 ResultSet result = queryStatement.executeQuery();
                 if (result.next()) {
                     storeUnban(target, moderator, "Ban Override");
+                    storeBan(target, moderator, until, server, reason);
+                    return;
                 }
 
                 PreparedStatement banStatement = connection.prepareStatement("INSERT IGNORE INTO `basics_bans` (`uuid`, `moderator_uuid`, `punished_at`, `expires_at`, `server`, `reason`) VALUES (?, ?, ?, ?, ?, ?)");
@@ -130,6 +132,8 @@ public class PunishmentManager {
                 ResultSet result = queryStatement.executeQuery();
                 if (result.next()) {
                     storeUnblacklist(ip, moderator_uuid, "Blacklist Override");
+                    storeBlacklist(player, moderator_uuid, until, server, reason, ip);
+                    return;
                 }
 
                 PreparedStatement blacklistStatement = connection.prepareStatement("INSERT IGNORE INTO `basics_blacklists` (`uuid`, `ip`, `moderator_uuid`, `punished_at`, `expires_at`, `server`, `reason`) VALUES (?, ?, ?, ?, ?, ?, ?)");
@@ -203,6 +207,8 @@ public class PunishmentManager {
                 ResultSet result = queryStatement.executeQuery();
                 if (result.next()) {
                     storeUnmute(player, moderator_uuid, "Mute Override");
+                    storeMute(player, moderator_uuid, until, server, reason);
+                    return;
                 }
 
                 PreparedStatement muteStatement = connection.prepareStatement("INSERT IGNORE INTO `basics_mutes` (`uuid`, `moderator_uuid`, `punished_at`, `expires_at`, `server`, `reason`) VALUES (?, ?, ?, ?, ?, ?)");
