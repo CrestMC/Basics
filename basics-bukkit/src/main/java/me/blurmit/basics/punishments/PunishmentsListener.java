@@ -44,9 +44,9 @@ public class PunishmentsListener implements Listener {
             String banMessage;
             long expiresAt = pManager.getBanDuration(uuid);
             if (expiresAt == -1) {
-                banMessage = Messages.BAN_PERMANENT_ALERT + "";
+                banMessage = Messages.BAN_PERMANENT_JOIN + "";
             } else {
-                banMessage = Messages.BAN_TEMPORARY_ALERT + "";
+                banMessage = Messages.BAN_TEMPORARY_JOIN + "";
             }
 
             String banReason = Placeholders.parsePlaceholder(banMessage, true, pManager.getBanReason(uuid), TimeUtil.getHowLongUntil(expiresAt));
@@ -84,9 +84,9 @@ public class PunishmentsListener implements Listener {
         String blacklistMessage;
         long expiresAt = pManager.getBlacklistDuration(uuid);
         if (expiresAt == -1) {
-            blacklistMessage = Messages.BLACKLIST_PERMANENT_ALERT + "";
+            blacklistMessage = Messages.BLACKLIST_PERMANENT_JOIN + "";
         } else {
-            blacklistMessage = Messages.BLACKLIST_TEMPORARY_ALERT + "";
+            blacklistMessage = Messages.BLACKLIST_TEMPORARY_JOIN + "";
         }
 
         String blacklistReason = Placeholders.parsePlaceholder(blacklistMessage, true, blacklistReasonRaw, TimeUtil.getHowLongUntil(expiresAt));
