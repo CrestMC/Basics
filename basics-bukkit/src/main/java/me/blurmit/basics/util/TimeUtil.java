@@ -4,8 +4,10 @@ import javafx.util.Pair;
 
 import java.time.*;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -127,7 +129,13 @@ public class TimeUtil {
             try {
                 // Check if the current argument is a number, if it is, check if the next argument is a time unit
                 Long.parseLong(currentArg);
-                String nextArg = args[arg + 1];
+                String nextArg;
+
+                if (args.length <= arg + 1) {
+                    continue;
+                }
+
+                nextArg = args[arg + 1];
                 TimeUtil.Units unit = TimeUtil.Units.getByName(nextArg);
 
                 if (unit == null) {

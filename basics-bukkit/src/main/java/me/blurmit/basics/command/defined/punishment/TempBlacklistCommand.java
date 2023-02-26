@@ -33,37 +33,15 @@ public class TempBlacklistCommand extends PunishmentCommand {
         }
 
         PluginMessageUtil.sendData("BungeeCord", "KickPlayer", getTargetName(), Placeholders.parsePlaceholder(
-                Messages.BLACKLIST_TEMPORARY_ALERT + "",
-                true,
-                getReason(),
-                getExpiresInText()
+                Messages.BLACKLIST_TEMPORARY_ALERT + "", true, getReason(), getExpiresInText()
         ));
 
         moderator.sendMessage(Placeholders.parsePlaceholder(
-                Messages.PUNISHMENT_MESSAGE + "",
-                true,
-                "blacklisted",
-                getTargetName(),
-                getReason(),
-                getDurationText()
+                Messages.PUNISHMENT_MESSAGE + "", true, "blacklisted", getTargetName(), getReason(), getDurationText()
         ));
 
-        plugin.getPunishmentManager().storeBlacklist(
-                getTargetUUID(),
-                getModUUID(),
-                getExpiresAt(),
-                getServerName(),
-                getReason(),
-                "0.0.0.0"
-        );
-        plugin.getPunishmentManager().broadcastPunishment(
-                moderator,
-                getFancyTargetName(),
-                PunishmentType.TEMP_BLACKLIST,
-                getReason(),
-                getDurationText(),
-                isSilent()
-        );
+        plugin.getPunishmentManager().storeBlacklist(getTargetUUID(), getModUUID(), getExpiresAt(), getReason());
+        plugin.getPunishmentManager().broadcastPunishment(moderator, getFancyTargetName(), PunishmentType.TEMP_BLACKLIST, getReason(), getDurationText(), isSilent());
     }
 
 }

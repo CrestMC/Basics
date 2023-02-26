@@ -3,8 +3,9 @@ package me.blurmit.basics.rank;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import me.blurmit.basics.Basics;
-import me.blurmit.basics.database.StorageType;
+import me.blurmit.basics.punishments.storage.PunishmentStorageType;
 import me.blurmit.basics.rank.storage.RankStorage;
+import me.blurmit.basics.rank.storage.RankStorageType;
 import me.blurmit.basics.rank.team.TeamManager;
 import me.blurmit.basics.util.ReflectionUtil;
 import net.md_5.bungee.api.ChatColor;
@@ -74,7 +75,7 @@ public class RankManager {
     }
 
     public Rank getHighestRankByPriority(UUID uuid) {
-        if (storage.getType().equals(StorageType.MYSQL)) {
+        if (storage.getType().equals(RankStorageType.MYSQL)) {
             AtomicReference<Rank> primaryRank = new AtomicReference<>();
 
             storage.getDatabaseManager().useConnection(connection -> {
@@ -238,7 +239,7 @@ public class RankManager {
         Rank rank = new Rank(name);
         storage.getRanks().add(rank);
 
-        if (storage.getType().equals(StorageType.MYSQL)) {
+        if (storage.getType().equals(RankStorageType.MYSQL)) {
             storage.getDatabaseManager().useAsynchronousConnection(connection -> {
                 PreparedStatement statement = connection.prepareStatement("INSERT INTO `basics_ranks` (`name`, `display_name`, `color`, `priority`, `default`, `prefix`, `suffix`) VALUES (?, ?, ?, ?, ?, ?, ?)");
                 statement.setString(1, name);
@@ -269,7 +270,7 @@ public class RankManager {
         storage.getOwnedRanks().keySet().forEach(owner -> revokeRank(name, owner.toString()));
         storage.getRanks().remove(getRankByName(name));
 
-        if (storage.getType().equals(StorageType.MYSQL)) {
+        if (storage.getType().equals(RankStorageType.MYSQL)) {
             storage.getDatabaseManager().useAsynchronousConnection(connection -> {
                 PreparedStatement statement = connection.prepareStatement("DELETE FROM `basics_ranks` WHERE `name` = ?");
                 statement.setString(1, name);
@@ -290,7 +291,7 @@ public class RankManager {
             teamManager.addPlayerToRankTeam(user, rank);
         }
 
-        if (storage.getType().equals(StorageType.MYSQL)) {
+        if (storage.getType().equals(RankStorageType.MYSQL)) {
             storage.getDatabaseManager().useAsynchronousConnection(connection -> {
                 PreparedStatement statement = connection.prepareStatement("INSERT INTO `basics_rank_members` (`rank`, `member`, `server`) VALUES (?, ?, ?)");
                 statement.setString(1, rank);
@@ -326,7 +327,7 @@ public class RankManager {
         Set<String> members = storage.getOwnedRanks().computeIfAbsent(UUID.fromString(player), uuid -> new HashSet<>());
         members.remove(rank);
 
-        if (storage.getType().equals(StorageType.MYSQL)) {
+        if (storage.getType().equals(RankStorageType.MYSQL)) {
             storage.getDatabaseManager().useAsynchronousConnection(connection -> {
                 PreparedStatement statement = connection.prepareStatement("DELETE FROM `basics_rank_members` WHERE (`rank`, `member`) = (?, ?)");
                 statement.setString(1, rank);
@@ -385,7 +386,7 @@ public class RankManager {
             player.updateCommands();
         });
 
-        if (storage.getType().equals(StorageType.MYSQL)) {
+        if (storage.getType().equals(RankStorageType.MYSQL)) {
             storage.getDatabaseManager().useAsynchronousConnection(connection -> {
                 PreparedStatement statement = connection.prepareStatement("INSERT INTO `basics_rank_permissions` (`rank`, `permission`, `server`, `negated`) VALUES (?, ?, ?, ?)");
                 statement.setString(1, rank);
@@ -426,7 +427,7 @@ public class RankManager {
             player.updateCommands();
         });
 
-        if (storage.getType().equals(StorageType.MYSQL)) {
+        if (storage.getType().equals(RankStorageType.MYSQL)) {
             storage.getDatabaseManager().useAsynchronousConnection(connection -> {
                 PreparedStatement statement = connection.prepareStatement("DELETE FROM `basics_rank_permissions` WHERE (`rank`, `permission`) = (?, ?)");
                 statement.setString(1, rank);
@@ -454,7 +455,7 @@ public class RankManager {
         permission.setDefault(PermissionDefault.TRUE);
         cachedRank.getPermissions().add(permission);
 
-        if (storage.getType().equals(StorageType.MYSQL)) {
+        if (storage.getType().equals(RankStorageType.MYSQL)) {
             storage.getDatabaseManager().useAsynchronousConnection(connection -> {
                 PreparedStatement statement = connection.prepareStatement("INSERT INTO `basics_rank_members` (`rank`, `player`, `server`) VALUES (?, ?, ?)");
                 statement.setString(1, rank);
@@ -481,7 +482,7 @@ public class RankManager {
 
         cachedRank.getPermissions().removeIf(permission -> permission.getName().equalsIgnoreCase("group." + rank));
 
-        if (storage.getType().equals(StorageType.MYSQL)) {
+        if (storage.getType().equals(RankStorageType.MYSQL)) {
             storage.getDatabaseManager().useAsynchronousConnection(connection -> {
                 PreparedStatement statement = connection.prepareStatement("DELETE FROM `basics_rank_members` WHERE (`rank`, `member`) = (?, ?)");
                 statement.setString(1, rank);
@@ -506,7 +507,7 @@ public class RankManager {
 
         storage.getRanks().stream().filter(rank1 -> rank1.getName().equals(rank)).forEach(rank1 -> rank1.setPrefix(prefix));
 
-        if (storage.getType().equals(StorageType.MYSQL)) {
+        if (storage.getType().equals(RankStorageType.MYSQL)) {
             storage.getDatabaseManager().useAsynchronousConnection(connection -> {
                 PreparedStatement statement = connection.prepareStatement("UPDATE `basics_ranks` SET `prefix` = ? WHERE `name` = ?");
                 statement.setString(1, prefix);
@@ -528,7 +529,7 @@ public class RankManager {
 
         storage.getRanks().stream().filter(rank1 -> rank1.getName().equals(cachedRank.getName())).forEach(rank1 -> rank1.setSuffix(suffix));
 
-        if (storage.getType().equals(StorageType.MYSQL)) {
+        if (storage.getType().equals(RankStorageType.MYSQL)) {
             storage.getDatabaseManager().useAsynchronousConnection(connection -> {
                 PreparedStatement statement = connection.prepareStatement("UPDATE `basics_ranks` SET `suffix` = ? WHERE `name` = ?");
                 statement.setString(1, suffix);
@@ -550,7 +551,7 @@ public class RankManager {
 
         storage.getRanks().stream().filter(rank1 -> rank1.getName().equals(cachedRank.getName())).forEach(rank1 -> rank1.setDisplayName(displayName));
 
-        if (storage.getType().equals(StorageType.MYSQL)) {
+        if (storage.getType().equals(RankStorageType.MYSQL)) {
             storage.getDatabaseManager().useAsynchronousConnection(connection -> {
                 PreparedStatement statement = connection.prepareStatement("UPDATE `basics_ranks` SET `display_name` = ? WHERE `name` = ?");
                 statement.setString(1, displayName);
@@ -572,7 +573,7 @@ public class RankManager {
 
         storage.getRanks().stream().filter(rank1 -> rank1.getName().equals(rank)).forEach(rank1 -> rank1.setPriority(priority));
 
-        if (storage.getType().equals(StorageType.MYSQL)) {
+        if (storage.getType().equals(RankStorageType.MYSQL)) {
             storage.getDatabaseManager().useAsynchronousConnection(connection -> {
                 PreparedStatement statement = connection.prepareStatement("UPDATE `basics_ranks` SET `priority` = ? WHERE `name` = ?");
                 statement.setInt(1, priority);
@@ -594,7 +595,7 @@ public class RankManager {
 
         storage.getRanks().stream().filter(rank1 -> rank1.getName().equals(rank)).forEach(rank1 -> rank1.setColor(color));
 
-        if (storage.getType().equals(StorageType.MYSQL)) {
+        if (storage.getType().equals(RankStorageType.MYSQL)) {
             storage.getDatabaseManager().useAsynchronousConnection(connection -> {
                 PreparedStatement statement = connection.prepareStatement("UPDATE `basics_ranks` SET `color` = ? WHERE `name` = ?");
                 statement.setString(1, color);
@@ -616,7 +617,7 @@ public class RankManager {
 
         storage.getRanks().stream().filter(rank1 -> rank1.getName().equals(rank)).forEach(rank1 -> rank1.setDefault(def));
 
-        if (storage.getType().equals(StorageType.MYSQL)) {
+        if (storage.getType().equals(RankStorageType.MYSQL)) {
             storage.getDatabaseManager().useAsynchronousConnection(connection -> {
                 PreparedStatement statement = connection.prepareStatement("UPDATE `basics_ranks` SET `default` = ? WHERE `name` = ?");
                 statement.setInt(1, def ? 1 : 0);
@@ -631,7 +632,7 @@ public class RankManager {
 
     public void getRankFromStorage(UUID uuid, Consumer<Set<String>> consumer) {
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-            if (storage.getType().equals(StorageType.MYSQL)) {
+            if (storage.getType().equals(RankStorageType.MYSQL)) {
                 storage.getDatabaseManager().useAsynchronousConnection(connection -> {
                     PreparedStatement statement = connection.prepareStatement("SELECT `rank` FROM `basics_rank_members` WHERE `member` = ?");
                     Set<String> ranks = new HashSet<>();
@@ -663,7 +664,7 @@ public class RankManager {
         storage.getOwnedRanks().computeIfAbsent(player.getUniqueId(), id -> new HashSet<>());
         storage.getRanks().stream().filter(Rank::isDefault).forEach(rank -> storage.getOwnedRanks().get(player.getUniqueId()).add(rank.getName()));
 
-        if (storage.getType().equals(StorageType.MYSQL)) {
+        if (storage.getType().equals(RankStorageType.MYSQL)) {
             storage.getDatabaseManager().useAsynchronousConnection(connection -> {
                 PreparedStatement statement = connection.prepareStatement("SELECT `rank` FROM `basics_rank_members` WHERE `member` = ?");
                 statement.setString(1, player.getUniqueId().toString());

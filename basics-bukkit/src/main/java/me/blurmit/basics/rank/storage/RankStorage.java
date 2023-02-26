@@ -3,7 +3,6 @@ package me.blurmit.basics.rank.storage;
 import lombok.Getter;
 import me.blurmit.basics.Basics;
 import me.blurmit.basics.database.DatabaseManager;
-import me.blurmit.basics.database.StorageType;
 import me.blurmit.basics.rank.Rank;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -26,7 +25,7 @@ public class RankStorage {
     @Getter
     private DatabaseManager databaseManager;
     @Getter
-    private StorageType type;
+    private RankStorageType type;
 
     private static final String CREATE_RANKS_TABLE = "CREATE TABLE IF NOT EXISTS `basics_ranks` (`name` VARCHAR(64) NOT NULL PRIMARY KEY, `display_name` VARCHAR(255) NOT NULL, `color` VARCHAR(16), `priority` INT NOT NULL, `default` TINYINT(1) NOT NULL, `prefix` VARCHAR(255) NOT NULL, `suffix` VARCHAR(255) NOT NULL)";
     private static final String CREATE_RANK_PERMISSION_TABLE = "CREATE TABLE IF NOT EXISTS `basics_rank_permissions` (`rank` VARCHAR(64) NOT NULL, `permission` VARCHAR(64) NOT NULL, `server` VARCHAR(64) NOT NULL, `negated` TINYINT(1), `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY)";
@@ -46,7 +45,7 @@ public class RankStorage {
             case "sql":
             case "mysql": {
                 plugin.getLogger().info("Using MySQL database as storage provider...");
-                type = StorageType.MYSQL;
+                type = RankStorageType.MYSQL;
 
                 databaseManager = new DatabaseManager(
                         plugin,
@@ -67,7 +66,7 @@ public class RankStorage {
             }
             default: {
                 plugin.getLogger().info("Using ranks.yml as storage provider...");
-                type = StorageType.CONFIG;
+                type = RankStorageType.YAML;
                 loadFromStorage();
             }
         }
@@ -75,7 +74,7 @@ public class RankStorage {
 
     private void loadFromStorage() {
         switch (type) {
-            case CONFIG: {
+            case YAML: {
                 Set<Rank> ranks = new HashSet<>();
 
                 plugin.getConfigManager().getRanksConfig().getConfigurationSection("Groups").getValues(false).forEach((name, section) -> {

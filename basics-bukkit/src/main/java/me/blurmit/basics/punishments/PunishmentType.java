@@ -2,6 +2,9 @@ package me.blurmit.basics.punishments;
 
 import me.blurmit.basics.util.lang.Messages;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public enum PunishmentType {
 
     PERM_BLACKLIST() {
@@ -22,6 +25,11 @@ public enum PunishmentType {
         @Override
         public Messages message() {
             return Messages.BLACKLIST_PERMANENT_ALERT;
+        }
+
+        @Override
+        public String toString() {
+            return "blacklists";
         }
     },
 
@@ -51,6 +59,11 @@ public enum PunishmentType {
         public Messages message() {
             return Messages.BAN_PERMANENT_ALERT;
         }
+
+        @Override
+        public String toString() {
+            return "bans";
+        }
     },
 
     UNBAN() {
@@ -79,6 +92,11 @@ public enum PunishmentType {
         public Messages message() {
             return Messages.MUTE_PERMANENT_ALERT;
         }
+
+        @Override
+        public String toString() {
+            return "mutes";
+        }
     },
 
     UNMUTE() {
@@ -93,6 +111,11 @@ public enum PunishmentType {
         public Messages message() {
             return Messages.KICK_MESSAGE;
         }
+
+        @Override
+        public String toString() {
+            return "history";
+        }
     },
 
     WARN() {
@@ -100,8 +123,25 @@ public enum PunishmentType {
         public Messages message() {
             return Messages.WARN_MESSAGE;
         }
+
+        @Override
+        public String toString() {
+            return "warns";
+        }
     };
 
     public abstract Messages message();
+
+    private static final Map<String, PunishmentType> types = new HashMap<>();
+
+    static {
+        for (PunishmentType type : values()) {
+            types.put(type.toString(), type);
+        }
+    }
+
+    public static PunishmentType getByName(String name) {
+        return types.get(name);
+    }
 
 }

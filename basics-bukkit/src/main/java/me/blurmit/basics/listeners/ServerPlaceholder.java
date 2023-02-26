@@ -17,7 +17,6 @@ import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ServerPlaceholder extends PlaceholderExpansion implements Listener, PluginMessageListener {
 

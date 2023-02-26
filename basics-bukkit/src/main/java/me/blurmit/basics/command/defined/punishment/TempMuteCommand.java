@@ -1,17 +1,14 @@
 package me.blurmit.basics.command.defined.punishment;
 
-import javafx.util.Pair;
 import me.blurmit.basics.Basics;
-import me.blurmit.basics.command.CommandBase;
 import me.blurmit.basics.punishments.PunishmentType;
-import me.blurmit.basics.util.*;
+import me.blurmit.basics.util.Placeholders;
+import me.blurmit.basics.util.TimeUtil;
 import me.blurmit.basics.util.lang.Messages;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.UUID;
 
 public class TempMuteCommand extends PunishmentCommand {
@@ -36,43 +33,21 @@ public class TempMuteCommand extends PunishmentCommand {
         }
 
         moderator.sendMessage(Placeholders.parsePlaceholder(
-                Messages.PUNISHMENT_MESSAGE + "",
-                true,
-                "muted",
-                getTargetName(),
-                getReason(),
-                getDurationText()
+                Messages.PUNISHMENT_MESSAGE + "", true, "muted", getTargetName(), getReason(), getDurationText()
         ));
 
         Player targetPlayer = plugin.getServer().getPlayer(target);
         if (targetPlayer != null) {
-            targetPlayer.sendMessage(Placeholders.parsePlaceholder(
-                    Messages.MUTE_TEMPORARY_ALERT + "",
-                    true,
-                    getReason(),
-                    getExpiresInText()
-            ));
+            targetPlayer.sendMessage(Placeholders.parsePlaceholder(Messages.MUTE_TEMPORARY_ALERT + "", true, getReason(), getExpiresInText()));
 
             long timeLeft = expiresAt - TimeUtil.getCurrentTimeSeconds();
             BukkitTask task = plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, () -> plugin.getPunishmentManager().storeUnmute(target, null, "Expired"), timeLeft * 20L);
+
             plugin.getPunishmentManager().getMutedPlayers().put(target, task);
         }
 
-        plugin.getPunishmentManager().storeMute(
-                getTargetUUID(),
-                getModUUID(),
-                getExpiresAt(),
-                getServerName(),
-                getReason()
-        );
-        plugin.getPunishmentManager().broadcastPunishment(
-                moderator,
-                getFancyTargetName(),
-                PunishmentType.TEMP_MUTE,
-                getReason(),
-                getDurationText(),
-                isSilent()
-        );
+        plugin.getPunishmentManager().storeMute(getTargetUUID(), getModUUID(), getExpiresAt(), getReason());
+        plugin.getPunishmentManager().broadcastPunishment(moderator, getFancyTargetName(), PunishmentType.TEMP_MUTE, getReason(), getDurationText(), isSilent());
     }
 
 }

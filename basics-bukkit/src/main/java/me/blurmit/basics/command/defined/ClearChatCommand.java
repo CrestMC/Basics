@@ -4,11 +4,11 @@ import me.blurmit.basics.Basics;
 import me.blurmit.basics.command.CommandBase;
 import me.blurmit.basics.util.Placeholders;
 import me.blurmit.basics.util.lang.Messages;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 public class ClearChatCommand extends CommandBase {
@@ -33,14 +33,17 @@ public class ClearChatCommand extends CommandBase {
             return true;
         }
 
-        plugin.getServer().getOnlinePlayers().forEach(onlinePlayer -> {
-            if (!onlinePlayer.hasPermission("basics.clearchat.bypass")) {
-                for (int i = 0; i < 500; i++) {
-                    onlinePlayer.sendMessage(ChatColor.RESET + "");
-                }
-            }
-        });
-        Bukkit.broadcast(Placeholders.parsePlaceholder(Messages.CHAT_CLEARED + "", sender, this, args), "basics.clearchat.bypass");
+        boolean ignoreBypass = Arrays.asList(args).contains("-a");
+
+        plugin.getServer().getOnlinePlayers().stream()
+                .filter(onlinePlayer -> !onlinePlayer.hasPermission("basics.clearchat.bypass"))
+                .filter(onlinePlayer -> !ignoreBypass)
+                .forEach(onlinePlayer -> {
+                    for (int i = 0; i < 500; i++) {
+                        onlinePlayer.sendMessage(ChatColor.RESET + "");
+                    }
+                });
+        plugin.getServer().broadcast(Placeholders.parsePlaceholder(Messages.CHAT_CLEARED + "", sender, this, args), "basics.clearchat.bypass");
 
         return true;
     }

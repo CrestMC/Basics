@@ -1,7 +1,6 @@
 package me.blurmit.basics.command.defined.punishment;
 
 import me.blurmit.basics.Basics;
-import me.blurmit.basics.command.CommandBase;
 import me.blurmit.basics.punishments.PunishmentType;
 import me.blurmit.basics.util.Placeholders;
 import me.blurmit.basics.util.PluginMessageUtil;
@@ -32,36 +31,15 @@ public class TempBanCommand extends PunishmentCommand {
         }
 
         PluginMessageUtil.sendData("BungeeCord", "KickPlayer", getTargetName(), Placeholders.parsePlaceholder(
-                Messages.BAN_TEMPORARY_ALERT + "",
-                true,
-                getReason(),
-                getExpiresInText()
+                Messages.BAN_TEMPORARY_ALERT + "", true, getReason(), getExpiresInText()
         ));
 
         moderator.sendMessage(Placeholders.parsePlaceholder(
-                Messages.PUNISHMENT_MESSAGE + "",
-                true,
-                "banned",
-                getTargetName(),
-                getReason(),
-                getDurationText()
+                Messages.PUNISHMENT_MESSAGE + "", true, "banned", getTargetName(), getReason(), getDurationText()
         ));
 
-        plugin.getPunishmentManager().storeBan(
-                getTargetUUID(),
-                getModUUID(),
-                getExpiresAt(),
-                getServerName(),
-                getReason()
-        );
-        plugin.getPunishmentManager().broadcastPunishment(
-                moderator,
-                getFancyTargetName(),
-                PunishmentType.TEMP_BAN,
-                getReason(),
-                getDurationText(),
-                isSilent()
-        );
+        plugin.getPunishmentManager().storeBan(getTargetUUID(), getModUUID(), getExpiresAt(), getReason());
+        plugin.getPunishmentManager().broadcastPunishment(moderator, getFancyTargetName(), PunishmentType.TEMP_BAN, getReason(), getDurationText(), isSilent());
     }
 
 }

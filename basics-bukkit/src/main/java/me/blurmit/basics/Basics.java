@@ -4,11 +4,11 @@ import lombok.Getter;
 import me.blurmit.basics.command.CommandManager;
 import me.blurmit.basics.configuration.ConfigManager;
 import me.blurmit.basics.listeners.*;
+import me.blurmit.basics.menu.MenuManager;
 import me.blurmit.basics.punishments.PunishmentManager;
 import me.blurmit.basics.rank.RankManager;
 import me.blurmit.basics.scoreboard.ScoreboardManager;
 import me.blurmit.basics.scoreboard.Scoreboards;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -27,6 +27,8 @@ public final class Basics extends JavaPlugin {
     private RankManager rankManager;
     @Getter
     private PunishmentManager punishmentManager;
+    @Getter
+    private MenuManager menuManager;
 
     @Override
     public void onEnable() {
@@ -41,6 +43,9 @@ public final class Basics extends JavaPlugin {
 
         getLogger().info("Loading punishments...");
         this.punishmentManager = new PunishmentManager(this);
+
+        getLogger().info("Loading menus...");
+        this.menuManager = new MenuManager(this);
 
         getLogger().info("Registering commands...");
         this.commandManager = new CommandManager(this);

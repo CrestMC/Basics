@@ -9,10 +9,7 @@ import me.blurmit.basicsbungee.listener.PluginMessageListener;
 import me.blurmit.basicsbungee.listener.ProxyPingListener;
 import me.blurmit.basicsbungee.placeholder.CommandPlaceholder;
 import me.blurmit.basicsbungee.placeholder.PlayerPlaceholder;
-import me.blurmit.basicsbungee.util.Requests;
 import net.md_5.bungee.api.plugin.Plugin;
-
-import java.util.HashMap;
 
 public final class BasicsBungee extends Plugin {
 

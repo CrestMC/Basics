@@ -24,14 +24,11 @@ public class ConfigManager {
 
     @Getter
     public FileConfiguration ranksConfig;
-    @Getter
-    public FileConfiguration punishmentsConfig;
 
     private final File configFile;
     private final File languageFile;
     private final File scoreboardFile;
     private final File ranksFile;
-    private final File punishmentsFile;
 
     public ConfigManager(Basics plugin) {
         this.plugin = plugin;
@@ -39,7 +36,6 @@ public class ConfigManager {
         this.languageFile = new File(plugin.getDataFolder(), "language.yml");
         this.scoreboardFile = new File(plugin.getDataFolder(), "scoreboard.yml");
         this.ranksFile = new File(plugin.getDataFolder(), "ranks.yml");
-        this.punishmentsFile = new File(plugin.getDataFolder(), "punishments.yml");
 
         loadConfigurations();
     }
@@ -65,10 +61,6 @@ public class ConfigManager {
             plugin.saveResource("ranks.yml", false);
         }
 
-        if (!punishmentsFile.exists()) {
-            plugin.saveResource("punishments.yml", false);
-        }
-
         plugin.getLogger().info("Loading config.yml...");
         config = YamlConfiguration.loadConfiguration(configFile);
 
@@ -80,9 +72,6 @@ public class ConfigManager {
 
         plugin.getLogger().info("Loading ranks.yml...");
         ranksConfig = YamlConfiguration.loadConfiguration(ranksFile);
-
-        plugin.getLogger().info("Loading punishments.yml");
-        punishmentsConfig = YamlConfiguration.loadConfiguration(punishmentsFile);
     }
 
     public void saveConfig() {
@@ -101,14 +90,6 @@ public class ConfigManager {
         }
     }
 
-    public void savePunishmentsConfig() {
-        try {
-            getPunishmentsConfig().save(punishmentsFile);
-        } catch (IOException e) {
-            plugin.getLogger().log(Level.SEVERE, "An error occurred whilst saving the punishments configuration file", e);
-        }
-    }
-
     public void reloadConfig() {
         config = YamlConfiguration.loadConfiguration(configFile);
     }
@@ -123,10 +104,6 @@ public class ConfigManager {
 
     public void reloadRanksConfig() {
         ranksConfig = YamlConfiguration.loadConfiguration(ranksFile);
-    }
-
-    public void reloadPunishmentsConfig() {
-        punishmentsConfig = YamlConfiguration.loadConfiguration(punishmentsFile);
     }
 
 }
