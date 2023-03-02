@@ -13,7 +13,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.*;
 
-public class RankStorage {
+public class RankStorageManager {
 
     private final Basics plugin;
 
@@ -31,7 +31,7 @@ public class RankStorage {
     private static final String CREATE_RANK_PERMISSION_TABLE = "CREATE TABLE IF NOT EXISTS `basics_rank_permissions` (`rank` VARCHAR(64) NOT NULL, `permission` VARCHAR(64) NOT NULL, `server` VARCHAR(64) NOT NULL, `negated` TINYINT(1), `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY)";
     private static final String CREATE_RANK_MEMBER_TABLE = "CREATE TABLE IF NOT EXISTS `basics_rank_members` (`rank` VARCHAR(64) NOT NULL, `member` VARCHAR(36) NOT NULL, `server` VARCHAR(64) NOT NULL, `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY)";
 
-    public RankStorage(Basics plugin) {
+    public RankStorageManager(Basics plugin) {
         this.plugin = plugin;
 
         this.ranks = new HashSet<>();

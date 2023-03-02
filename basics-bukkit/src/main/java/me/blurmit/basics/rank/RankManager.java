@@ -3,8 +3,7 @@ package me.blurmit.basics.rank;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import me.blurmit.basics.Basics;
-import me.blurmit.basics.punishments.storage.PunishmentStorageType;
-import me.blurmit.basics.rank.storage.RankStorage;
+import me.blurmit.basics.rank.storage.RankStorageManager;
 import me.blurmit.basics.rank.storage.RankStorageType;
 import me.blurmit.basics.rank.team.TeamManager;
 import me.blurmit.basics.util.ReflectionUtil;
@@ -29,7 +28,7 @@ public class RankManager {
     private final Basics plugin;
 
     @Getter
-    private final RankStorage storage;
+    private final RankStorageManager storage;
     @Getter
     private final TeamManager teamManager;
     private final RankListener listener;
@@ -38,7 +37,7 @@ public class RankManager {
 
     public RankManager(Basics plugin) {
         this.plugin = plugin;
-        this.storage = new RankStorage(plugin);
+        this.storage = new RankStorageManager(plugin);
         this.teamManager = new TeamManager(plugin);
         this.listener = new RankListener(plugin);
         this.activeAttachments = new HashMap<>();

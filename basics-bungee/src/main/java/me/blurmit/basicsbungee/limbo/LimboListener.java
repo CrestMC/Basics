@@ -1,7 +1,12 @@
 package me.blurmit.basicsbungee.limbo;
 
 import me.blurmit.basicsbungee.BasicsBungee;
+import me.blurmit.basicsbungee.limbo.server.LimboServer;
 import me.blurmit.basicsbungee.util.Messages;
+import me.blurmit.basicsbungee.util.Placeholders;
+import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.config.ServerInfo;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.ServerKickEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -24,14 +29,17 @@ public class LimboListener implements Listener {
 
     @EventHandler
     public void onServerKick(ServerKickEvent event) {
-//        event.setCancelled(true);
-//        event.setCancelServer(new LimboServer());
-        event.setKickReasonComponent(event.getKickReasonComponent());
+        ProxiedPlayer player = event.getPlayer();
+        String serverName = player.getServer().getInfo().getName();
+        ServerInfo server = plugin.getProxy().getServers().values().stream()
+                .filter(serverInfo -> serverInfo.getName().equals(serverName))
+                .findFirst()
+                .orElse(new LimboServer());
 
-        event.getPlayer().sendMessage(Messages.SERVER_KICK.text());
-        event.getPlayer().sendMessage(event.getKickReasonComponent());
+        event.setCancelServer(server);
+        event.setCancelled(true);
 
-//        plugin.getLimboManager().banishToLimbo(event.getPlayer());
+        player.sendMessage(Placeholders.parsePlaceholder(Messages.SERVER_KICK + "", player, false, event.getKickReason()));
     }
 
 }

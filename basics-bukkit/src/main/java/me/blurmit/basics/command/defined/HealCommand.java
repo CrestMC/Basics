@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -45,6 +46,7 @@ public class HealCommand extends CommandBase {
             target.setHealth(target.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
             target.setSaturation(20);
             target.setFoodLevel(20);
+            clearEffects(target);
 
             sender.sendMessage(Placeholders.parsePlaceholder(Messages.PLAYER_HEALED + "", target, this, args));
             return true;
@@ -60,8 +62,16 @@ public class HealCommand extends CommandBase {
         player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
         player.setSaturation(20);
         player.setFoodLevel(20);
+        clearEffects(player);
 
         sender.sendMessage(Placeholders.parsePlaceholder(Messages.PLAYER_HEALED + "", player, this, args));
         return true;
     }
+
+    private void clearEffects(Player player) {
+        for (PotionEffect effect : player.getActivePotionEffects()) {
+            player.removePotionEffect(effect.getType());
+        }
+    }
+
 }
