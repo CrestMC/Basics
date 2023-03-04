@@ -21,6 +21,7 @@ permissions:
       - "basics.command.deleteworld"
       - "basics.command.echo"
       - "basics.command.enchant"
+      - "basics.command.invsee.interact"
       - "basics.command.feed"
       - "basics.command.fly"
       - "basics.command.flyspeed"

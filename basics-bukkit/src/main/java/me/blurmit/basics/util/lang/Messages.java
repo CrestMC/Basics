@@ -188,6 +188,13 @@ public enum Messages {
         }
     },
 
+    OPENED_INVENTORY() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("opened-inventory");
+        }
+    },
+
     ITEM_LORE_ITEM_INVALID() {
         @Override
         public String toString() {

@@ -45,7 +45,7 @@ public class WalkSpeedCommand extends CommandBase {
 
             try {
                 speed = Float.parseFloat(args[0]);
-            } catch (IllegalArgumentException e) {
+            } catch (NumberFormatException e) {
                 sender.sendMessage(Placeholders.parsePlaceholder(Messages.NUMBER_INVALID + "", args[0]));
                 return true;
             }
@@ -72,7 +72,7 @@ public class WalkSpeedCommand extends CommandBase {
 
             try {
                 speed = Float.parseFloat(args[0]);
-            } catch (Exception e) {
+            } catch (NumberFormatException e) {
                 sender.sendMessage(Placeholders.parsePlaceholder(Messages.NUMBER_INVALID + "", args[0]));
                 return true;
             }

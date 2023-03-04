@@ -17,7 +17,7 @@ public class FlySpeedCommand extends CommandBase {
         setName("flyspeed");
         setDescription("Changes the fly speed of a player");
         setUsage("/flyspeed <number> [player]");
-        setPermission("pizza.commands.flyspeed");
+        setPermission("basics.command.flyspeed");
 
         this.plugin = plugin;
     }
@@ -30,7 +30,7 @@ public class FlySpeedCommand extends CommandBase {
         }
 
         if (args.length == 2) {
-            if (!sender.hasPermission("pizza.commands.flyspeed.other")) {
+            if (!sender.hasPermission("basics.command.flyspeed.other")) {
                 sender.sendMessage(Placeholders.parsePlaceholder(Messages.NO_PERMISSION_SUBCOMMAND + "", sender, this, args));
                 return true;
             }
@@ -45,7 +45,7 @@ public class FlySpeedCommand extends CommandBase {
 
             try {
                 speed = Float.parseFloat(args[0]);
-            } catch (IllegalArgumentException e) {
+            } catch (NumberFormatException e) {
                 sender.sendMessage(Placeholders.parsePlaceholder(Messages.NUMBER_INVALID + "", args[0]));
                 return true;
             }
@@ -72,7 +72,7 @@ public class FlySpeedCommand extends CommandBase {
 
             try {
                 speed = Float.parseFloat(args[0]);
-            } catch (Exception e) {
+            } catch (NumberFormatException e) {
                 sender.sendMessage(Placeholders.parsePlaceholder(Messages.NUMBER_INVALID + "", args[0]));
                 return true;
             }

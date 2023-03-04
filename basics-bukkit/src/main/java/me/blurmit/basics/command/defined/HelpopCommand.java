@@ -27,7 +27,7 @@ public class HelpopCommand extends CommandBase implements PluginMessageListener 
         setAliases(Arrays.asList("helpme", "messagestaff"));
         setDescription("Send a message to all active staff members.");
         setPermission("basics.command.helpop");
-        setCooldown(10);
+        setCooldown(60);
         setUsage("/helpop <message>");
 
         this.plugin = plugin;
@@ -85,7 +85,7 @@ public class HelpopCommand extends CommandBase implements PluginMessageListener 
 
         UUIDUtil.asyncGetUUID(user, uuid -> {
             plugin.getServer().broadcast(
-                    Placeholders.parsePlaceholder(Messages.HELPOP_REQUEST + "", RankUtil.getColor(uuid) + user, ChatColor.stripColor(request)),
+                    Placeholders.parsePlaceholder(Messages.HELPOP_REQUEST + "", true, RankUtil.getColor(uuid) + user, ChatColor.stripColor(request)),
                     "basics.helpop.read"
             );
         });

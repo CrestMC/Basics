@@ -36,8 +36,7 @@ public class ClearChatCommand extends CommandBase {
         boolean ignoreBypass = Arrays.asList(args).contains("-a");
 
         plugin.getServer().getOnlinePlayers().stream()
-                .filter(onlinePlayer -> !onlinePlayer.hasPermission("basics.clearchat.bypass"))
-                .filter(onlinePlayer -> !ignoreBypass)
+                .filter(onlinePlayer -> !onlinePlayer.hasPermission("basics.clearchat.bypass") || ignoreBypass)
                 .forEach(onlinePlayer -> {
                     for (int i = 0; i < 500; i++) {
                         onlinePlayer.sendMessage(ChatColor.RESET + "");

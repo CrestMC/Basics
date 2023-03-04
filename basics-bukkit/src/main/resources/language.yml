@@ -75,6 +75,7 @@ command-cooldown: "&c✖ &7You are on cooldown. Please wait &c{replacement-0} &7
 skin-set: "&a✔ &7Successfully set your skin to &a{replacement-0}&7."
 max-players-set: "&a✔ &7Successfully set player limit to &a{server-max-players}&7."
 server-full: "&cThe server you are attempting to join is currently full! Please try again later."
+opened-inventory: "&a✔ &7Opened the inventory of &a{player-name}&7."
 togglehunger:
   toggled: "&a✔ &7You have {replacement-0} &7hunger."
   enabled: "&aenabled"

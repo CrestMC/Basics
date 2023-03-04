@@ -35,19 +35,21 @@ public class PingCommand extends CommandBase {
             return true;
         }
 
+        Player player = (Player) sender;
+
         if (args.length == 0) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.PING_MESSAGE + "", (Player) sender, this, args));
+            player.sendMessage(Placeholders.parsePlaceholder(Messages.PING_MESSAGE + "", player, this, args));
             return true;
         }
 
-        Player target = Bukkit.getPlayer(args[0]);
+        Player target = plugin.getServer().getPlayer(args[0]);
 
-        if (target == null) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.PING_MESSAGE + "", (Player) sender, this, args));
+        if (target == null || !player.canSee(target)) {
+            player.sendMessage(Placeholders.parsePlaceholder(Messages.PING_MESSAGE + "", player, this, args));
             return true;
         }
 
-        sender.sendMessage(Placeholders.parsePlaceholder(Messages.PING_MESSAGE + "", target, this, args));
+        player.sendMessage(Placeholders.parsePlaceholder(Messages.PING_MESSAGE + "", target, this, args));
         return true;
 
     }
