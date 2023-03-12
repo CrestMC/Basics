@@ -88,6 +88,7 @@ help-command: |-
 list-message: |-
   {replacement-0}
   ({server-playercount-filtered}/{server-max-players}) {replacement-1}
+
 console-name: "&c&lConsole"
 punishment-silent-prefix: "&7(Silent) "
 punishment-message: "&aYou've {replacement-0} {replacement-1} &afor &2{replacement-2}"
