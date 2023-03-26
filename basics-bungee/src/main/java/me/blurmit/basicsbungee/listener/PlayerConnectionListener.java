@@ -4,6 +4,7 @@ import me.blurmit.basicsbungee.BasicsBungee;
 import me.blurmit.basicsbungee.util.Placeholders;
 import me.blurmit.basicsbungee.util.PluginMessageHelper;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
@@ -47,9 +48,17 @@ public class PlayerConnectionListener implements Listener {
         // Send staff disconnect message via plugin messaging
         plugin.getProxy().getScheduler().schedule(plugin, () -> {
             String playerName = player.getName();
-            String server = player.getServer().getInfo().getName();
+            ServerInfo server = player.getServer().getInfo();
+            String serverName;
 
-            PluginMessageHelper.sendData("receivers", "", "Staff", "Disconnected", server, playerName);
+            if (server != null) {
+                serverName = player.getServer().getInfo().getName();;
+            } else {
+                serverName = "Unknown";
+                playerName = "invalid_" + playerName;
+            }
+
+            PluginMessageHelper.sendData("receivers", "", "Staff", "Disconnected", serverName, playerName);
         }, 25, TimeUnit.MILLISECONDS);
     }
 

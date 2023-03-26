@@ -31,17 +31,17 @@ public class EnchantCommand extends CommandBase {
     @Override
     public boolean execute(CommandSender sender, @NotNull String commandLabel, String[] args) {
         if (!sender.hasPermission(getPermission())) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.NO_PERMISSION + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.NO_PERMISSION + "", sender, this, args));
             return true;
         }
 
         if (!(sender instanceof Player)) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.ONLY_PLAYERS + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.ONLY_PLAYERS + "", sender, this, args));
             return true;
         }
 
         if (args.length != 2) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_ARGS + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.INVALID_ARGS + "", sender, this, args));
             return true;
         }
 
@@ -55,22 +55,22 @@ public class EnchantCommand extends CommandBase {
         try {
             level = Integer.parseInt(args[1]);
         } catch (NumberFormatException e) {
-            player.sendMessage(Placeholders.parsePlaceholder(Messages.NUMBER_INVALID + "", args[1]));
+            player.sendMessage(Placeholders.parse(Messages.NUMBER_INVALID + "", args[1]));
             return true;
         }
 
         if (itemStack.getItemMeta() == null) {
-            player.sendMessage(Placeholders.parsePlaceholder(Messages.ENCHANT_INVALID_ITEM + "", player, this, args));
+            player.sendMessage(Placeholders.parse(Messages.ENCHANT_INVALID_ITEM + "", player, this, args));
             return true;
         }
 
         if (enchantment == null) {
-            player.sendMessage(Placeholders.parsePlaceholder(Messages.ENCHANT_UNKNOWN + "", sender, this, args));
+            player.sendMessage(Placeholders.parse(Messages.ENCHANT_UNKNOWN + "", sender, this, args));
             return true;
         }
 
         itemStack.addUnsafeEnchantment(enchantment, level);
-        player.sendMessage(Placeholders.parsePlaceholder(Messages.ENCHANT_SUCCESS + "", player, this, args));
+        player.sendMessage(Placeholders.parse(Messages.ENCHANT_SUCCESS + "", player, this, args));
 
         return true;
     }

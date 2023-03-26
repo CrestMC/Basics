@@ -4,7 +4,6 @@ import me.blurmit.basics.Basics;
 import me.blurmit.basics.command.CommandBase;
 import me.blurmit.basics.util.Placeholders;
 import me.blurmit.basics.util.lang.Messages;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,34 +28,35 @@ public class DeleteWorldCommand extends CommandBase {
     @Override
     public boolean execute(CommandSender sender, @NotNull String commandLabel, String[] args) {
         if (!sender.hasPermission(getPermission())) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.NO_PERMISSION + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.NO_PERMISSION + "", sender, this, args));
             return true;
         }
 
         if (args.length != 1) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_ARGS + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.INVALID_ARGS + "", sender, this, args));
             return true;
         }
 
-        File worldFile = new File("./" + args[0].toLowerCase());
-        File dataFile = new File("./" + args[0].toLowerCase() + "/data");
-        File regionFile = new File("./" + args[0].toLowerCase() + "/region");
-        File poiFile = new File("./" + args[0].toLowerCase() + "/poi");
+
+        String worldName = args[0].toLowerCase();
+        String worldContainer = plugin.getServer().getWorldContainer().getPath();
+
+        File worldFile = new File(worldContainer + "/" + worldName);
+        File dataFile = new File(worldContainer + "/" + worldName + "/data");
+        File regionFile = new File(worldContainer + "/" + worldName + "/region");
+        File poiFile = new File(worldContainer + "/" + worldName.toLowerCase() + "/poi");
 
         if (!worldFile.exists() || !worldFile.isDirectory() || !dataFile.exists() || !regionFile.isDirectory() || !poiFile.exists()) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_WORLD + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.INVALID_WORLD + "", sender, false, worldName));
             return true;
         }
 
         try {
-            Bukkit.getWorld(args[0]).getPlayers().forEach(player -> {
-                player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
-            });
-        } catch (NullPointerException ignored) {
-        }
+            plugin.getServer().getWorld(worldName).getPlayers().forEach(player -> player.teleport(plugin.getServer().getWorlds().get(0).getSpawnLocation()));
+        } catch (NullPointerException ignored) {}
 
-        if (Bukkit.getWorld(args[0]) != null) {
-            Bukkit.unloadWorld(args[0], true);
+        if (plugin.getServer().getWorld(worldName) != null) {
+            plugin.getServer().unloadWorld(worldName, false);
         }
 
         for (File dataFiles : dataFile.listFiles()) {
@@ -76,7 +76,7 @@ public class DeleteWorldCommand extends CommandBase {
         }
         worldFile.delete();
 
-        sender.sendMessage(Placeholders.parsePlaceholder(Messages.WORLD_DELETED + "", sender, this, args));
+        sender.sendMessage(Placeholders.parse(Messages.WORLD_DELETED + "", sender, this, args));
         return true;
     }
 

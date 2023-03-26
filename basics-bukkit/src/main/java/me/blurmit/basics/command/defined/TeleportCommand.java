@@ -30,13 +30,13 @@ public class TeleportCommand extends CommandBase {
     @Override
     public boolean execute(CommandSender sender, @NotNull String commandLabel, String[] args) {
         if (!sender.hasPermission(getPermission())) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.NO_PERMISSION + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.NO_PERMISSION + "", sender, this, args));
             return true;
         }
 
         if (args.length == 1) {
             if (!(sender instanceof Player)) {
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.ONLY_PLAYERS + ""));
+                sender.sendMessage(Placeholders.parse(Messages.ONLY_PLAYERS + ""));
                 return true;
             }
 
@@ -44,12 +44,12 @@ public class TeleportCommand extends CommandBase {
             Player target = plugin.getServer().getPlayer(args[0]);
 
             if (target == null) {
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.PLAYER_NOT_FOUND + "", args[0]));
+                sender.sendMessage(Placeholders.parse(Messages.PLAYER_NOT_FOUND + "", args[0]));
                 return true;
             }
 
             player.teleport(target);
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.PLAYER_TELEPORTED + "", target.getName()));
+            sender.sendMessage(Placeholders.parse(Messages.PLAYER_TELEPORTED + "", target.getName()));
             return true;
         }
 
@@ -58,18 +58,18 @@ public class TeleportCommand extends CommandBase {
             Player target2 = plugin.getServer().getPlayer(args[1]);
 
             if (target1 == null || target2 == null) {
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.PLAYER_NOT_FOUND + "", target1 == null ? args[0] : args[1]));
+                sender.sendMessage(Placeholders.parse(Messages.PLAYER_NOT_FOUND + "", target1 == null ? args[0] : args[1]));
                 return true;
             }
 
             target1.teleport(target2);
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.PLAYER_TELEPORTED_OTHER + "", target1.getName(), target2.getName()));
+            sender.sendMessage(Placeholders.parse(Messages.PLAYER_TELEPORTED_OTHER + "", target1.getName(), target2.getName()));
             return true;
         }
 
         if (args.length == 3) {
             if (!(sender instanceof Player)) {
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.ONLY_PLAYERS + ""));
+                sender.sendMessage(Placeholders.parse(Messages.ONLY_PLAYERS + ""));
                 return true;
             }
 
@@ -80,12 +80,12 @@ public class TeleportCommand extends CommandBase {
             try {
                 location = new Location(player.getWorld(), Double.parseDouble(args[0]), Double.parseDouble(args[1]), Double.parseDouble(args[2]));
             } catch (NumberFormatException e) {
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_COORDINATES + "", coordinates));
+                sender.sendMessage(Placeholders.parse(Messages.INVALID_COORDINATES + "", coordinates));
                 return true;
             }
 
             player.teleport(location);
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.PLAYER_TELEPORTED_OTHER + "", player.getName(), coordinates));
+            sender.sendMessage(Placeholders.parse(Messages.PLAYER_TELEPORTED_OTHER + "", player.getName(), coordinates));
             return true;
         }
 
@@ -95,23 +95,23 @@ public class TeleportCommand extends CommandBase {
             Location location;
 
             if (target == null) {
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.PLAYER_NOT_FOUND + "", args[0]));
+                sender.sendMessage(Placeholders.parse(Messages.PLAYER_NOT_FOUND + "", args[0]));
                 return true;
             }
 
             try {
                 location = new Location(target.getWorld(), Double.parseDouble(args[1]), Double.parseDouble(args[2]), Double.parseDouble(args[3]));
             } catch (NumberFormatException e) {
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_COORDINATES + "", coordinates));
+                sender.sendMessage(Placeholders.parse(Messages.INVALID_COORDINATES + "", coordinates));
                 return true;
             }
 
             target.teleport(location);
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.PLAYER_TELEPORTED_OTHER + "", target.getName(), coordinates));
+            sender.sendMessage(Placeholders.parse(Messages.PLAYER_TELEPORTED_OTHER + "", target.getName(), coordinates));
             return true;
         }
 
-        sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_ARGS + "", sender, this, args));
+        sender.sendMessage(Placeholders.parse(Messages.INVALID_ARGS + "", sender, this, args));
         return true;
     }
 

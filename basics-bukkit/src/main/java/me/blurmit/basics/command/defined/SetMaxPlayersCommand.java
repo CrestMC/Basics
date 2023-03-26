@@ -34,12 +34,12 @@ public class SetMaxPlayersCommand extends CommandBase {
     @Override
     public boolean execute(CommandSender sender, @NotNull String commandLabel, String[] args) {
         if (!sender.hasPermission(getPermission())) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.NO_PERMISSION + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.NO_PERMISSION + "", sender, this, args));
             return true;
         }
 
         if (args.length != 1) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_ARGS + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.INVALID_ARGS + "", sender, this, args));
             return true;
         }
 
@@ -48,7 +48,7 @@ public class SetMaxPlayersCommand extends CommandBase {
         try {
             max = Integer.parseInt(args[0]);
         } catch (IllegalArgumentException e) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.NUMBER_INVALID + "", args[0]));
+            sender.sendMessage(Placeholders.parse(Messages.NUMBER_INVALID + "", args[0]));
             return true;
         }
 
@@ -77,7 +77,7 @@ public class SetMaxPlayersCommand extends CommandBase {
             plugin.getLogger().log(Level.SEVERE, "An error occurred whilst attempting to set the player limit", e);
         }
 
-        sender.sendMessage(Placeholders.parsePlaceholder(Messages.MAX_PLAYERS_SET + ""));
+        sender.sendMessage(Placeholders.parse(Messages.MAX_PLAYERS_SET + ""));
         return true;
     }
 

@@ -2,6 +2,7 @@ package me.blurmit.basics.util.lang;
 
 import me.blurmit.basics.Basics;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 public enum Messages {
@@ -822,6 +823,26 @@ public enum Messages {
         @Override
         public String toString() {
             return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("server-full");
+        }
+    },
+
+    INVALID_ENTITY_TYPE() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("invalid-entity-type");
+        }
+    },
+
+    MOBS_REMOVED() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("mobs-removed");
+        }
+    },
+    INVALID_WORLD_ENVIRONMENT() {
+        @Override
+        public String toString() {
+            return JavaPlugin.getPlugin(Basics.class).getConfigManager().getLanguageConfig().getString("invalid-world-environment");
         }
     };
 

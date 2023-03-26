@@ -30,7 +30,7 @@ public class PlayerConnectionListener implements Listener {
                 return;
             }
 
-            event.setKickMessage(Placeholders.parsePlaceholder(Messages.SERVER_FULL + "", player));
+            event.setKickMessage(Placeholders.parse(Messages.SERVER_FULL + "", player));
         }
     }
 
@@ -38,13 +38,13 @@ public class PlayerConnectionListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
 
-        event.setJoinMessage(Placeholders.parsePlaceholder(plugin.getConfigManager().getConfig().getString("Join-Message"), player));
-        plugin.getConfigManager().getConfig().getStringList("MOTD").forEach(line -> player.sendMessage(Placeholders.parsePlaceholder(line, event.getPlayer())));
+        event.setJoinMessage(Placeholders.parse(plugin.getConfigManager().getConfig().getString("Join-Message"), player));
+        plugin.getConfigManager().getConfig().getStringList("MOTD").forEach(line -> player.sendMessage(Placeholders.parse(line, event.getPlayer())));
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
-        event.setQuitMessage(Placeholders.parsePlaceholder(plugin.getConfigManager().getConfig().getString("Quit-Message"), event.getPlayer()));
+        event.setQuitMessage(Placeholders.parse(plugin.getConfigManager().getConfig().getString("Quit-Message"), event.getPlayer()));
     }
 
 }

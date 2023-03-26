@@ -24,17 +24,17 @@ public class CreateRankSubCommand extends SubCommand {
     @Override
     public void execute(CommandSender sender, Command command, String[] args) {
         if (args.length != 2) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_ARGS_SUBCOMMAND + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.INVALID_ARGS_SUBCOMMAND + "", sender, this, args));
             return;
         }
 
         if (plugin.getRankManager().getRankByName(args[1].toLowerCase()) != null) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_ALREADY_EXISTS + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.RANK_ALREADY_EXISTS + "", sender, this, args));
             return;
         }
 
         plugin.getRankManager().createRank(args[1].toLowerCase());
-        sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_CREATED + "", args[1].toLowerCase()));
+        sender.sendMessage(Placeholders.parse(Messages.RANK_CREATED + "", args[1].toLowerCase()));
     }
 
 }

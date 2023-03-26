@@ -25,13 +25,13 @@ public class UnmuteCommand extends PunishmentCommand {
     @Override
     public void punish(CommandSender moderator, UUID target, String command, String[] args, boolean isSilent, long expiresAt) {
         if (!plugin.getPunishmentManager().isMuted(target)) {
-            moderator.sendMessage(Placeholders.parsePlaceholder(Messages.NOT_MUTED + "", true, args[0]));
+            moderator.sendMessage(Placeholders.parse(Messages.NOT_MUTED + "", true, args[0]));
             return;
         }
 
         plugin.getPunishmentManager().getMutedPlayers().remove(getTargetUUID());
 
-        moderator.sendMessage(Placeholders.parsePlaceholder(
+        moderator.sendMessage(Placeholders.parse(
                 Messages.PUNISHMENT_MESSAGE + "", true, "unmuted", getFancyTargetName(), getReason()
         ));
 

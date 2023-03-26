@@ -29,7 +29,7 @@ public class ClearChatCommand extends CommandBase {
     @Override
     public boolean execute(CommandSender sender, @NotNull String commandLabel, String[] args) {
         if (!sender.hasPermission(getPermission())) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.NO_PERMISSION + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.NO_PERMISSION + "", sender, this, args));
             return true;
         }
 
@@ -42,7 +42,7 @@ public class ClearChatCommand extends CommandBase {
                         onlinePlayer.sendMessage(ChatColor.RESET + "");
                     }
                 });
-        plugin.getServer().broadcast(Placeholders.parsePlaceholder(Messages.CHAT_CLEARED + "", sender, this, args), "basics.clearchat.bypass");
+        plugin.getServer().broadcast(Placeholders.parse(Messages.CHAT_CLEARED + "", sender, this, args), "basics.clearchat.bypass");
 
         return true;
     }

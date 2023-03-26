@@ -1,4 +1,4 @@
-package me.blurmit.basicsbungee.command;
+package me.blurmit.basicsbungee.command.defined;
 
 import me.blurmit.basicsbungee.BasicsBungee;
 import me.blurmit.basicsbungee.util.Messages;

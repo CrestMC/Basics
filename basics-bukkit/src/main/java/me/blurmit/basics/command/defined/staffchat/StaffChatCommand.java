@@ -9,12 +9,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.*;
 
 public class StaffChatCommand extends CommandBase {
 
     private final Basics plugin;
+    private final Set<UUID> usersChatToggled;
 
     public StaffChatCommand(Basics plugin) {
         super(plugin.getName());
@@ -25,6 +25,7 @@ public class StaffChatCommand extends CommandBase {
         setPermission("basics.command.staffchat");
 
         this.plugin = plugin;
+        this.usersChatToggled = new HashSet<>();
 
         plugin.getServer().getPluginManager().registerEvents(new StaffChatListener(plugin, this), plugin);
         plugin.getServer().getMessenger().registerOutgoingPluginChannel(plugin, "BungeeCord");
@@ -34,25 +35,25 @@ public class StaffChatCommand extends CommandBase {
     @Override
     public boolean execute(CommandSender sender, @NotNull String commandLabel, String[] args) {
         if (!sender.hasPermission(getPermission())) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.NO_PERMISSION + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.NO_PERMISSION + "", sender, this, args));
             return true;
         }
 
         if (!(sender instanceof Player)) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.ONLY_PLAYERS + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.ONLY_PLAYERS + "", sender, this, args));
             return true;
         }
 
         if (args.length == 0) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_ARGS + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.INVALID_ARGS + "", sender, this, args));
             return true;
         }
 
         Player player = (Player) sender;
 
-        String server = Placeholders.parsePlaceholder("{server-name}");
-        String message = Placeholders.parsePlaceholder(String.join(" ", Arrays.copyOfRange(args, 0, args.length)), player, this, args);
-        String format = Placeholders.parsePlaceholder(plugin.getConfigManager().getConfig().getString("StaffChat.Format"), player, this, null, null, false, server, player.getName(), message);
+        String server = Placeholders.parse("{server-name}");
+        String message = Placeholders.parse(String.join(" ", Arrays.copyOfRange(args, 0, args.length)), player, this, args);
+        String format = Placeholders.parse(plugin.getConfigManager().getConfig().getString("StaffChat.Format"), player, this, null, null, false, server, player.getName(), message);
 
         PluginMessageUtil.sendData("BungeeCord", "Staff", "Chat", server, player.getName(), message);
         plugin.getServer().broadcast(format, "basics.staffchat");

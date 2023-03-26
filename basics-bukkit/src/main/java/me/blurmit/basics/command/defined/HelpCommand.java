@@ -23,7 +23,7 @@ public class HelpCommand extends CommandBase {
 
     @Override
     public boolean execute(@NotNull CommandSender sender, @NotNull String label, @NotNull String[] args) {
-        sender.sendMessage(Placeholders.parsePlaceholder(Messages.HELP_CMD + ""));
+        sender.sendMessage(Placeholders.parse(Messages.HELP_CMD + ""));
         return true;
     }
 }

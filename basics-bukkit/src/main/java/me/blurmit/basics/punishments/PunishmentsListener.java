@@ -72,7 +72,7 @@ public class PunishmentsListener implements Listener {
                 return;
             }
 
-            player.sendMessage(Placeholders.parsePlaceholder(Messages.COMMAND_NOT_ALLOWED_BANNED + "", command));
+            player.sendMessage(Placeholders.parse(Messages.COMMAND_NOT_ALLOWED_BANNED + "", command));
             event.setCancelled(true);
             return;
         }
@@ -82,7 +82,7 @@ public class PunishmentsListener implements Listener {
                 return;
             }
 
-            player.sendMessage(Placeholders.parsePlaceholder(Messages.COMMAND_NOT_ALLOWED_MUTED + "", command));
+            player.sendMessage(Placeholders.parse(Messages.COMMAND_NOT_ALLOWED_MUTED + "", command));
             event.setCancelled(true);
         }
     }
@@ -93,13 +93,13 @@ public class PunishmentsListener implements Listener {
         Player player = event.getPlayer();
 
         if (punishmentManager.getMutedPlayers().containsKey(player.getUniqueId())) {
-            player.sendMessage(Placeholders.parsePlaceholder(Messages.CANT_USE_CHAT_MUTED + "", true));
+            player.sendMessage(Placeholders.parse(Messages.CANT_USE_CHAT_MUTED + "", true));
             event.setCancelled(true);
             return;
         }
 
         if (punishmentManager.getBannedPlayers().containsKey(player.getUniqueId())) {
-            player.sendMessage(Placeholders.parsePlaceholder(Messages.CANT_USE_CHAT_BANNED + "", true));
+            player.sendMessage(Placeholders.parse(Messages.CANT_USE_CHAT_BANNED + "", true));
             event.setCancelled(true);
         }
     }
@@ -142,7 +142,7 @@ public class PunishmentsListener implements Listener {
             message = Messages.BLACKLIST_TEMPORARY_JOIN + "";
         }
 
-        message = Placeholders.parsePlaceholder(message, true, reason, expiresAtText);
+        message = Placeholders.parse(message, true, reason, expiresAtText);
         if (!banAllowJoin) {
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, message);
         }
@@ -173,7 +173,7 @@ public class PunishmentsListener implements Listener {
             message = Messages.BAN_TEMPORARY_JOIN + "";
         }
 
-        message = Placeholders.parsePlaceholder(message, true, reason, expiresAtText);
+        message = Placeholders.parse(message, true, reason, expiresAtText);
         if (!banAllowJoin) {
             event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, message);
         }

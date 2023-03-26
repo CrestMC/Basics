@@ -35,11 +35,11 @@ public class BlacklistCommand extends PunishmentCommand {
             blacklistType = PunishmentType.TEMP_BLACKLIST;
         }
 
-        PluginMessageUtil.sendData("BungeeCord", "KickPlayer", getTargetName(), Placeholders.parsePlaceholder(
+        PluginMessageUtil.sendData("BungeeCord", "KickPlayer", getTargetName(), Placeholders.parse(
                 blacklistMessage, true, getReason(), getExpiresInText()
         ));
 
-        moderator.sendMessage(Placeholders.parsePlaceholder(
+        moderator.sendMessage(Placeholders.parse(
                 Messages.PUNISHMENT_MESSAGE + "", true, "blacklisted", getTargetName(), getReason(), getDurationText()
         ));
 

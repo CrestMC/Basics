@@ -29,13 +29,13 @@ public class FlyCommand extends CommandBase {
     @Override
     public boolean execute(CommandSender sender, @NotNull String commandLabel, String[] args) {
         if (!sender.hasPermission(getPermission())) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.NO_PERMISSION + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.NO_PERMISSION + "", sender, this, args));
             return true;
         }
 
         if (args.length == 2) {
             if (!sender.hasPermission("basics.command.fly.other")) {
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.NO_PERMISSION_SUBCOMMAND + "", sender, this, args));
+                sender.sendMessage(Placeholders.parse(Messages.NO_PERMISSION_SUBCOMMAND + "", sender, this, args));
                 return true;
             }
 
@@ -43,22 +43,22 @@ public class FlyCommand extends CommandBase {
             boolean state = Booleans.isFancyBoolean(args[0]);
 
             if (target == null) {
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.PLAYER_NOT_FOUND + "", args[1]));
+                sender.sendMessage(Placeholders.parse(Messages.PLAYER_NOT_FOUND + "", args[1]));
                 return true;
             }
 
             target.setAllowFlight(state);
-            target.sendMessage(Placeholders.parsePlaceholder(Messages.FLY_TOGGLE + "", target, this, args));
+            target.sendMessage(Placeholders.parse(Messages.FLY_TOGGLE + "", target, this, args));
 
             if (!target.equals(sender)) {
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.FLY_TOGGLE + "", target, this, args));
+                sender.sendMessage(Placeholders.parse(Messages.FLY_TOGGLE + "", target, this, args));
             }
 
             return true;
         }
 
         if (!(sender instanceof Player)) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_ARGS + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.INVALID_ARGS + "", sender, this, args));
             return true;
         }
 
@@ -66,7 +66,7 @@ public class FlyCommand extends CommandBase {
 
         if (args.length == 0) {
             player.setAllowFlight(!player.getAllowFlight());
-            player.sendMessage(Placeholders.parsePlaceholder(Messages.FLY_TOGGLE + "", player, this, args));
+            player.sendMessage(Placeholders.parse(Messages.FLY_TOGGLE + "", player, this, args));
             return true;
         }
 
@@ -74,11 +74,11 @@ public class FlyCommand extends CommandBase {
             boolean state = Booleans.isFancyBoolean(args[0]);
 
             player.setAllowFlight(state);
-            player.sendMessage(Placeholders.parsePlaceholder(Messages.FLY_TOGGLE + "", player, this, args));
+            player.sendMessage(Placeholders.parse(Messages.FLY_TOGGLE + "", player, this, args));
             return true;
         }
 
-        sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_ARGS + "", player, this, args));
+        sender.sendMessage(Placeholders.parse(Messages.INVALID_ARGS + "", player, this, args));
         return true;
 
     }

@@ -129,7 +129,7 @@ public class CommandManager implements Listener {
             long secondsLeft = ((commandCooldowns.get(event.getPlayer().getUniqueId()) / 1000) + cooldown) - (System.currentTimeMillis() / 1000);
 
             if (secondsLeft > 0) {
-                event.getPlayer().sendMessage(Placeholders.parsePlaceholder(Messages.COMMAND_COOLDOWN + "", secondsLeft + ""));
+                event.getPlayer().sendMessage(Placeholders.parse(Messages.COMMAND_COOLDOWN + "", secondsLeft + ""));
                 event.setCancelled(true);
                 return;
             }

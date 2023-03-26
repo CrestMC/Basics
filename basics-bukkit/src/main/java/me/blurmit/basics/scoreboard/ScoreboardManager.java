@@ -15,7 +15,7 @@ import java.util.UUID;
 
 public class ScoreboardManager implements Listener {
 
-    private final Map<UUID, Scoreboards> boards;
+    private final Map<UUID, BasicsScoreboard> boards;
     private final Basics plugin;
 
     public ScoreboardManager(Basics plugin) {
@@ -27,11 +27,12 @@ public class ScoreboardManager implements Listener {
         }
 
         scheduleUpdate();
+
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     public void register(Player player) {
-        Scoreboards scoreboards = new Scoreboards(plugin).getNew().show(player);
+        BasicsScoreboard scoreboards = new BasicsScoreboard(plugin).getNew().show(player);
         boards.put(player.getUniqueId(), scoreboards);
     }
 
@@ -40,11 +41,11 @@ public class ScoreboardManager implements Listener {
         boards.remove(player.getUniqueId());
     }
 
-    public Scoreboards getScoreboard(Player player) {
+    public BasicsScoreboard getScoreboard(Player player) {
         return boards.get(player.getUniqueId());
     }
 
-    public Map<UUID, Scoreboards> getBoards() {
+    public Map<UUID, BasicsScoreboard> getBoards() {
         return this.boards;
     }
 

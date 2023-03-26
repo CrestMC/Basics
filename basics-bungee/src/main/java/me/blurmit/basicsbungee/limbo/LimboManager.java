@@ -53,23 +53,23 @@ public class LimboManager {
         // 451 = Snapshot 18w50a
         // 471 = Snapshot 19w14b
         // 550 = Snapshot 19w34a
-        Protocols.registerPacket(
-                PacketPlayerPosition.class,
-                PacketPlayerPosition::new,
-                new ProtocolMapping(ProtocolConstants.MINECRAFT_1_8, 0x08),
-                new ProtocolMapping(ProtocolConstants.MINECRAFT_1_9, 0x2E),
-                new ProtocolMapping(80, 0x2F),
-                new ProtocolMapping(86, 0x2E),
-                new ProtocolMapping(318, 0x2F),
-                new ProtocolMapping(332, 0x2E),
-                new ProtocolMapping(336, 0x2F),
-                new ProtocolMapping(345, 0x30),
-                new ProtocolMapping(352, 0x31),
-                new ProtocolMapping(389, 0x32),
-                new ProtocolMapping(451, 0x33),
-                new ProtocolMapping(471, 0x35),
-                new ProtocolMapping(550, 0x36)
-        );
+//        Protocols.registerPacket(
+//                PacketPlayerPosition.class,
+//                PacketPlayerPosition::new,
+//                new ProtocolMapping(ProtocolConstants.MINECRAFT_1_8, 0x08),
+//                new ProtocolMapping(ProtocolConstants.MINECRAFT_1_9, 0x2E),
+//                new ProtocolMapping(80, 0x2F),
+//                new ProtocolMapping(86, 0x2E),
+//                new ProtocolMapping(318, 0x2F),
+//                new ProtocolMapping(332, 0x2E),
+//                new ProtocolMapping(336, 0x2F),
+//                new ProtocolMapping(345, 0x30),
+//                new ProtocolMapping(352, 0x31),
+//                new ProtocolMapping(389, 0x32),
+//                new ProtocolMapping(451, 0x33),
+//                new ProtocolMapping(471, 0x35),
+//                new ProtocolMapping(550, 0x36)
+//        );
 
         // 318 = Snapshot 17w13a
         // 332 = 1.12-pre5

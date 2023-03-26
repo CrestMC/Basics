@@ -25,7 +25,7 @@ public class AsyncChatListener implements Listener {
             event.setMessage(ChatColor.translateAlternateColorCodes('&', event.getMessage()));
         }
 
-        event.setFormat(Placeholders.parsePlaceholder(format, event.getPlayer(), event.isAsynchronous()));
+        event.setFormat(Placeholders.parse(format, event.getPlayer(), event.isAsynchronous()));
 
     }
 

@@ -102,6 +102,14 @@ Chat-Enabled: true
 # Otherwise, enable this option, and further configuration will be in the scoreboard.yml file.
 Scoreboard-Enabled: false
 
+Discord-Integration:
+  Enabled: false
+  Color-Codes-Enabled: false
+  Webhook-Name: "Chat"
+  Webhook-Profile-Picture: https://discord.com/assets/847541504914fd33810e70a0ea73177e.ico
+  Webhook-URL: https://discord.com/webhook/YOUR_LINK_HERE
+  Chat-Format: "{player-name} &7» {message}"
+
 # The social media links.
 Social-Media:
   All:

@@ -65,7 +65,7 @@ public class MenuButton {
     }
 
     public MenuButton setLore(List<String> lore) {
-        this.lore = lore.stream().map(Placeholders::parsePlaceholder).collect(Collectors.toList());
+        this.lore = lore.stream().map(Placeholders::parse).collect(Collectors.toList());
 
         return this;
     }

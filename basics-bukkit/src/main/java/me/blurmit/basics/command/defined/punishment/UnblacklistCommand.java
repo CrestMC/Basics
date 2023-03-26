@@ -27,13 +27,13 @@ public class UnblacklistCommand extends PunishmentCommand {
     @Override
     public void punish(CommandSender moderator, UUID target, String command, String[] args, boolean isSilent, long expiresAt) {
         if (!plugin.getPunishmentManager().isBlacklisted(target)) {
-            moderator.sendMessage(Placeholders.parsePlaceholder(Messages.NOT_BLACKLISTED + "", true, args[0]));
+            moderator.sendMessage(Placeholders.parse(Messages.NOT_BLACKLISTED + "", true, args[0]));
             return;
         }
 
         plugin.getPunishmentManager().getBannedPlayers().remove(getTargetUUID());
 
-        moderator.sendMessage(Placeholders.parsePlaceholder(
+        moderator.sendMessage(Placeholders.parse(
                 Messages.PUNISHMENT_MESSAGE + "", true, "unblacklisted", getFancyTargetName(), getReason()
         ));
 

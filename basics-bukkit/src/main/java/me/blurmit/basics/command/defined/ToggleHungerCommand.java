@@ -36,7 +36,9 @@ public class ToggleHungerCommand extends CommandBase implements Listener {
         isHungerDisabled = !isHungerDisabled;
 
         plugin.getConfigManager().getConfig().set("Hunger-Disabled", isHungerDisabled);
-        sender.sendMessage(Placeholders.parsePlaceholder(Messages.HUNGER_TOGGLED + "", plugin.getConfigManager().getLanguageConfig().getString("togglehunger." + (isHungerDisabled ? "disabled" : "enabled"))));
+        sender.sendMessage(Placeholders.parse(
+                Messages.HUNGER_TOGGLED + "", plugin.getConfigManager().getLanguageConfig().getString("togglehunger." + (isHungerDisabled ? "disabled" : "enabled"))
+        ));
         return true;
     }
 

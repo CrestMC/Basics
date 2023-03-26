@@ -31,12 +31,12 @@ public class SlowmodeCommand extends CommandBase {
     @Override
     public boolean execute(CommandSender sender, @NotNull String commandLabel, String[] args) {
         if (!sender.hasPermission(getPermission())) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.NO_PERMISSION + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.NO_PERMISSION + "", sender, this, args));
             return true;
         }
 
         if (args.length != 1) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_ARGS + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.INVALID_ARGS + "", sender, this, args));
             return true;
         }
 
@@ -45,7 +45,7 @@ public class SlowmodeCommand extends CommandBase {
         try {
             delay = Long.parseLong(args[0]);
         } catch (IllegalArgumentException e) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.NUMBER_INVALID + "", args[0]));
+            sender.sendMessage(Placeholders.parse(Messages.NUMBER_INVALID + "", args[0]));
             return true;
         }
 
@@ -53,7 +53,7 @@ public class SlowmodeCommand extends CommandBase {
         plugin.getConfigManager().getConfig().set("Slowmode-Delay", delay);
         plugin.getConfigManager().saveConfig();
 
-        sender.sendMessage(Placeholders.parsePlaceholder(Messages.SLOWMODE_SET + "", sender, this, args));
+        sender.sendMessage(Placeholders.parse(Messages.SLOWMODE_SET + "", sender, this, args));
 
         return true;
     }

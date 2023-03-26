@@ -36,7 +36,7 @@ public class ConfigManager {
         this.languageFile = new File(plugin.getDataFolder(), "language.yml");
         this.scoreboardFile = new File(plugin.getDataFolder(), "scoreboard.yml");
         this.ranksFile = new File(plugin.getDataFolder(), "ranks.yml");
-
+        
         loadConfigurations();
     }
 

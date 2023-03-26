@@ -30,13 +30,13 @@ public class GamemodeCommand extends CommandBase {
     @Override
     public boolean execute(CommandSender sender, @NotNull String commandLabel, String[] args) {
         if (!sender.hasPermission(getPermission())) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.NO_PERMISSION + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.NO_PERMISSION + "", sender, this, args));
             return true;
         }
 
         if (args.length == 2) {
             if (!sender.hasPermission("basics.command.gamemode.other")) {
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.NO_PERMISSION_SUBCOMMAND + "", sender, this, args));
+                sender.sendMessage(Placeholders.parse(Messages.NO_PERMISSION_SUBCOMMAND + "", sender, this, args));
                 return true;
             }
 
@@ -44,23 +44,23 @@ public class GamemodeCommand extends CommandBase {
             GameMode gameMode = Gamemodes.getGamemode(args[0]);
 
             if (target == null) {
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.PLAYER_NOT_FOUND + "", args[1]));
+                sender.sendMessage(Placeholders.parse(Messages.PLAYER_NOT_FOUND + "", args[1]));
                 return true;
             }
 
             if (gameMode == null) {
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.GAMEMODE_UNKNOWN + "", target, this, args));
+                sender.sendMessage(Placeholders.parse(Messages.GAMEMODE_UNKNOWN + "", target, this, args));
                 return true;
             }
 
             target.setGameMode(gameMode);
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.GAMEMODE_CHANGED + "", target, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.GAMEMODE_CHANGED + "", target, this, args));
 
             return true;
         }
 
         if (!(sender instanceof Player)) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_ARGS + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.INVALID_ARGS + "", sender, this, args));
             return true;
         }
 
@@ -70,17 +70,17 @@ public class GamemodeCommand extends CommandBase {
             GameMode gameMode = Gamemodes.getGamemode(args[0]);
 
             if (gameMode == null) {
-                player.sendMessage(Placeholders.parsePlaceholder(Messages.GAMEMODE_UNKNOWN + "", player, this, args));
+                player.sendMessage(Placeholders.parse(Messages.GAMEMODE_UNKNOWN + "", player, this, args));
                 return true;
             }
 
             player.setGameMode(gameMode);
-            player.sendMessage(Placeholders.parsePlaceholder(Messages.GAMEMODE_CHANGED + "", player, this, args));
+            player.sendMessage(Placeholders.parse(Messages.GAMEMODE_CHANGED + "", player, this, args));
 
             return true;
         }
 
-        sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_ARGS + "", sender, this, args));
+        sender.sendMessage(Placeholders.parse(Messages.INVALID_ARGS + "", sender, this, args));
         return true;
 
     }

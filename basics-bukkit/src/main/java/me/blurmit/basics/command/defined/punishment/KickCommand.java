@@ -26,11 +26,11 @@ public class KickCommand extends PunishmentCommand {
 
     @Override
     public void punish(CommandSender moderator, UUID target, String command, String[] args, boolean isSilent, long expiresAt) {
-        PluginMessageUtil.sendData("BungeeCord", "KickPlayer", getTargetName(), Placeholders.parsePlaceholder(
+        PluginMessageUtil.sendData("BungeeCord", "KickPlayer", getTargetName(), Placeholders.parse(
                 Messages.KICK_ALERT + "", true, getReason(), getExpiresInText()
         ));
 
-        moderator.sendMessage(Placeholders.parsePlaceholder(
+        moderator.sendMessage(Placeholders.parse(
                 Messages.PUNISHMENT_MESSAGE + "", true, "kicked", getTargetName(), getReason(), getDurationText()
         ));
 

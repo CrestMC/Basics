@@ -25,13 +25,13 @@ public class WalkSpeedCommand extends CommandBase {
     @Override
     public boolean execute(CommandSender sender, @NotNull String commandLabel, String[] args) {
         if (!sender.hasPermission(getPermission())) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.NO_PERMISSION + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.NO_PERMISSION + "", sender, this, args));
             return true;
         }
 
         if (args.length == 2) {
             if (!sender.hasPermission("basics.command.walkspeed.other")) {
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.NO_PERMISSION_SUBCOMMAND + "", sender, this, args));
+                sender.sendMessage(Placeholders.parse(Messages.NO_PERMISSION_SUBCOMMAND + "", sender, this, args));
                 return true;
             }
 
@@ -39,30 +39,30 @@ public class WalkSpeedCommand extends CommandBase {
             float speed;
 
             if (target == null) {
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.PLAYER_NOT_FOUND + "", args[1]));
+                sender.sendMessage(Placeholders.parse(Messages.PLAYER_NOT_FOUND + "", args[1]));
                 return true;
             }
 
             try {
                 speed = Float.parseFloat(args[0]);
             } catch (NumberFormatException e) {
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.NUMBER_INVALID + "", args[0]));
+                sender.sendMessage(Placeholders.parse(Messages.NUMBER_INVALID + "", args[0]));
                 return true;
             }
 
             if (speed > 10F || speed < -10F) {
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.FLY_SPEED_INVALID + "", target, this, args));
+                sender.sendMessage(Placeholders.parse(Messages.FLY_SPEED_INVALID + "", target, this, args));
                 return true;
             }
 
             target.setWalkSpeed(speed / 10F);
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.WALK_SPEED_CHANGED + "", target, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.WALK_SPEED_CHANGED + "", target, this, args));
             return true;
 
         }
 
         if (!(sender instanceof Player)) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_ARGS + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.INVALID_ARGS + "", sender, this, args));
             return true;
         }
 
@@ -73,21 +73,21 @@ public class WalkSpeedCommand extends CommandBase {
             try {
                 speed = Float.parseFloat(args[0]);
             } catch (NumberFormatException e) {
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.NUMBER_INVALID + "", args[0]));
+                sender.sendMessage(Placeholders.parse(Messages.NUMBER_INVALID + "", args[0]));
                 return true;
             }
 
             if (speed > 10F || speed < -10F) {
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.WALK_SPEED_INVALID + "", player, this, args));
+                sender.sendMessage(Placeholders.parse(Messages.WALK_SPEED_INVALID + "", player, this, args));
                 return true;
             }
 
             player.setWalkSpeed(speed / 10F);
-            player.sendMessage(Placeholders.parsePlaceholder(Messages.WALK_SPEED_CHANGED + "", player, this, args));
+            player.sendMessage(Placeholders.parse(Messages.WALK_SPEED_CHANGED + "", player, this, args));
             return true;
         }
 
-        sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_ARGS + "", sender, this, args));
+        sender.sendMessage(Placeholders.parse(Messages.INVALID_ARGS + "", sender, this, args));
         return true;
 
     }

@@ -29,7 +29,7 @@ public class GiveRankSubCommand extends SubCommand {
     @Override
     public void execute(CommandSender sender, Command command, String[] args) {
         if (args.length < 3) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_ARGS_SUBCOMMAND + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.INVALID_ARGS_SUBCOMMAND + "", sender, this, args));
             return;
         }
 
@@ -41,18 +41,18 @@ public class GiveRankSubCommand extends SubCommand {
         Rank rank = plugin.getRankManager().getRankByName(args[1]);
 
         if (uuid == null) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.ACCOUNT_DOESNT_EXIST + "", true, args[2]));
+            sender.sendMessage(Placeholders.parse(Messages.ACCOUNT_DOESNT_EXIST + "", true, args[2]));
             return;
         }
 
         if (rank == null) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_NOT_FOUND + "", true, args[1].toLowerCase()));
+            sender.sendMessage(Placeholders.parse(Messages.RANK_NOT_FOUND + "", true, args[1].toLowerCase()));
             return;
         }
 
         plugin.getRankManager().hasRank(uuid, rank.getName(), hasRank -> {
             if (hasRank) {
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_ALREADY_OWNED + "", true, rank.getDisplayName()));
+                sender.sendMessage(Placeholders.parse(Messages.RANK_ALREADY_OWNED + "", true, rank.getDisplayName()));
                 return;
             }
 
@@ -63,10 +63,10 @@ public class GiveRankSubCommand extends SubCommand {
             }
 
             plugin.getRankManager().giveRank(rank.getName(), uuid.toString(), server);
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_GRANTED_SUCCESS + "", true, args[2], rank.getDisplayName()));
+            sender.sendMessage(Placeholders.parse(Messages.RANK_GRANTED_SUCCESS + "", true, args[2], rank.getDisplayName()));
 
             if (target != null) {
-                target.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_RECEIVED + "", true, rank.getDisplayName()));
+                target.sendMessage(Placeholders.parse(Messages.RANK_RECEIVED + "", true, rank.getDisplayName()));
             }
         });
     }

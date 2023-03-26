@@ -10,6 +10,7 @@ import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.List;
 
 public abstract class CommandBase extends BukkitCommand implements TabCompleter {
@@ -34,6 +35,10 @@ public abstract class CommandBase extends BukkitCommand implements TabCompleter 
                 command.setTabCompleter(tabCompleter);
             }
         }
+    }
+
+    public void setAliases(String... aliases) {
+        setAliases(Arrays.asList(aliases));
     }
 
     public void setTabCompleter(TabCompleter tabCompleter) {

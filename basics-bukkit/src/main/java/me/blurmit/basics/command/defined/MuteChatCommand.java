@@ -36,7 +36,7 @@ public class MuteChatCommand extends CommandBase implements Listener {
     @Override
     public boolean execute(CommandSender sender, @NotNull String commandLabel, String[] args) {
         if (!sender.hasPermission(getPermission())) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.NO_PERMISSION + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.NO_PERMISSION + "", sender, this, args));
             return true;
         }
 
@@ -44,7 +44,7 @@ public class MuteChatCommand extends CommandBase implements Listener {
         plugin.getConfigManager().getConfig().set("Chat-Enabled", isMuted);
         plugin.getConfigManager().saveConfig();
 
-        Bukkit.broadcast(Placeholders.parsePlaceholder(Messages.MUTE_CHAT_TOGGLE + "", sender, false, Booleans.getFancyBoolean(isMuted)), "basics.mutechat.bypass");
+        Bukkit.broadcast(Placeholders.parse(Messages.MUTE_CHAT_TOGGLE + "", sender, false, Booleans.getFancyBoolean(isMuted)), "basics.mutechat.bypass");
 
         return true;
     }
@@ -63,7 +63,7 @@ public class MuteChatCommand extends CommandBase implements Listener {
             return;
         }
 
-        event.getPlayer().sendMessage(Placeholders.parsePlaceholder(Messages.MUTE_CHAT_MESSAGE + ""));
+        event.getPlayer().sendMessage(Placeholders.parse(Messages.MUTE_CHAT_MESSAGE + ""));
         event.setCancelled(true);
     }
 

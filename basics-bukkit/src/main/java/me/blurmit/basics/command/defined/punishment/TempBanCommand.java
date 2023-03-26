@@ -26,15 +26,15 @@ public class TempBanCommand extends PunishmentCommand {
     @Override
     public void punish(CommandSender moderator, UUID target, String command, String[] args, boolean isSilent, long expiresAt) {
         if (getExpiresAt() == -1) {
-            moderator.sendMessage(Placeholders.parsePlaceholder(Messages.PUNISHMENT_NO_TIME_PROVIDED + ""));
+            moderator.sendMessage(Placeholders.parse(Messages.PUNISHMENT_NO_TIME_PROVIDED + ""));
             return;
         }
 
-        PluginMessageUtil.sendData("BungeeCord", "KickPlayer", getTargetName(), Placeholders.parsePlaceholder(
+        PluginMessageUtil.sendData("BungeeCord", "KickPlayer", getTargetName(), Placeholders.parse(
                 Messages.BAN_TEMPORARY_ALERT + "", true, getReason(), getExpiresInText()
         ));
 
-        moderator.sendMessage(Placeholders.parsePlaceholder(
+        moderator.sendMessage(Placeholders.parse(
                 Messages.PUNISHMENT_MESSAGE + "", true, "banned", getTargetName(), getReason(), getDurationText()
         ));
 
