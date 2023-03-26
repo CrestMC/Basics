@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-public class ServerPlaceholder extends PlaceholderExpansion implements Listener, PluginMessageListener {
+public class ServerPlaceholder implements Listener, PluginMessageListener {
 
     private final Basics plugin;
     private final Map<String, String> playerCountMap;
@@ -173,36 +173,6 @@ public class ServerPlaceholder extends PlaceholderExpansion implements Listener,
                 currentServerName = input.readUTF();
             }
         }
-    }
-
-    @Override
-    public String onRequest(OfflinePlayer player, String params) {
-        if (params.startsWith("server_playercount_")) {
-            String serverName = params.replace("server_playercount_", "").toLowerCase();
-            return playerCountMap.get(serverName) == null ? ChatColor.RED + "Offline" : playerCountMap.get(serverName);
-        }
-
-        return null;
-    }
-
-    @Override
-    public @NotNull String getIdentifier() {
-        return "basics";
-    }
-
-    @Override
-    public @NotNull String getAuthor() {
-        return String.join(", ", plugin.getDescription().getAuthors());
-    }
-
-    @Override
-    public @NotNull String getVersion() {
-        return plugin.getDescription().getVersion();
-    }
-
-    @Override
-    public boolean persist() {
-        return true;
     }
 
 }

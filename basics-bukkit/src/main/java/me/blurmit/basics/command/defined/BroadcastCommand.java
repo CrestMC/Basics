@@ -27,17 +27,17 @@ public class BroadcastCommand extends CommandBase {
     @Override
     public boolean execute(CommandSender sender, @NotNull String commandLabel, String[] args) {
         if (!sender.hasPermission(getPermission())) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.NO_PERMISSION + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.NO_PERMISSION + "", sender, this, args));
             return true;
         }
 
         if (args.length == 0) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_ARGS + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.INVALID_ARGS + "", sender, this, args));
             return true;
         }
 
         String message = String.join(" ", Arrays.copyOfRange(args, 0, args.length));
-        plugin.getServer().broadcastMessage(Placeholders.parsePlaceholder(Messages.BROADCAST_MESSAGE + "", message));
+        plugin.getServer().broadcastMessage(Placeholders.parse(Messages.BROADCAST_MESSAGE + "", message));
 
         return true;
     }

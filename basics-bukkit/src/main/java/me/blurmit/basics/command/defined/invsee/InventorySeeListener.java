@@ -30,7 +30,7 @@ public class InventorySeeListener implements Listener {
             return;
         }
 
-        if (!player.hasPermission("basics.command.invsee.interact")) {
+        if (player.hasPermission("basics.command.invsee.interact")) {
             return;
         }
 

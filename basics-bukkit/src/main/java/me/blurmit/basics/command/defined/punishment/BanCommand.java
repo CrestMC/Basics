@@ -35,11 +35,11 @@ public class BanCommand extends PunishmentCommand {
             banType = PunishmentType.TEMP_BAN;
         }
 
-        PluginMessageUtil.sendData("BungeeCord", "KickPlayer", getTargetName(), Placeholders.parsePlaceholder(
+        PluginMessageUtil.sendData("BungeeCord", "KickPlayer", getTargetName(), Placeholders.parse(
                 banMessage, true, getReason(), getExpiresInText()
         ));
 
-        moderator.sendMessage(Placeholders.parsePlaceholder(
+        moderator.sendMessage(Placeholders.parse(
                 Messages.PUNISHMENT_MESSAGE + "", true, "banned", getTargetName(), getReason(), getDurationText()
         ));
 

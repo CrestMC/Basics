@@ -30,17 +30,17 @@ public class ItemRenameCommand extends CommandBase {
     @Override
     public boolean execute(CommandSender sender, @NotNull String commandLabel, String[] args) {
         if (!sender.hasPermission(getPermission())) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.NO_PERMISSION + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.NO_PERMISSION + "", sender, this, args));
             return true;
         }
 
         if (!(sender instanceof Player)) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_ARGS + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.INVALID_ARGS + "", sender, this, args));
             return true;
         }
 
         if (args.length == 0) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_ARGS + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.INVALID_ARGS + "", sender, this, args));
             return true;
         }
 
@@ -49,7 +49,7 @@ public class ItemRenameCommand extends CommandBase {
         ItemMeta meta = item.getItemMeta();
 
         if (item.getItemMeta() == null) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.ITEM_RENAME_INVALID + "", player, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.ITEM_RENAME_INVALID + "", player, this, args));
             return true;
         }
 
@@ -57,7 +57,7 @@ public class ItemRenameCommand extends CommandBase {
         meta.setDisplayName(name);
         item.setItemMeta(meta);
 
-        player.sendMessage(Placeholders.parsePlaceholder(Messages.ITEM_RENAMED + "", player, this, args));
+        player.sendMessage(Placeholders.parse(Messages.ITEM_RENAMED + "", player, this, args));
         return true;
 
     }

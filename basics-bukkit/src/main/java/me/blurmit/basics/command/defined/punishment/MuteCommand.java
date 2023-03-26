@@ -35,13 +35,13 @@ public class MuteCommand extends PunishmentCommand {
             muteType = PunishmentType.TEMP_MUTE;
         }
 
-        moderator.sendMessage(Placeholders.parsePlaceholder(
+        moderator.sendMessage(Placeholders.parse(
                 Messages.PUNISHMENT_MESSAGE + "", true, "muted", getTargetName(), getReason(), getDurationText()
         ));
 
         Player targetPlayer = plugin.getServer().getPlayer(target);
         if (targetPlayer != null) {
-            targetPlayer.sendMessage(Placeholders.parsePlaceholder(muteMessage, true, getReason(), getExpiresInText()));
+            targetPlayer.sendMessage(Placeholders.parse(muteMessage, true, getReason(), getExpiresInText()));
 
             long timeLeft = expiresAt - TimeUtil.getCurrentTimeSeconds();
             BukkitTask task = null;

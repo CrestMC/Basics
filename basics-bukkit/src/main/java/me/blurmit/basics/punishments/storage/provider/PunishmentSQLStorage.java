@@ -5,7 +5,6 @@ import me.blurmit.basics.Basics;
 import me.blurmit.basics.database.DatabaseManager;
 import me.blurmit.basics.punishments.PunishmentType;
 import me.blurmit.basics.punishments.data.PunishmentData;
-import me.blurmit.basics.punishments.storage.provider.PunishmentStorageProvider;
 import me.blurmit.basics.util.Placeholders;
 import me.blurmit.basics.util.PluginMessageUtil;
 import me.blurmit.basics.util.TimeUtil;
@@ -334,7 +333,7 @@ public class PunishmentSQLStorage extends PunishmentStorageProvider {
                         })
                         .forEach(onlinePlayer -> {
                             if (expiresAt == -1) {
-                                PluginMessageUtil.sendData("BungeeCord", "KickPlayer", onlinePlayer.getName(), Placeholders.parsePlaceholder(
+                                PluginMessageUtil.sendData("BungeeCord", "KickPlayer", onlinePlayer.getName(), Placeholders.parse(
                                         Messages.BAN_PERMANENT_ALERT + "",
                                         true,
                                         reason,
@@ -343,7 +342,7 @@ public class PunishmentSQLStorage extends PunishmentStorageProvider {
                                 return;
                             }
 
-                            PluginMessageUtil.sendData("BungeeCord", "KickPlayer", onlinePlayer.getName(), Placeholders.parsePlaceholder(
+                            PluginMessageUtil.sendData("BungeeCord", "KickPlayer", onlinePlayer.getName(), Placeholders.parse(
                                     Messages.BAN_TEMPORARY_ALERT + "",
                                     true,
                                     reason,
@@ -369,7 +368,7 @@ public class PunishmentSQLStorage extends PunishmentStorageProvider {
                 long expiresAt = results.getLong("expires_at");
 
                 if (expiresAt == -1) {
-                    PluginMessageUtil.sendData("BungeeCord", "KickPlayer", player.getName(), Placeholders.parsePlaceholder(
+                    PluginMessageUtil.sendData("BungeeCord", "KickPlayer", player.getName(), Placeholders.parse(
                             Messages.BAN_PERMANENT_ALERT + "",
                             true,
                             reason,
@@ -378,7 +377,7 @@ public class PunishmentSQLStorage extends PunishmentStorageProvider {
                     return;
                 }
 
-                PluginMessageUtil.sendData("BungeeCord", "KickPlayer", player.getName(), Placeholders.parsePlaceholder(
+                PluginMessageUtil.sendData("BungeeCord", "KickPlayer", player.getName(), Placeholders.parse(
                         Messages.BAN_TEMPORARY_ALERT + "",
                         true,
                         reason,
@@ -410,7 +409,7 @@ public class PunishmentSQLStorage extends PunishmentStorageProvider {
                 plugin.getPunishmentManager().getMutedPlayers().put(player.getUniqueId(), task);
 
                 if (expiresAt == -1) {
-                    player.sendMessage(Placeholders.parsePlaceholder(
+                    player.sendMessage(Placeholders.parse(
                             Messages.MUTE_PERMANENT_ALERT + "",
                             reason,
                             "never"
@@ -418,7 +417,7 @@ public class PunishmentSQLStorage extends PunishmentStorageProvider {
                     return;
                 }
 
-                player.sendMessage(Placeholders.parsePlaceholder(
+                player.sendMessage(Placeholders.parse(
                         Messages.MUTE_TEMPORARY_ALERT + "",
                         reason,
                         TimeUtil.getHowLongUntil(expiresAt)

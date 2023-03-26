@@ -30,7 +30,7 @@ public class StaffChatListener implements Listener, PluginMessageListener {
         this.config = plugin.getConfigManager().getConfig();
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onAsyncPlayerChat(AsyncPlayerChatEvent event) {
         if (!event.getPlayer().hasPermission("basics.staffchat")) {
             return;
@@ -55,8 +55,8 @@ public class StaffChatListener implements Listener, PluginMessageListener {
         event.setMessage(event.getMessage().replaceFirst(prefix, ""));
 
         String message = event.getMessage();
-        String server = Placeholders.parsePlaceholder("{server-name}", true);
-        String format = Placeholders.parsePlaceholder(config.getString("StaffChat.Format"), player, command, null, null, event.isAsynchronous(), server, player.getName(), message);
+        String server = Placeholders.parse("{server-name}", true);
+        String format = Placeholders.parse(config.getString("StaffChat.Format"), player, command, null, null, event.isAsynchronous(), server, player.getName(), message);
 
         PluginMessageUtil.sendData("BungeeCord", "Staff", "Chat", server, player.getName(), message);
         plugin.getServer().broadcast(format, "basics.staffchat");
@@ -87,20 +87,20 @@ public class StaffChatListener implements Listener, PluginMessageListener {
             switch (subchannel) {
                 case "Chat": {
                     String msg = input.readUTF();
-                    format = Placeholders.parsePlaceholder(config.getString("StaffChat.Format"), true, server, coloredName, msg);
+                    format = Placeholders.parse(config.getString("StaffChat.Format"), true, server, coloredName, msg);
                     break;
                 }
                 case "Connected": {
-                    format = Placeholders.parsePlaceholder(config.getString("StaffChat.Connect"), true, coloredName, server);
+                    format = Placeholders.parse(config.getString("StaffChat.Connect"), true, coloredName, server);
                     break;
                 }
                 case "Disconnected": {
-                    format = Placeholders.parsePlaceholder(config.getString("StaffChat.Disconnect"), true, coloredName, server);
+                    format = Placeholders.parse(config.getString("StaffChat.Disconnect"), true, coloredName, server);
                     break;
                 }
                 case "ServerSwitch": {
                     String newServer = input.readUTF();
-                    format = Placeholders.parsePlaceholder(config.getString("StaffChat.Switch"), true, coloredName, newServer, server);
+                    format = Placeholders.parse(config.getString("StaffChat.Switch"), true, coloredName, newServer, server);
                     break;
                 }
                 default: {

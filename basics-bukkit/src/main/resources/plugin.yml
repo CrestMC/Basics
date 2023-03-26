@@ -4,6 +4,8 @@ main: me.blurmit.basics.Basics
 api-version: 1.16
 prefix: Basics
 authors: [ Blurmit ]
+loadbefore:
+  - Citizens
 softdepend:
   - PlaceholderAPI
   - LuckPerms

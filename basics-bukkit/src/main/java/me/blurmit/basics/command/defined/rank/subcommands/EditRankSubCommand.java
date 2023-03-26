@@ -28,7 +28,7 @@ public class EditRankSubCommand extends SubCommand {
     @Override
     public void execute(CommandSender sender, Command command, String[] args) {
         if (args.length < 4) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_ARGS_SUBCOMMAND +
+            sender.sendMessage(Placeholders.parse(Messages.INVALID_ARGS_SUBCOMMAND +
                     "\n&c/rank edit <name> <addpermission> <permission> [value] [server]" +
                     "\n&c  - Adds a permission to a rank" +
                     "\n/rank edit <name> <removepermission> <permission>" +
@@ -52,7 +52,7 @@ public class EditRankSubCommand extends SubCommand {
         Rank rank = plugin.getRankManager().getRankByName(rankName);
 
         if (rank == null) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_NOT_FOUND + "", rankName));
+            sender.sendMessage(Placeholders.parse(Messages.RANK_NOT_FOUND + "", rankName));
             return;
         }
 
@@ -74,52 +74,52 @@ public class EditRankSubCommand extends SubCommand {
                 }
 
                 plugin.getRankManager().giveRankPermission(rank.getName(), args[3], server, negated);
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_PERMISSION_ADDED + "", args[3], rank.getDisplayName()));
+                sender.sendMessage(Placeholders.parse(Messages.RANK_PERMISSION_ADDED + "", args[3], rank.getDisplayName()));
                 return;
             }
             case "removepermission": {
                 if (!plugin.getRankManager().hasPermission(rank, args[3])) {
-                    sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_PERMISSION_NOT_OWNED + "", rank.getDisplayName(), args[3]));
+                    sender.sendMessage(Placeholders.parse(Messages.RANK_PERMISSION_NOT_OWNED + "", rank.getDisplayName(), args[3]));
                     return;
                 }
 
                 plugin.getRankManager().removeRankPermission(rank.getName(), args[3]);
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_PERMISSION_REMOVED + "", args[3], rank.getDisplayName()));
+                sender.sendMessage(Placeholders.parse(Messages.RANK_PERMISSION_REMOVED + "", args[3], rank.getDisplayName()));
                 return;
             }
             case "setprefix": {
                 String prefix = String.join(" ", Arrays.copyOfRange(args, 3, args.length));
 
                 plugin.getRankManager().setRankPrefix(rank.getName(), prefix);
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_PREFIX_SET + "", prefix, rank.getDisplayName()));
+                sender.sendMessage(Placeholders.parse(Messages.RANK_PREFIX_SET + "", prefix, rank.getDisplayName()));
                 return;
             }
             case "setsuffix": {
                 String suffix = String.join(" ", Arrays.copyOfRange(args, 3, args.length));
 
                 plugin.getRankManager().setRankSuffix(rank.getName(), suffix);
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_SUFFIX_SET + "", suffix, rank.getDisplayName()));
+                sender.sendMessage(Placeholders.parse(Messages.RANK_SUFFIX_SET + "", suffix, rank.getDisplayName()));
                 return;
             }
             case "setdefault": {
                 boolean isDefault = Boolean.parseBoolean(args[3]);
 
                 plugin.getRankManager().setRankDefault(rank.getName(), isDefault);
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_DEFAULT_SET + "", rank.getDisplayName(), isDefault ? "now" : "no longer"));
+                sender.sendMessage(Placeholders.parse(Messages.RANK_DEFAULT_SET + "", rank.getDisplayName(), isDefault ? "now" : "no longer"));
                 return;
             }
             case "setdisplayname": {
                 String displayName = String.join(" ", Arrays.copyOfRange(args, 3, args.length));
 
                 plugin.getRankManager().setDisplayName(rank.getName(), displayName);
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_DISPLAYNAME_SET + "", displayName, rank.getName()));
+                sender.sendMessage(Placeholders.parse(Messages.RANK_DISPLAYNAME_SET + "", displayName, rank.getName()));
                 return;
             }
             case "setcolor": {
                 String color = String.join(" ", Arrays.copyOfRange(args, 3, args.length));
 
                 plugin.getRankManager().setRankColor(rank.getName(), color);
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_COLOR_SET + "", color, rank.getDisplayName()));
+                sender.sendMessage(Placeholders.parse(Messages.RANK_COLOR_SET + "", color, rank.getDisplayName()));
                 return;
             }
             case "setpriority": {
@@ -128,16 +128,16 @@ public class EditRankSubCommand extends SubCommand {
                 try {
                     priority = Integer.parseInt(args[3]);
                 } catch (NumberFormatException e) {
-                    sender.sendMessage(Placeholders.parsePlaceholder(Messages.NUMBER_INVALID + "", args[3]));
+                    sender.sendMessage(Placeholders.parse(Messages.NUMBER_INVALID + "", args[3]));
                     return;
                 }
 
                 plugin.getRankManager().setRankPriority(rank.getName(), priority);
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.RANK_PRIORITY_SET + "", priority + "", rank.getName()));
+                sender.sendMessage(Placeholders.parse(Messages.RANK_PRIORITY_SET + "", priority + "", rank.getName()));
                 return;
             }
             default: {
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_ARGS_SUBCOMMAND +
+                sender.sendMessage(Placeholders.parse(Messages.INVALID_ARGS_SUBCOMMAND +
                     "\n&c/rank edit <name> <addpermission> <permission> [value] [server]" +
                     "\n&c  - Adds a permission to a rank" +
                     "\n/rank edit <name> <removepermission> <permission>" +

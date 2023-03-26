@@ -39,27 +39,27 @@ public class HelpopCommand extends CommandBase implements PluginMessageListener 
     @Override
     public boolean execute(@NotNull CommandSender sender, @NotNull String label, @NotNull String[] args) {
         if (!sender.hasPermission(getPermission())) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.NO_PERMISSION + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.NO_PERMISSION + "", sender, this, args));
             return true;
         }
 
         if (!(sender instanceof Player)) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.ONLY_PLAYERS + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.ONLY_PLAYERS + "", sender, this, args));
             return true;
         }
 
         if (args.length == 0) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_ARGS + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.INVALID_ARGS + "", sender, this, args));
             return true;
         }
 
         Player player = (Player) sender;
         String message = String.join(" ", Arrays.copyOfRange(args, 0, args.length));
 
-        player.sendMessage(Placeholders.parsePlaceholder(Messages.HELPOP_SUBMITTED + ""));
+        player.sendMessage(Placeholders.parse(Messages.HELPOP_SUBMITTED + ""));
 
         plugin.getServer().broadcast(
-                Placeholders.parsePlaceholder(Messages.HELPOP_REQUEST + "", RankUtil.getColor(player.getUniqueId()) + player.getName(), ChatColor.stripColor(message)),
+                Placeholders.parse(Messages.HELPOP_REQUEST + "", RankUtil.getColor(player.getUniqueId()) + player.getName(), ChatColor.stripColor(message)),
                 "basics.helpop.read"
         );
 
@@ -85,7 +85,7 @@ public class HelpopCommand extends CommandBase implements PluginMessageListener 
 
         UUIDUtil.asyncGetUUID(user, uuid -> {
             plugin.getServer().broadcast(
-                    Placeholders.parsePlaceholder(Messages.HELPOP_REQUEST + "", true, RankUtil.getColor(uuid) + user, ChatColor.stripColor(request)),
+                    Placeholders.parse(Messages.HELPOP_REQUEST + "", true, RankUtil.getColor(uuid) + user, ChatColor.stripColor(request)),
                     "basics.helpop.read"
             );
         });

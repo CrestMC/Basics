@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>me.blurmit</groupId>
-    <artifactId>basics-bukkit</artifactId>
+    <artifactId>Basics-Bukkit</artifactId>
     <version>1.0</version>
     <packaging>jar</packaging>
 
-    <name>basics-bukkit</name>
+    <name>Basics-Bukkit</name>
 
     <description>A plugin containing general server utilities</description>
     <properties>

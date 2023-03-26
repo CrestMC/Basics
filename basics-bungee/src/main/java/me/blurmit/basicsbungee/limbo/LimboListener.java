@@ -4,13 +4,15 @@ import me.blurmit.basicsbungee.BasicsBungee;
 import me.blurmit.basicsbungee.limbo.server.LimboServer;
 import me.blurmit.basicsbungee.util.Messages;
 import me.blurmit.basicsbungee.util.Placeholders;
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.ServerKickEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class LimboListener implements Listener {
 
@@ -32,9 +34,14 @@ public class LimboListener implements Listener {
         ProxiedPlayer player = event.getPlayer();
         String serverName = player.getServer().getInfo().getName();
         ServerInfo server = plugin.getProxy().getServers().values().stream()
-                .filter(serverInfo -> serverInfo.getName().equals(serverName))
+                .filter(serverInfo -> !serverInfo.getName().equals(serverName))
+                .filter(serverInfo -> !serverInfo.isRestricted())
                 .findFirst()
                 .orElse(new LimboServer());
+
+        if (server instanceof LimboServer) {
+            plugin.getLimboManager().banishToLimbo(player);
+        }
 
         event.setCancelServer(server);
         event.setCancelled(true);

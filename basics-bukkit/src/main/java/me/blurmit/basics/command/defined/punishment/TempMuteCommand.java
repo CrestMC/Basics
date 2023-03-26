@@ -28,17 +28,17 @@ public class TempMuteCommand extends PunishmentCommand {
     @Override
     public void punish(CommandSender moderator, UUID target, String command, String[] args, boolean isSilent, long expiresAt) {
         if (getExpiresAt() == -1) {
-            moderator.sendMessage(Placeholders.parsePlaceholder(Messages.PUNISHMENT_NO_TIME_PROVIDED + ""));
+            moderator.sendMessage(Placeholders.parse(Messages.PUNISHMENT_NO_TIME_PROVIDED + ""));
             return;
         }
 
-        moderator.sendMessage(Placeholders.parsePlaceholder(
+        moderator.sendMessage(Placeholders.parse(
                 Messages.PUNISHMENT_MESSAGE + "", true, "muted", getTargetName(), getReason(), getDurationText()
         ));
 
         Player targetPlayer = plugin.getServer().getPlayer(target);
         if (targetPlayer != null) {
-            targetPlayer.sendMessage(Placeholders.parsePlaceholder(Messages.MUTE_TEMPORARY_ALERT + "", true, getReason(), getExpiresInText()));
+            targetPlayer.sendMessage(Placeholders.parse(Messages.MUTE_TEMPORARY_ALERT + "", true, getReason(), getExpiresInText()));
 
             long timeLeft = expiresAt - TimeUtil.getCurrentTimeSeconds();
             BukkitTask task = plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, () -> plugin.getPunishmentManager().storeUnmute(target, null, "Expired"), timeLeft * 20L);

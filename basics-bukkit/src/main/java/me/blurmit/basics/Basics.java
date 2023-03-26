@@ -3,12 +3,15 @@ package me.blurmit.basics;
 import lombok.Getter;
 import me.blurmit.basics.command.CommandManager;
 import me.blurmit.basics.configuration.ConfigManager;
+import me.blurmit.basics.discord.DiscordIntegrationManager;
 import me.blurmit.basics.listeners.*;
 import me.blurmit.basics.menu.MenuManager;
 import me.blurmit.basics.punishments.PunishmentManager;
+import me.blurmit.basics.punishments.storage.provider.PunishmentSQLStorage;
+import me.blurmit.basics.punishments.storage.provider.PunishmentStorageProvider;
 import me.blurmit.basics.rank.RankManager;
 import me.blurmit.basics.scoreboard.ScoreboardManager;
-import me.blurmit.basics.scoreboard.Scoreboards;
+import me.blurmit.basics.scoreboard.BasicsScoreboard;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -29,6 +32,8 @@ public final class Basics extends JavaPlugin {
     private PunishmentManager punishmentManager;
     @Getter
     private MenuManager menuManager;
+    @Getter
+    private DiscordIntegrationManager discordIntegrationManager;
 
     @Override
     public void onEnable() {
@@ -55,12 +60,11 @@ public final class Basics extends JavaPlugin {
         new CommandPlaceholder(this);
         new PlayerPlaceholder(this);
         new RankPlaceholder(this);
-        ServerPlaceholder serverPlaceholder = new ServerPlaceholder(this);
+        new ServerPlaceholder(this);
 
         Plugin papi = getServer().getPluginManager().getPlugin("PlaceholderAPI");
         if (papi != null && papi.isEnabled()) {
             new PapiPlaceholder(this);
-            serverPlaceholder.register();
         }
 
         getLogger().info("Registering scoreboard...");
@@ -70,6 +74,8 @@ public final class Basics extends JavaPlugin {
         new AsyncChatListener(this);
         new PlayerConnectionListener(this);
 
+        getLogger().info("Loading Discord integration...");
+        discordIntegrationManager = new DiscordIntegrationManager(this);
 
         getLogger().info(getName() + " has been enabled!");
     }
@@ -84,19 +90,21 @@ public final class Basics extends JavaPlugin {
 
         getLogger().info("Saving punishment storage....");
         PunishmentManager pManager = getPunishmentManager();
-        if (pManager != null && pManager.getStorage().getDatabaseManager() != null) {
-            pManager.getStorage().getDatabaseManager().shutdown();
+        if (pManager != null) {
+            PunishmentStorageProvider punishmentStorageProvider = pManager.getStorage().getStorageProvider();
+            if (punishmentStorageProvider instanceof PunishmentSQLStorage) {
+                PunishmentSQLStorage sqlStorage = (PunishmentSQLStorage) pManager.getStorage().getStorageProvider();
+                sqlStorage.getDatabase().shutdown();
+            }
         }
 
         getLogger().info("Unregistering scoreboards...");
         ScoreboardManager sManager = getScoreboardManager();
-        if (sManager == null) {
-            return;
+        if (sManager != null) {
+            Map<UUID, BasicsScoreboard> scoreboards = sManager.getBoards();
+            scoreboards.forEach((uuid, scoreboard) -> scoreboard.getObjective().unregister());
+            scoreboards.clear();
         }
-
-        Map<UUID, Scoreboards> scoreboards = sManager.getBoards();
-        scoreboards.forEach((uuid, scoreboard) -> scoreboard.getObjective().unregister());
-        scoreboards.clear();
 
         getLogger().info(getName() + " has been disabled!");
     }

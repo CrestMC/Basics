@@ -32,12 +32,12 @@ public class ItemLoreCommand extends CommandBase {
     @Override
     public boolean execute(CommandSender sender, @NotNull String commandLabel, String[] args) {
         if (!sender.hasPermission(getPermission())) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.NO_PERMISSION + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.NO_PERMISSION + "", sender, this, args));
             return true;
         }
 
         if (!(sender instanceof Player)) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.ONLY_PLAYERS + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.ONLY_PLAYERS + "", sender, this, args));
             return true;
         }
 
@@ -50,22 +50,22 @@ public class ItemLoreCommand extends CommandBase {
         String loreText;
 
         if (args.length < 1) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_ARGS + "", player, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.INVALID_ARGS + "", player, this, args));
             return true;
         }
 
         if (item.getType().isAir()) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.ITEM_LORE_ITEM_INVALID + "", player, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.ITEM_LORE_ITEM_INVALID + "", player, this, args));
             return true;
         }
 
         if (args[0].equalsIgnoreCase("clear")) {
             meta.setLore(null);
             item.setItemMeta(meta);
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.ITEM_LORE_CLEARED + "", player, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.ITEM_LORE_CLEARED + "", player, this, args));
             return true;
         } else if (args.length == 1) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_ARGS + "", player, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.INVALID_ARGS + "", player, this, args));
             return true;
         }
 
@@ -83,7 +83,7 @@ public class ItemLoreCommand extends CommandBase {
                 meta.setLore(lore);
                 item.setItemMeta(meta);
 
-                player.sendMessage(Placeholders.parsePlaceholder(Messages.ITEM_LORE_ADDED + "", player, this, args));
+                player.sendMessage(Placeholders.parse(Messages.ITEM_LORE_ADDED + "", player, this, args));
                 return true;
             case "set":
                 loreText = ChatColor.translateAlternateColorCodes('&', ChatColor.WHITE + String.join(" ", Arrays.copyOfRange(args, 2, args.length)));
@@ -92,7 +92,7 @@ public class ItemLoreCommand extends CommandBase {
                 try {
                     line = Integer.parseInt(args[1]);
                 } catch (IllegalArgumentException e) {
-                    sender.sendMessage(Placeholders.parsePlaceholder(Messages.NUMBER_INVALID + "", args[1]));
+                    sender.sendMessage(Placeholders.parse(Messages.NUMBER_INVALID + "", args[1]));
                     return true;
                 }
 
@@ -101,14 +101,14 @@ public class ItemLoreCommand extends CommandBase {
                     meta.setLore(lore);
                     item.setItemMeta(meta);
                 } catch (IndexOutOfBoundsException e) {
-                    sender.sendMessage(Placeholders.parsePlaceholder(Messages.ITEM_LORE_LINE_INVALID + "", player, this, args));
+                    sender.sendMessage(Placeholders.parse(Messages.ITEM_LORE_LINE_INVALID + "", player, this, args));
                     return true;
                 }
 
-                player.sendMessage(Placeholders.parsePlaceholder(Messages.ITEM_LORE_SET + "", player, this, args));
+                player.sendMessage(Placeholders.parse(Messages.ITEM_LORE_SET + "", player, this, args));
                 return true;
             default:
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_ARGS + "", player, this, args));
+                sender.sendMessage(Placeholders.parse(Messages.INVALID_ARGS + "", player, this, args));
                 return true;
         }
 

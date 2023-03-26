@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>me.blurmit</groupId>
-    <artifactId>basics-bungee</artifactId>
+    <artifactId>Basics-Bungee</artifactId>
     <version>1.0</version>
     <packaging>jar</packaging>
 
-    <name>basics-bungee</name>
+    <name>Basics-Bungee</name>
 
     <description>Bungee counterpart to the Basics plugin</description>
     <properties>

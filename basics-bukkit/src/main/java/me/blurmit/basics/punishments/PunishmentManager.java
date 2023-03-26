@@ -191,7 +191,7 @@ public class PunishmentManager {
 
             String senderName = RankUtil.getColoredName(sender);
 
-            TextComponent message = new TextComponent(Placeholders.parsePlaceholder(
+            TextComponent message = new TextComponent(Placeholders.parse(
                     (silent ? Messages.PUNISHMENT_SILENT_PREFIX.toString() : "") + punishment.message(),
                     true,
                     targetName,
@@ -199,7 +199,7 @@ public class PunishmentManager {
                     duration));
 
             if (player.hasPermission("basics.punishments.viewdetails")) {
-                HoverEvent hover = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(Placeholders.parsePlaceholder(
+                HoverEvent hover = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(Placeholders.parse(
                         Messages.PUNISHMENT_HOVER.toString(),
                         true,
                         senderName,
@@ -221,7 +221,7 @@ public class PunishmentManager {
 
             String senderName = RankUtil.getColoredName(sender);
 
-            TextComponent message = new TextComponent(Placeholders.parsePlaceholder(
+            TextComponent message = new TextComponent(Placeholders.parse(
                     (silent ? Messages.PUNISHMENT_SILENT_PREFIX.toString() : "") + punishment.message(),
                     true,
                     targetName,
@@ -229,7 +229,7 @@ public class PunishmentManager {
                     senderName));
 
             if (player.hasPermission("basics.punishments.viewdetails")) {
-                HoverEvent hover = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(Placeholders.parsePlaceholder(
+                HoverEvent hover = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(Placeholders.parse(
                         Messages.PUNISHMENT_HOVER.toString(),
                         true,
                         senderName,

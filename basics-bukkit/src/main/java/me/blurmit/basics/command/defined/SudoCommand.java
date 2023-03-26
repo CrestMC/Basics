@@ -27,25 +27,25 @@ public class SudoCommand extends CommandBase {
     @Override
     public boolean execute(CommandSender sender, @NotNull String commandLabel, String[] args) {
         if (!sender.hasPermission(getPermission())) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.NO_PERMISSION + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.NO_PERMISSION + "", sender, this, args));
             return true;
         }
 
         if (args.length < 2) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_ARGS + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.INVALID_ARGS + "", sender, this, args));
             return true;
         }
 
         Player target = plugin.getServer().getPlayer(args[0]);
 
         if (target == null) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.PLAYER_NOT_FOUND + "", args[0]));
+            sender.sendMessage(Placeholders.parse(Messages.PLAYER_NOT_FOUND + "", args[0]));
             return true;
         }
 
-        sender.sendMessage(Placeholders.parsePlaceholder(Messages.SUDO_SUCCESS + "", target, this, args));
+        sender.sendMessage(Placeholders.parse(Messages.SUDO_SUCCESS + "", target, this, args));
 
-        String command = Placeholders.parsePlaceholder(String.join(" ", Arrays.copyOfRange(args, 1, args.length)));
+        String command = Placeholders.parse(String.join(" ", Arrays.copyOfRange(args, 1, args.length)));
 
         if (command.startsWith("c:")) {
             command = command.replaceFirst("c:", "");

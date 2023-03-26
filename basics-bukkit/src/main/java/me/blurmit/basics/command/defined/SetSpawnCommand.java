@@ -25,12 +25,12 @@ public class SetSpawnCommand extends CommandBase {
     @Override
     public boolean execute(CommandSender sender, @NotNull String commandLabel, String[] args) {
         if (!sender.hasPermission(getPermission())) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.NO_PERMISSION + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.NO_PERMISSION + "", sender, this, args));
             return true;
         }
 
         if (!(sender instanceof Player)) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.ONLY_PLAYERS + ""));
+            sender.sendMessage(Placeholders.parse(Messages.ONLY_PLAYERS + ""));
             return true;
         }
 
@@ -46,7 +46,7 @@ public class SetSpawnCommand extends CommandBase {
                         + ", " + Math.round(player.getLocation().getPitch())
         );
         plugin.getConfigManager().saveConfig();
-        player.sendMessage(Placeholders.parsePlaceholder(Messages.SPAWN_SET + "", player, this, args));
+        player.sendMessage(Placeholders.parse(Messages.SPAWN_SET + "", player, this, args));
 
         return true;
     }

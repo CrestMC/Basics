@@ -35,10 +35,6 @@ public class PunishmentYamlStorage extends PunishmentStorageProvider {
      */
     @Override
     public void load() {
-        if (punishmentsFile.exists()) {
-            return;
-        }
-
         plugin.saveResource(punishmentsFile.getName(), false);
         storage = YamlConfiguration.loadConfiguration(punishmentsFile);
     }

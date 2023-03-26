@@ -28,7 +28,7 @@ public class SpawnCommand extends CommandBase {
     @Override
     public boolean execute(CommandSender sender, @NotNull String commandLabel, String[] args) {
         if (!sender.hasPermission(getPermission())) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.NO_PERMISSION + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.NO_PERMISSION + "", sender, this, args));
             return true;
         }
 
@@ -50,19 +50,19 @@ public class SpawnCommand extends CommandBase {
 
         if (!(sender instanceof Player)) {
             if (args.length != 1) {
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_ARGS + "", sender, this, args));
+                sender.sendMessage(Placeholders.parse(Messages.INVALID_ARGS + "", sender, this, args));
                 return true;
             }
 
             Player target = Bukkit.getPlayer(args[0]);
 
             if (target == null) {
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.PLAYER_NOT_FOUND + "", args[0]));
+                sender.sendMessage(Placeholders.parse(Messages.PLAYER_NOT_FOUND + "", args[0]));
                 return true;
             }
 
             target.teleport(spawnLocation, PlayerTeleportEvent.TeleportCause.PLUGIN);
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.TELEPORTED_SPAWN + "", target, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.TELEPORTED_SPAWN + "", target, this, args));
             return true;
         }
 
@@ -70,24 +70,24 @@ public class SpawnCommand extends CommandBase {
 
         if (args.length == 0) {
             player.teleport(spawnLocation, PlayerTeleportEvent.TeleportCause.PLUGIN);
-            player.sendMessage(Placeholders.parsePlaceholder(Messages.TELEPORTED_SPAWN + "", player, this, args));
+            player.sendMessage(Placeholders.parse(Messages.TELEPORTED_SPAWN + "", player, this, args));
             return true;
         }
 
         if (!player.hasPermission("basics.spawn.other")) {
-            player.sendMessage(Placeholders.parsePlaceholder(Messages.NO_PERMISSION_SUBCOMMAND + "", sender, this, args));
+            player.sendMessage(Placeholders.parse(Messages.NO_PERMISSION_SUBCOMMAND + "", sender, this, args));
             return true;
         }
 
         Player target = Bukkit.getPlayer(args[0]);
 
         if (target == null) {
-            player.sendMessage(Placeholders.parsePlaceholder(Messages.PLAYER_NOT_FOUND + "", args[0]));
+            player.sendMessage(Placeholders.parse(Messages.PLAYER_NOT_FOUND + "", args[0]));
             return true;
         }
 
         target.teleport(spawnLocation, PlayerTeleportEvent.TeleportCause.PLUGIN);
-        player.sendMessage(Placeholders.parsePlaceholder(Messages.TELEPORTED_SPAWN + "", target, this, args));
+        player.sendMessage(Placeholders.parse(Messages.TELEPORTED_SPAWN + "", target, this, args));
 
         return true;
     }

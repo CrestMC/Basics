@@ -4,7 +4,6 @@ import me.blurmit.basics.Basics;
 import me.blurmit.basics.command.CommandBase;
 import me.blurmit.basics.util.Placeholders;
 import me.blurmit.basics.util.lang.Messages;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -28,7 +27,7 @@ public class SpeedCommand extends CommandBase {
     @Override
     public boolean execute(CommandSender sender, @NotNull String commandLabel, String[] args) {
         if (!sender.hasPermission(getPermission())) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.NO_PERMISSION + ""));
+            sender.sendMessage(Placeholders.parse(Messages.NO_PERMISSION + ""));
             return true;
         }
 
@@ -41,6 +40,7 @@ public class SpeedCommand extends CommandBase {
             type = SpeedType.WALK;
         }
 
+        String[] newArgs = args;
         if (args.length > 2) {
             switch (args[2].toLowerCase()) {
                 case "walk":
@@ -50,16 +50,16 @@ public class SpeedCommand extends CommandBase {
                 case "fly":
                     type = SpeedType.FLY;
             }
+
+            newArgs = Arrays.copyOfRange(args, 0, args.length - 1);
         }
 
-        String[] newArgs = Arrays.copyOfRange(args, 0, args.length - 1);
         if (type == SpeedType.FLY) {
             new FlySpeedCommand(plugin).execute(sender, commandLabel, newArgs);
         } else {
             new WalkSpeedCommand(plugin).execute(sender, commandLabel, newArgs);
         }
         return true;
-
     }
 
     private enum SpeedType {

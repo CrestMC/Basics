@@ -32,7 +32,7 @@ public class ListCommand extends CommandBase {
     @Override
     public boolean execute(CommandSender sender, @NotNull String commandLabel, String[] args) {
         if (!sender.hasPermission(getPermission())) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.NO_PERMISSION + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.NO_PERMISSION + "", sender, this, args));
             return true;
         }
 
@@ -50,7 +50,7 @@ public class ListCommand extends CommandBase {
                 .collect(Collectors.joining(ChatColor.GRAY + ", " + ChatColor.RESET, ChatColor.GRAY + "", ChatColor.RESET + ""));
         String ranks = RankUtil.getOrderedRanks();
 
-        sender.sendMessage(Placeholders.parsePlaceholder(Messages.LIST_MESSAGE + "", sender, this, null, args, false, ranks, players));
+        sender.sendMessage(Placeholders.parse(Messages.LIST_MESSAGE + "", sender, this, null, args, false, ranks, players));
         return true;
     }
 

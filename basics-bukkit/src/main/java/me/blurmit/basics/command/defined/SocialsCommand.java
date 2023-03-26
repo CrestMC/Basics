@@ -28,7 +28,7 @@ public class SocialsCommand extends CommandBase {
     @Override
     public boolean execute(CommandSender sender, @NotNull String command, String[] args) {
         if (!sender.hasPermission(getPermission())) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.NO_PERMISSION + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.NO_PERMISSION + "", sender, this, args));
             return true;
         }
 
@@ -40,23 +40,23 @@ public class SocialsCommand extends CommandBase {
 
         switch (command.toLowerCase()) {
             case "socials": {
-                allSocials.forEach(social -> sender.sendMessage(Placeholders.parsePlaceholder(social)));
+                allSocials.forEach(social -> sender.sendMessage(Placeholders.parse(social)));
                 break;
             }
             case "website": {
-                sender.sendMessage(Placeholders.parsePlaceholder(website));
+                sender.sendMessage(Placeholders.parse(website));
                 break;
             }
             case "discord": {
-                sender.sendMessage(Placeholders.parsePlaceholder(discord));
+                sender.sendMessage(Placeholders.parse(discord));
                 break;
             }
             case "store": {
-                sender.sendMessage(Placeholders.parsePlaceholder(store));
+                sender.sendMessage(Placeholders.parse(store));
                 break;
             }
             case "twitter": {
-                sender.sendMessage(Placeholders.parsePlaceholder(twitter));
+                sender.sendMessage(Placeholders.parse(twitter));
                 break;
             }
         }

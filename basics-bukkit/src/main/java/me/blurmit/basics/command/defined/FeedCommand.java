@@ -29,7 +29,7 @@ public class FeedCommand extends CommandBase {
     @Override
     public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
         if (!sender.hasPermission(getPermission())) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.NO_PERMISSION + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.NO_PERMISSION + "", sender, this, args));
             return true;
         }
 
@@ -37,19 +37,19 @@ public class FeedCommand extends CommandBase {
             Player target = Bukkit.getPlayer(args[0]);
 
             if (target == null) {
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.PLAYER_NOT_FOUND + "", args[0]));
+                sender.sendMessage(Placeholders.parse(Messages.PLAYER_NOT_FOUND + "", args[0]));
                 return true;
             }
 
             target.setSaturation(20);
             target.setFoodLevel(20);
 
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.PLAYER_FED + "", target, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.PLAYER_FED + "", target, this, args));
             return true;
         }
 
         if (!(sender instanceof Player)) {
-            sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_ARGS + "", sender, this, args));
+            sender.sendMessage(Placeholders.parse(Messages.INVALID_ARGS + "", sender, this, args));
             return true;
         }
 
@@ -58,7 +58,7 @@ public class FeedCommand extends CommandBase {
         player.setSaturation(20);
         player.setFoodLevel(20);
 
-        sender.sendMessage(Placeholders.parsePlaceholder(Messages.PLAYER_FED + "", player, this, args));
+        sender.sendMessage(Placeholders.parse(Messages.PLAYER_FED + "", player, this, args));
         return true;
     }
 }

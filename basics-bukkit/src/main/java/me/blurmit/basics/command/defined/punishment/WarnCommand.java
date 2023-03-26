@@ -26,13 +26,13 @@ public class WarnCommand extends PunishmentCommand {
 
     @Override
     public void punish(CommandSender moderator, UUID target, String command, String[] args, boolean isSilent, long expiresAt) {
-        moderator.sendMessage(Placeholders.parsePlaceholder(
+        moderator.sendMessage(Placeholders.parse(
                 Messages.PUNISHMENT_MESSAGE + "", true, "warned", getTargetName(), getReason(), getDurationText()
         ));
 
         Player player = plugin.getServer().getPlayer(target);
         if (player != null) {
-            player.sendMessage(Placeholders.parsePlaceholder(Messages.WARN_ALERT + "", true, getReason(), getExpiresInText()));
+            player.sendMessage(Placeholders.parse(Messages.WARN_ALERT + "", true, getReason(), getExpiresInText()));
         }
 
         plugin.getPunishmentManager().storeHistory(PunishmentType.WARN, getTargetUUID(), getModUUID(), getReason(), TimeUtil.getCurrentTimeSeconds(), getExpiresAt());

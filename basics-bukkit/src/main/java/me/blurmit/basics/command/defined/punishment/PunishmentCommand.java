@@ -52,7 +52,7 @@ public abstract class PunishmentCommand extends CommandBase {
     public boolean execute(CommandSender sender, @NotNull String commandLabel, String[] arguments) {
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
             if (!sender.hasPermission(getPermission())) {
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.NO_PERMISSION + "", sender, this, arguments, true));
+                sender.sendMessage(Placeholders.parse(Messages.NO_PERMISSION + "", sender, this, arguments, true));
                 return;
             }
 
@@ -72,7 +72,7 @@ public abstract class PunishmentCommand extends CommandBase {
 
             // Check if the arguments are greater than 2, after they've been parsed
             if (args.length < 2) {
-                sender.sendMessage(Placeholders.parsePlaceholder(Messages.INVALID_ARGS + "", sender, this, args, true));
+                sender.sendMessage(Placeholders.parse(Messages.INVALID_ARGS + "", sender, this, args, true));
                 return;
             }
 
@@ -89,7 +89,7 @@ public abstract class PunishmentCommand extends CommandBase {
                 targetUUID = UUIDUtil.getUUID(args[0]);
 
                 if (targetUUID == null) {
-                    sender.sendMessage(Placeholders.parsePlaceholder(Messages.ACCOUNT_DOESNT_EXIST + "", true, args[0]));
+                    sender.sendMessage(Placeholders.parse(Messages.ACCOUNT_DOESNT_EXIST + "", true, args[0]));
                     return;
                 }
             }

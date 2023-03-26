@@ -16,6 +16,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Comparator;
+import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -25,7 +27,7 @@ public class RankUtil {
 
     public static String getColoredName(CommandSender sender) {
         if (!(sender instanceof Player)) {
-            return Placeholders.parsePlaceholder(Messages.CONSOLE_NAME + "", true);
+            return Placeholders.parse(Messages.CONSOLE_NAME + "", true);
         }
 
         Player player = (Player) sender;
@@ -94,7 +96,11 @@ public class RankUtil {
 
             ranks = groupManager.getLoadedGroups()
                     .stream()
-                    .sorted(Comparator.comparingInt(group -> -group.getWeight().getAsInt()))
+                    .filter(group -> group.getCachedData().getMetaData().getMetaValue("hidden") == null)
+                    .sorted(Comparator.comparingInt(group -> {
+                        OptionalInt weight = group.getWeight();
+                        return weight.isPresent() ? -weight.getAsInt() : 0;
+                    }))
                     .map(Group::getDisplayName)
                     .collect(Collectors.joining(ChatColor.GRAY + ", " + ChatColor.RESET, ChatColor.GRAY + "", ChatColor.RESET + ""));
         }
