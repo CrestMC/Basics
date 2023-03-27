@@ -110,14 +110,20 @@ public class BasicsScoreboard {
             return id;
         }
 
+        if (text.length() < 17) {
+            entryText = id;
+        }
+
         String oldEntry = entry.getPlayerEntry();
         if (oldEntry != null) {
             if (oldEntry.equals(entryText) && prefix.equals(oldPrefix)) {
                 return entryText;
             }
 
-            scoreboard.resetScores(oldEntry);
-            team.removeEntry(oldEntry);
+            if (!oldEntry.equals(entryText)) {
+                scoreboard.resetScores(oldEntry);
+                team.removeEntry(oldEntry);
+            }
         }
 
         objective.getScore(entryText).setScore(entry.getID());
@@ -125,7 +131,6 @@ public class BasicsScoreboard {
         team.setSuffix(suffix);
         team.addEntry(entryText);
         entry.setPlayerEntry(entryText);
-
         return entryText;
     }
 
