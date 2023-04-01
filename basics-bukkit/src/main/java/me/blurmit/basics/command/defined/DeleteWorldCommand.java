@@ -44,9 +44,8 @@ public class DeleteWorldCommand extends CommandBase {
         File worldFile = new File(worldContainer + "/" + worldName);
         File dataFile = new File(worldContainer + "/" + worldName + "/data");
         File regionFile = new File(worldContainer + "/" + worldName + "/region");
-        File poiFile = new File(worldContainer + "/" + worldName.toLowerCase() + "/poi");
 
-        if (!worldFile.exists() || !worldFile.isDirectory() || !dataFile.exists() || !regionFile.isDirectory() || !poiFile.exists()) {
+        if (!worldFile.exists() || !worldFile.isDirectory() || !dataFile.exists() || !regionFile.isDirectory()) {
             sender.sendMessage(Placeholders.parse(Messages.INVALID_WORLD + "", sender, false, worldName));
             return true;
         }
@@ -59,20 +58,8 @@ public class DeleteWorldCommand extends CommandBase {
             plugin.getServer().unloadWorld(worldName, false);
         }
 
-        for (File dataFiles : dataFile.listFiles()) {
-            dataFiles.delete();
-        }
-
-        for (File regionFiles : regionFile.listFiles()) {
-            regionFiles.delete();
-        }
-
-        for (File poiFiles : poiFile.listFiles()) {
-            poiFiles.delete();
-        }
-
-        for (File worldFiles : worldFile.listFiles()) {
-            worldFiles.delete();
+        for (File file : worldFile.listFiles()) {
+            file.delete();
         }
         worldFile.delete();
 

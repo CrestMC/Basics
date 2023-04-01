@@ -113,12 +113,16 @@ public class CreateWorldCommand extends CommandBase {
             return true;
         }
 
-        plugin.getServer().createWorld(new WorldCreator(name)
+        WorldCreator creator = new WorldCreator(name)
                 .type(type)
                 .environment(environment)
                 .generateStructures(doGenerateStructures)
-                .hardcore(isHardcore)
-                .seed(seed));
+                .seed(seed);
+
+        try {
+            creator.hardcore(true);
+        } catch (NoSuchMethodError ignored) {}
+
         sender.sendMessage(Placeholders.parse(Messages.WORLD_CREATED + "", sender, this, args));
 
         return true;

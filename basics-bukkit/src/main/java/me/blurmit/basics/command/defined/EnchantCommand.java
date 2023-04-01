@@ -47,7 +47,7 @@ public class EnchantCommand extends CommandBase {
 
         Enchantment enchantment;
         Player player = (Player) sender;
-        ItemStack itemStack = player.getInventory().getItemInMainHand();
+        ItemStack itemStack = player.getInventory().getItemInHand();
         enchantment = Enchantment.getByKey(NamespacedKey.minecraft(args[0].toLowerCase()));
         int level;
 

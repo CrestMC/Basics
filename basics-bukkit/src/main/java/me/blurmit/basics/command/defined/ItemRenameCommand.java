@@ -45,7 +45,7 @@ public class ItemRenameCommand extends CommandBase {
         }
 
         Player player = (Player) sender;
-        ItemStack item = player.getInventory().getItemInMainHand();
+        ItemStack item = player.getInventory().getItemInHand();
         ItemMeta meta = item.getItemMeta();
 
         if (item.getItemMeta() == null) {

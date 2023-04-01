@@ -76,7 +76,8 @@ public class BasicsScoreboard {
 
         if (text.length() > 16) {
             prefix = text.substring(0, 16);
-            entryText = id + ChatColor.getLastColors(prefix) + text.substring(16, Math.min(32, text.length()));
+            String originalLastColor = ChatColor.getLastColors(prefix).equals("") ? ChatColor.RESET + "" : ChatColor.getLastColors(prefix);
+            entryText = id + originalLastColor + text.substring(16, Math.min(32, text.length()));
 
             boolean splitPrefix = prefix.endsWith("§");
             if (splitPrefix) {

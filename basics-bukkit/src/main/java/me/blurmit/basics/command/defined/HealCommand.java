@@ -43,7 +43,7 @@ public class HealCommand extends CommandBase {
                 return true;
             }
 
-            target.setHealth(target.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
+            target.setHealth(target.getMaxHealth());
             target.setSaturation(20);
             target.setFoodLevel(20);
             clearEffects(target);
@@ -62,6 +62,7 @@ public class HealCommand extends CommandBase {
         player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
         player.setSaturation(20);
         player.setFoodLevel(20);
+        player.setFireTicks(0);
         clearEffects(player);
 
         sender.sendMessage(Placeholders.parse(Messages.PLAYER_HEALED + "", player, this, args));
